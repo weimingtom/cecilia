@@ -1,0 +1,46 @@
+print("hello")
+//break on string_print()
+
+string_print(PyStringObject * 0x006098f0, _iobuf * 0x005c7a10, int 0x00000001) line 600 - objects/stringobject.c
+PyObject_Print(_object * 0x006098f0, _iobuf * 0x005c7a10, int 0x00000001) line 183 + 23 bytes - objects/object.c
+PyFile_WriteObject(_object * 0x006098f0, _object * 0x005ea320, int 0x00000001) line 1620 + 17 bytes - objects/fileobject.c
+eval_frame(_frame * 0x006089a0) line 1371 + 15 bytes - python/ceval.c
+PyEval_EvalCodeEx(PyCodeObject * 0x006096a0, _object * 0x005f7a40, _object * 0x005f7a40, _object * * 0x00000000, int 0x00000000, _object * * 0x00000000, int 0x00000000, _object * * 0x00000000, int 0x00000000, _object * 0x00000000) line 2595 + 9 bytes - python/ceval.c
+PyEval_EvalCode(PyCodeObject * 0x006096a0, _object * 0x005f7a40, _object * 0x005f7a40) line 486 + 31 bytes - python/ceval.c
+run_node(_node * 0x00608db0, char * 0x005969a8 `string', _object * 0x005f7a40, _object * 0x005f7a40, PyCompilerFlags * 0x0012fee8) line 1095 + 17 bytes - python/pythonrun.c
+PyRun_InteractiveOneFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', PyCompilerFlags * 0x0012fee8) line 606 + 25 bytes - python/pythonrun.c
+PyRun_InteractiveLoopFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', PyCompilerFlags * 0x0012fee8) line 537 + 17 bytes - python/pythonrun.c
+PyRun_AnyFileExFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', int 0x00000000, PyCompilerFlags * 0x0012fee8) line 500 + 17 bytes - python/pythonrun.c
+Py_Main(int 0x00000001, char * * 0x005e0ec0) line 367 + 48 bytes - modules/main.c
+main(int 0x00000001, char * * 0x005e0ec0) line 27 + 13 bytes - modules/python.c
+mainCRTStartup() line 206 + 25 bytes
+KERNEL32! 7c816037()
+
+-------------------------------------------
+
+//break when prompt displaying
+
+NTDLL! 7c92e514()
+KERNEL32! 7c8737b9()
+KERNEL32! 7c873900()
+KERNEL32! 7c8018b7()
+_read_lk(int 0x00000000, void * 0x005cc700 __bufin, unsigned int 0x00001000) line 146 + 46 bytes
+_read(int 0x00000000, void * 0x005cc700 __bufin, unsigned int 0x00001000) line 75 + 17 bytes
+_filbuf(_iobuf * 0x005c79f0 __iob) line 127 + 26 bytes
+fgets(char * 0x00608d20, int 0x00000063, _iobuf * 0x005c79f0 __iob) line 75 + 65 bytes
+my_fgets(char * 0x00608d20, int 0x00000064, _iobuf * 0x005c79f0 __iob) line 35 + 17 bytes - parser/myreadline.c
+PyOS_StdioReadline(char * 0x005f779c) line 110 + 18 bytes - parser/myreadline.c
+PyOS_Readline(char * 0x005f779c) line 164 + 12 bytes - parser/myreadline.c
+tok_nextc(tok_state * 0x005f72f0) line 194 + 15 bytes - parser/tokenizer.c
+PyTokenizer_Get(tok_state * 0x005f72f0, char * * 0x0012fc64, char * * 0x0012fc60) line 526 + 9 bytes - parser/tokenizer.c
+parsetok(tok_state * 0x005f72f0, grammar * 0x005c4738 __PyParser_Grammar, int 0x00000100, perrdetail * 0x0012fd60, int 0x00000000) line 111 + 17 bytes - parser/parsetok.c
+PyParser_ParseFileFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', grammar * 0x005c4738 __PyParser_Grammar, int 0x00000100, char * 0x005f779c, char * 0x005f76fc, perrdetail * 0x0012fd60, int 0x00000000) line 80 + 25 bytes - parser/parsetok.c
+PyRun_InteractiveOneFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', PyCompilerFlags * 0x0012fee8) line 589 + 76 bytes - python/pythonrun.c
+PyRun_InteractiveLoopFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', PyCompilerFlags * 0x0012fee8) line 537 + 17 bytes - python/pythonrun.c
+PyRun_AnyFileExFlags(_iobuf * 0x005c79f0 __iob, char * 0x005969a8 `string', int 0x00000000, PyCompilerFlags * 0x0012fee8) line 500 + 17 bytes - python/pythonrun.c
+Py_Main(int 0x00000001, char * * 0x005e0ec0) line 367 + 48 bytes - modules/main.c
+main(int 0x00000001, char * * 0x005e0ec0) line 27 + 13 bytes - modules/python.c
+mainCRTStartup() line 206 + 25 bytes
+KERNEL32! 7c816037()
+
+-------------------------------------------
