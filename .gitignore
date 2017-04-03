@@ -256,6 +256,8 @@ obj/
 
 python-2.2.2/Debug/
 python-2.2.2/Release/
+python_mini/Debug/
+python_mini/Release/
 *.ncb
 *.opt
 *.suo
