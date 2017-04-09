@@ -293,13 +293,6 @@ SOURCE=.\parser\metagrammar.c
 # Begin Source File
 
 SOURCE=.\parser\myreadline.c
-
-!IF  "$(CFG)" == "python - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "python - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
