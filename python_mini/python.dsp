@@ -157,6 +157,13 @@ SOURCE=.\objects\abstract.c
 # Begin Source File
 
 SOURCE=.\objects\bufferobject.c
+
+!IF  "$(CFG)" == "python - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "python - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
