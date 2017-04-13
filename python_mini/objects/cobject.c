@@ -1,10 +1,5 @@
-
-/* Wrap void* pointers to be passed between C modules */
-
+//20170413
 #include "python.h"
-
-
-/* Declarations for objects of type PyCObject */
 
 typedef void (*destructor1)(void *);
 typedef void (*destructor2)(void *, void*);
@@ -16,28 +11,29 @@ typedef struct {
     void (*destructor)(void *);
 } PyCObject;
 
-PyObject *
-PyCObject_FromVoidPtr(void *cobj, void (*destr)(void *))
+PyObject *PyCObject_FromVoidPtr(void *cobj, void (*destr)(void *))
 {
     PyCObject *self;
 
     self = PyObject_NEW(PyCObject, &PyCObject_Type);
     if (self == NULL)
-        return NULL;
-    self->cobject=cobj;
+    {
+		return NULL;
+    }
+	self->cobject=cobj;
     self->destructor=destr;
     self->desc=NULL;
 
     return (PyObject *)self;
 }
 
-PyObject *
-PyCObject_FromVoidPtrAndDesc(void *cobj, void *desc,
+PyObject *PyCObject_FromVoidPtrAndDesc(void *cobj, void *desc,
                              void (*destr)(void *, void *))
 {
     PyCObject *self;
 
-    if (!desc) {
+    if (!desc) 
+	{
         PyErr_SetString(PyExc_TypeError,
                         "PyCObject_FromVoidPtrAndDesc called with null"
                         " description");
@@ -45,68 +41,83 @@ PyCObject_FromVoidPtrAndDesc(void *cobj, void *desc,
     }
     self = PyObject_NEW(PyCObject, &PyCObject_Type);
     if (self == NULL)
-        return NULL;
-    self->cobject=cobj;
+    {
+		return NULL;
+    }
+	self->cobject=cobj;
     self->destructor=(destructor1)destr;
     self->desc=desc;
 
     return (PyObject *)self;
 }
 
-void *
-PyCObject_AsVoidPtr(PyObject *self)
+void *PyCObject_AsVoidPtr(PyObject *self)
 {
-    if (self) {
+    if (self) 
+	{
         if (self->ob_type == &PyCObject_Type)
-            return ((PyCObject *)self)->cobject;
-        PyErr_SetString(PyExc_TypeError,
+        {
+			return ((PyCObject *)self)->cobject;
+        }
+		PyErr_SetString(PyExc_TypeError,
                         "PyCObject_AsVoidPtr with non-C-object");
     }
     if (!PyErr_Occurred())
+	{
         PyErr_SetString(PyExc_TypeError,
                         "PyCObject_AsVoidPtr called with null pointer");
-    return NULL;
+    }
+	return NULL;
 }
 
-void *
-PyCObject_GetDesc(PyObject *self)
+void *PyCObject_GetDesc(PyObject *self)
 {
-    if (self) {
+    if (self) 
+	{
         if (self->ob_type == &PyCObject_Type)
-            return ((PyCObject *)self)->desc;
-        PyErr_SetString(PyExc_TypeError,
+        {
+			return ((PyCObject *)self)->desc;
+        }
+		PyErr_SetString(PyExc_TypeError,
                         "PyCObject_GetDesc with non-C-object");
     }
     if (!PyErr_Occurred())
-        PyErr_SetString(PyExc_TypeError,
+    {
+		PyErr_SetString(PyExc_TypeError,
                         "PyCObject_GetDesc called with null pointer");
-    return NULL;
+    }
+	return NULL;
 }
 
-void *
-PyCObject_Import(char *module_name, char *name)
+void *PyCObject_Import(char *module_name, char *name)
 {
     PyObject *m, *c;
     void *r = NULL;
 
-    if ((m = PyImport_ImportModule(module_name))) {
-        if ((c = PyObject_GetAttrString(m,name))) {
+    if ((m = PyImport_ImportModule(module_name))) 
+	{
+        if ((c = PyObject_GetAttrString(m, name))) 
+		{
             r = PyCObject_AsVoidPtr(c);
             Py_DECREF(c);
-	}
+		}
         Py_DECREF(m);
     }
     return r;
 }
 
-static void
-PyCObject_dealloc(PyCObject *self)
+static void PyCObject_dealloc(PyCObject *self)
 {
-    if (self->destructor) {
-        if(self->desc)
-            ((destructor2)(self->destructor))(self->cobject, self->desc);
-        else
-            (self->destructor)(self->cobject);
+    if (self->destructor) 
+	{
+        if (self->desc)
+        {
+			((destructor2)(self->destructor))(self->cobject, self->desc);
+        }
+		else
+        {
+			(self->destructor)(self->cobject);
+		}
     }
     PyObject_DEL(self);
 }
@@ -122,25 +133,22 @@ mechanism to link to one another.";
 
 PyTypeObject PyCObject_Type = {
     PyObject_HEAD_INIT(&PyType_Type)
-    0,					/*ob_size*/
-    "PyCObject",			/*tp_name*/
-    sizeof(PyCObject),			/*tp_basicsize*/
-    0,					/*tp_itemsize*/
-    /* methods */
-    (destructor)PyCObject_dealloc,	/*tp_dealloc*/
-    (printfunc)0,			/*tp_print*/
-    (getattrfunc)0,			/*tp_getattr*/
-    (setattrfunc)0,			/*tp_setattr*/
-    (cmpfunc)0,				/*tp_compare*/
-    (reprfunc)0,			/*tp_repr*/
-    0,					/*tp_as_number*/
-    0,					/*tp_as_sequence*/
-    0,					/*tp_as_mapping*/
-    (hashfunc)0,			/*tp_hash*/
-    (ternaryfunc)0,			/*tp_call*/
-    (reprfunc)0,			/*tp_str*/
-
-    /* Space for future expansion */
+    0,					
+    "PyCObject",			
+    sizeof(PyCObject),			
+    0,					
+    (destructor)PyCObject_dealloc,	
+    (printfunc)0,			
+    (getattrfunc)0,			
+    (setattrfunc)0,			
+    (cmpfunc)0,				
+    (reprfunc)0,			
+    0,					
+    0,					
+    0,					
+    (hashfunc)0,			
+    (ternaryfunc)0,			
+    (reprfunc)0,			
     0L,0L,0L,0L,
-    PyCObject_Type__doc__ 		/* Documentation string */
+    PyCObject_Type__doc__ 
 };
