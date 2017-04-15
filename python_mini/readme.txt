@@ -7,3 +7,5 @@ todo:
 3. ramove param void
 (-) 4. rename class->class_
 5. //no break
+6. rename new->new_
+7. \-> "xxx"
