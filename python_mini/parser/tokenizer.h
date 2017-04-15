@@ -5,8 +5,7 @@
 
 #define MAXINDENT 100
 
-struct tok_state 
-{
+struct tok_state {
 	char *buf;
 	char *cur;
 	char *inp;

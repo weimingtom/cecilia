@@ -7,7 +7,11 @@
 extern char *PyOS_Readline(char *);
 
 #define TABSIZE 8
+#ifdef __CHAR_UNSIGNED__
+#define Py_CHARMASK(c)		(c)
+#else
 #define Py_CHARMASK(c)		((c) & 0xff)
+#endif
 
 static struct tok_state *tok_new(void);
 static int tok_nextc(struct tok_state *tok);
@@ -297,6 +301,8 @@ static int tok_nextc(struct tok_state *tok)
 				done = tok->inp[-1] == '\n';
 			}
 			tok->cur = tok->buf + cur;
+#ifndef macintosh
+
 			pt = tok->inp - 2;
 			if (pt >= tok->buf && *pt == '\r') 
 			{
@@ -304,6 +310,7 @@ static int tok_nextc(struct tok_state *tok)
 				*pt = '\0';
 				tok->inp = pt;
 			}
+#endif
 		}
 		if (tok->done != E_OK) 
 		{
@@ -832,6 +839,17 @@ again:
 		return NEWLINE;
 	}
 		
+#ifdef macintosh
+	if (c == '\r') 
+	{
+		PySys_WriteStderr(
+		  "File contains \\r characters (incorrect line endings?)\n");
+		tok->done = E_TOKEN;
+		tok->cur = tok->inp;
+		return ERRORTOKEN;
+	}
+#endif	
+	/* Period or number starting with period? */
 	if (c == '.') 
 	{
 		c = tok_nextc(tok);
@@ -891,10 +909,12 @@ again:
 				{
 					goto exponent;
 				}
+#ifndef WITHOUT_COMPLEX
 				else if (c == 'j' || c == 'J')
 				{
 					goto imaginary;
 				}
+#endif
 				else if (found_decimal) 
 				{
 					tok->done = E_TOKEN;
@@ -946,11 +966,13 @@ exponent:
 						c = tok_nextc(tok);
 					} while (isdigit(c));
 				}
-				if (c == 'j' || c == 'J') 
+#ifndef WITHOUT_COMPLEX
+				if (c == 'j' || c == 'J')
 				{
 imaginary:
 					c = tok_nextc(tok);
 				}
+#endif
 			}
 		}
 		tok_backup(tok, c);

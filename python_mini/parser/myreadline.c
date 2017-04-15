@@ -1,11 +1,16 @@
 //20170403
 
 #include "python.h"
+#ifdef MS_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"
+#endif
 
 int (*PyOS_InputHook)(void) = NULL;
 
+#ifdef RISCOS
+int Py_RISCOSWimpFlag;
+#endif
 static int my_fgets(char *buf, int len, FILE *fp)
 {
 	char *p;
@@ -20,6 +25,7 @@ static int my_fgets(char *buf, int len, FILE *fp)
 		if (p != NULL)
 		{
 			return 0;
+#ifdef MS_WINDOWS
 		}
 		if (GetLastError() == ERROR_OPERATION_ABORTED) 
 		{
@@ -28,10 +34,12 @@ static int my_fgets(char *buf, int len, FILE *fp)
 				return 1;
 			}
 		}
+#endif
 		if (feof(fp)) 
 		{
 			return -1;
 		}
+#ifdef EINTR
 		if (errno == EINTR) 
 		{
 			if (PyOS_InterruptOccurred()) 
@@ -40,6 +48,7 @@ static int my_fgets(char *buf, int len, FILE *fp)
 			}
 			continue;
 		}
+#endif
 		if (PyOS_InterruptOccurred()) 
 		{
 			return 1;
@@ -59,10 +68,24 @@ char *PyOS_StdioReadline(char *prompt)
 		return NULL;
 	}
 	fflush(stdout);
+#ifndef RISCOS
 	if (prompt)
 	{
 		fprintf(stderr, "%s", prompt);
 	}
+#else
+	if (prompt) 
+	{
+		if (Py_RISCOSWimpFlag)
+		{
+			fprintf(stderr, "\x0cr%s\x0c", prompt);
+		}
+		else
+		{
+			fprintf(stderr, "%s", prompt);
+		}
+	}
+#endif
 	fflush(stderr);
 	switch (my_fgets(p, (int)n, stdin)) 
 	{
@@ -79,6 +102,13 @@ char *PyOS_StdioReadline(char *prompt)
 		*p = '\0';
 		break;
 	}
+#ifdef MPW
+	n = strlen(prompt);
+	if (strncmp(p, prompt, n) == 0)
+	{
+		memmove(p, p + n, strlen(p) - n + 1);
+	}
+#endif
 	n = strlen(p);
 	while (n > 0 && p[n-1] != '\n') 
 	{
