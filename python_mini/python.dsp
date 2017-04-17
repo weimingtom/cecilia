@@ -743,6 +743,10 @@ SOURCE=.\include\weakrefobject.h
 # End Group
 # Begin Source File
 
+SOURCE=.\breakpoint.txt
+# End Source File
+# Begin Source File
+
 SOURCE=.\pyconfig.h
 # End Source File
 # Begin Source File
