@@ -9,3 +9,4 @@ todo:
 5. //no break
 6. rename new->new_
 7. \-> "xxx"
+8. remove (void)
