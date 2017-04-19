@@ -1,5 +1,8 @@
 Ctrl + Z : exit
 
+__lltrace__ = True
+del __lltrace__
+
 
 todo:
 (x) 1. remove macro #define

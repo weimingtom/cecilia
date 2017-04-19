@@ -747,6 +747,10 @@ SOURCE=.\breakpoint.txt
 # End Source File
 # Begin Source File
 
+SOURCE=D:\work\testrc\testrc\DebugPythonStacks.txt
+# End Source File
+# Begin Source File
+
 SOURCE=.\pyconfig.h
 # End Source File
 # Begin Source File
