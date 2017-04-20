@@ -3,6 +3,16 @@ Ctrl + Z : exit
 __lltrace__ = True
 del __lltrace__
 
+A Whirlwind Excursion through Python C Extensions
+https://nedbatchelder.com/text/whirlext.html
+http://stackoverflow.com/questions/1728472/i-want-to-start-reading-the-python-source-code-where-should-i-start
+
+https://svn.python.org/projects/python/trunk/
+
+http://akaptur.com/blog/2013/11/15/introduction-to-the-python-interpreter/
+http://developer.51cto.com/art/201401/428125.htm
+https://github.com/akaptur/akaptur.github.com
+
 
 todo:
 (x) 1. remove macro #define
@@ -12,4 +22,5 @@ todo:
 5. //no break
 6. rename new->new_
 7. \-> "xxx"
-8. remove (void)
+8. remove (void) : (void)xxx(...); int xxx(void);
+ 
