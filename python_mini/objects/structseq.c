@@ -283,13 +283,13 @@ static PyObject *structseq_reduce(PyStructSequence* self)
 
 static PySequenceMethods structseq_as_sequence = {
 	(inquiry)structseq_length,
-	(binaryfunc)structseq_concat,           /* sq_concat */
-	(intargfunc)structseq_repeat,         	/* sq_repeat */
-	(intargfunc)structseq_item,		/* sq_item */
-	(intintargfunc)structseq_slice,		/* sq_slice */
-	0,					/* sq_ass_item */
-	0,					/* sq_ass_slice */
-	(objobjproc)structseq_contains,	        /* sq_contains */
+	(binaryfunc)structseq_concat,   
+	(intargfunc)structseq_repeat,   
+	(intargfunc)structseq_item,		
+	(intintargfunc)structseq_slice,	
+	0,					
+	0,					
+	(objobjproc)structseq_contains,	 
 };
 
 static PyMethodDef structseq_methods[] = {
@@ -304,7 +304,7 @@ static PyTypeObject _struct_sequence_template = {
 	NULL,	            
     0,		            
 	0,	                
-	(destructor)structseq_dealloc,	        /* tp_dealloc */
+	(destructor)structseq_dealloc,	 
 	0,                  
 	0,			 		
 	0,					

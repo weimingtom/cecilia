@@ -1,13 +1,9 @@
-
-/* Type object implementation */
-
+//20170428
 #include "python.h"
 #include "structmember.h"
 
 #include <ctype.h>
 
-/* The *real* layout of a type object when allocated on the heap */
-/* XXX Should we publish this in a header file? */
 typedef struct {
 	PyTypeObject type;
 	PyNumberMethods as_number;
@@ -32,33 +28,40 @@ static PyMemberDef type_members[] = {
 	{0}
 };
 
-static PyObject *
-type_name(PyTypeObject *type, void *context)
+static PyObject *type_name(PyTypeObject *type, void *context)
 {
 	char *s;
 
 	s = strrchr(type->tp_name, '.');
 	if (s == NULL)
+	{
 		s = type->tp_name;
+	}
 	else
+	{
 		s++;
+	}
 	return PyString_FromString(s);
 }
 
-static PyObject *
-type_module(PyTypeObject *type, void *context)
+static PyObject *type_module(PyTypeObject *type, void *context)
 {
 	PyObject *mod;
 	char *s;
 
 	s = strrchr(type->tp_name, '.');
 	if (s != NULL)
+	{
 		return PyString_FromStringAndSize(type->tp_name,
 						  (int)(s - type->tp_name));
+	}
 	if (!(type->tp_flags & Py_TPFLAGS_HEAPTYPE))
+	{
 		return PyString_FromString("__builtin__");
+	}
 	mod = PyDict_GetItemString(type->tp_dict, "__module__");
-	if (mod != NULL && PyString_Check(mod)) {
+	if (mod != NULL && PyString_Check(mod)) 
+	{
 		Py_INCREF(mod);
 		return mod;
 	}
@@ -66,16 +69,17 @@ type_module(PyTypeObject *type, void *context)
 	return NULL;
 }
 
-static int
-type_set_module(PyTypeObject *type, PyObject *value, void *context)
+static int type_set_module(PyTypeObject *type, PyObject *value, void *context)
 {
 	if (!(type->tp_flags & Py_TPFLAGS_HEAPTYPE) ||
-	    strrchr(type->tp_name, '.')) {
+	    strrchr(type->tp_name, '.')) 
+	{
 		PyErr_Format(PyExc_TypeError,
 			     "can't set %s.__module__", type->tp_name);
 		return -1;
 	}
-	if (!value) {
+	if (!value) 
+	{
 		PyErr_Format(PyExc_TypeError,
 			     "can't delete %s.__module__", type->tp_name);
 		return -1;
@@ -83,32 +87,36 @@ type_set_module(PyTypeObject *type, PyObject *value, void *context)
 	return PyDict_SetItemString(type->tp_dict, "__module__", value);
 }
 
-static PyObject *
-type_dict(PyTypeObject *type, void *context)
+static PyObject *type_dict(PyTypeObject *type, void *context)
 {
-	if (type->tp_dict == NULL) {
+	if (type->tp_dict == NULL) 
+	{
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 	return PyDictProxy_New(type->tp_dict);
 }
 
-static PyObject *
-type_get_doc(PyTypeObject *type, void *context)
+static PyObject *type_get_doc(PyTypeObject *type, void *context)
 {
 	PyObject *result;
 	if (!(type->tp_flags & Py_TPFLAGS_HEAPTYPE) && type->tp_doc != NULL)
+	{
 		return PyString_FromString(type->tp_doc);
+	}
 	result = PyDict_GetItemString(type->tp_dict, "__doc__");
-	if (result == NULL) {
+	if (result == NULL) 
+	{
 		result = Py_None;
 		Py_INCREF(result);
 	}
-	else if (result->ob_type->tp_descr_get) {
+	else if (result->ob_type->tp_descr_get) 
+	{
 		result = result->ob_type->tp_descr_get(result, NULL,
 						       (PyObject *)type);
 	}
-	else {
+	else 
+	{
 		Py_INCREF(result);
 	}
 	return result;
@@ -122,58 +130,66 @@ static PyGetSetDef type_getsets[] = {
 	{0}
 };
 
-static int
-type_compare(PyObject *v, PyObject *w)
+static int type_compare(PyObject *v, PyObject *w)
 {
-	/* This is called with type objects only. So we
-	   can just compare the addresses. */
 	Py_uintptr_t vv = (Py_uintptr_t)v;
 	Py_uintptr_t ww = (Py_uintptr_t)w;
 	return (vv < ww) ? -1 : (vv > ww) ? 1 : 0;
 }
 
-static PyObject *
-type_repr(PyTypeObject *type)
+static PyObject *type_repr(PyTypeObject *type)
 {
 	PyObject *mod, *name, *rtn;
 	char *kind;
 
 	mod = type_module(type, NULL);
 	if (mod == NULL)
+	{
 		PyErr_Clear();
-	else if (!PyString_Check(mod)) {
+	}
+	else if (!PyString_Check(mod)) 
+	{
 		Py_DECREF(mod);
 		mod = NULL;
 	}
 	name = type_name(type, NULL);
 	if (name == NULL)
+	{
 		return NULL;
+	}
 
 	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+	{
 		kind = "class";
+	}
 	else
+	{
 		kind = "type";
+	}
 
-	if (mod != NULL && strcmp(PyString_AS_STRING(mod), "__builtin__")) {
+	if (mod != NULL && strcmp(PyString_AS_STRING(mod), "__builtin__")) 
+	{
 		rtn = PyString_FromFormat("<%s '%s.%s'>",
 					  kind,
 					  PyString_AS_STRING(mod),
 					  PyString_AS_STRING(name));
 	}
 	else
+	{
 		rtn = PyString_FromFormat("<%s '%s'>", kind, type->tp_name);
+	}
 
 	Py_XDECREF(mod);
 	Py_DECREF(name);
 	return rtn;
 }
 
-static PyObject *
-type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
+static PyObject *type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
 	PyObject *obj;
 
-	if (type->tp_new == NULL) {
+	if (type->tp_new == NULL) 
+	{
 		PyErr_Format(PyExc_TypeError,
 			     "cannot create '%.100s' instances",
 			     type->tp_name);
@@ -181,22 +197,24 @@ type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	}
 
 	obj = type->tp_new(type, args, kwds);
-	if (obj != NULL) {
-		/* Ugly exception: when the call was type(something),
-		   don't call tp_init on the result. */
+	if (obj != NULL) 
+	{
 		if (type == &PyType_Type &&
 		    PyTuple_Check(args) && PyTuple_GET_SIZE(args) == 1 &&
 		    (kwds == NULL ||
 		     (PyDict_Check(kwds) && PyDict_Size(kwds) == 0)))
+		{
 			return obj;
-		/* If the returned object is not an instance of type,
-		   it won't be initialized. */
+		}
 		if (!PyType_IsSubtype(obj->ob_type, type))
+		{
 			return obj;
+		}
 		type = obj->ob_type;
 		if (PyType_HasFeature(type, Py_TPFLAGS_HAVE_CLASS) &&
 		    type->tp_init != NULL &&
-		    type->tp_init(obj, args, kwds) < 0) {
+		    type->tp_init(obj, args, kwds) < 0) 
+		{
 			Py_DECREF(obj);
 			obj = NULL;
 		}
@@ -204,121 +222,144 @@ type_call(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	return obj;
 }
 
-PyObject *
-PyType_GenericAlloc(PyTypeObject *type, int nitems)
+PyObject *PyType_GenericAlloc(PyTypeObject *type, int nitems)
 {
 	PyObject *obj;
 	const size_t size = _PyObject_VAR_SIZE(type, nitems);
 
 	if (PyType_IS_GC(type))
+	{
 		obj = _PyObject_GC_Malloc(type, nitems);
+	}
 	else
+	{
 		obj = PyObject_MALLOC(size);
+	}
 
 	if (obj == NULL)
+	{
 		return PyErr_NoMemory();
+	}
 
 	memset(obj, '\0', size);
 
 	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+	{
 		Py_INCREF(type);
+	}
 
 	if (type->tp_itemsize == 0)
+	{
 		PyObject_INIT(obj, type);
+	}
 	else
+	{
 		(void) PyObject_INIT_VAR((PyVarObject *)obj, type, nitems);
+	}
 
 	if (PyType_IS_GC(type))
+	{
 		_PyObject_GC_TRACK(obj);
+	}
 	return obj;
 }
 
-PyObject *
-PyType_GenericNew(PyTypeObject *type, PyObject *args, PyObject *kwds)
+PyObject *PyType_GenericNew(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
 	return type->tp_alloc(type, 0);
 }
 
-/* Helpers for subtyping */
-
-static int
-traverse_slots(PyTypeObject *type, PyObject *self, visitproc visit, void *arg)
+static int traverse_slots(PyTypeObject *type, PyObject *self, visitproc visit, void *arg)
 {
 	int i, n;
 	PyMemberDef *mp;
 
 	n = type->ob_size;
 	mp = ((etype *)type)->members;
-	for (i = 0; i < n; i++, mp++) {
-		if (mp->type == T_OBJECT_EX) {
+	for (i = 0; i < n; i++, mp++) 
+	{
+		if (mp->type == T_OBJECT_EX) 
+		{
 			char *addr = (char *)self + mp->offset;
 			PyObject *obj = *(PyObject **)addr;
-			if (obj != NULL) {
+			if (obj != NULL) 
+			{
 				int err = visit(obj, arg);
 				if (err)
+				{
 					return err;
+				}
 			}
 		}
 	}
 	return 0;
 }
 
-static int
-subtype_traverse(PyObject *self, visitproc visit, void *arg)
+static int subtype_traverse(PyObject *self, visitproc visit, void *arg)
 {
 	PyTypeObject *type, *base;
 	traverseproc basetraverse;
 
-	/* Find the nearest base with a different tp_traverse,
-	   and traverse slots while we're at it */
 	type = self->ob_type;
 	base = type;
-	while ((basetraverse = base->tp_traverse) == subtype_traverse) {
-		if (base->ob_size) {
+	while ((basetraverse = base->tp_traverse) == subtype_traverse) 
+	{
+		if (base->ob_size) 
+		{
 			int err = traverse_slots(base, self, visit, arg);
 			if (err)
+			{
 				return err;
+			}
 		}
 		base = base->tp_base;
 		assert(base);
 	}
 
-	if (type->tp_dictoffset != base->tp_dictoffset) {
+	if (type->tp_dictoffset != base->tp_dictoffset) 
+	{
 		PyObject **dictptr = _PyObject_GetDictPtr(self);
-		if (dictptr && *dictptr) {
+		if (dictptr && *dictptr) 
+		{
 			int err = visit(*dictptr, arg);
 			if (err)
+			{
 				return err;
+			}
 		}
 	}
 
-	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE) {
-		/* For a heaptype, the instances count as references
-		   to the type.  Traverse the type so the collector
-		   can find cycles involving this link. */
+	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE) 
+	{
 		int err = visit((PyObject *)type, arg);
 		if (err)
+		{
 			return err;
+		}
 	}
 
 	if (basetraverse)
+	{
 		return basetraverse(self, visit, arg);
+	}
 	return 0;
 }
 
-static void
-clear_slots(PyTypeObject *type, PyObject *self)
+static void clear_slots(PyTypeObject *type, PyObject *self)
 {
 	int i, n;
 	PyMemberDef *mp;
 
 	n = type->ob_size;
 	mp = ((etype *)type)->members;
-	for (i = 0; i < n; i++, mp++) {
-		if (mp->type == T_OBJECT_EX && !(mp->flags & READONLY)) {
+	for (i = 0; i < n; i++, mp++) 
+	{
+		if (mp->type == T_OBJECT_EX && !(mp->flags & READONLY)) 
+		{
 			char *addr = (char *)self + mp->offset;
 			PyObject *obj = *(PyObject **)addr;
-			if (obj != NULL) {
+			if (obj != NULL) 
+			{
 				Py_DECREF(obj);
 				*(PyObject **)addr = NULL;
 			}
@@ -326,96 +367,83 @@ clear_slots(PyTypeObject *type, PyObject *self)
 	}
 }
 
-static int
-subtype_clear(PyObject *self)
+static int subtype_clear(PyObject *self)
 {
 	PyTypeObject *type, *base;
 	inquiry baseclear;
 
-	/* Find the nearest base with a different tp_clear
-	   and clear slots while we're at it */
 	type = self->ob_type;
 	base = type;
-	while ((baseclear = base->tp_clear) == subtype_clear) {
+	while ((baseclear = base->tp_clear) == subtype_clear) 
+	{
 		if (base->ob_size)
+		{
 			clear_slots(base, self);
+		}
 		base = base->tp_base;
 		assert(base);
 	}
 
-	/* There's no need to clear the instance dict (if any);
-	   the collector will call its tp_clear handler. */
-
 	if (baseclear)
+	{
 		return baseclear(self);
+	}
 	return 0;
 }
 
 staticforward PyObject *lookup_maybe(PyObject *, char *, PyObject **);
 
-static int
-call_finalizer(PyObject *self)
+static int call_finalizer(PyObject *self)
 {
 	static PyObject *del_str = NULL;
 	PyObject *del, *res;
 	PyObject *error_type, *error_value, *error_traceback;
 
-	/* Temporarily resurrect the object. */
 #ifdef Py_TRACE_REFS
 #ifndef Py_REF_DEBUG
 #   error "Py_TRACE_REFS defined but Py_REF_DEBUG not."
 #endif
-	/* much too complicated if Py_TRACE_REFS defined */
 	_Py_NewReference((PyObject *)self);
 #ifdef COUNT_ALLOCS
-	/* compensate for boost in _Py_NewReference; note that
-	 * _Py_RefTotal was also boosted; we'll knock that down later.
-	 */
 	self->ob_type->tp_allocs--;
 #endif
-#else /* !Py_TRACE_REFS */
-	/* Py_INCREF boosts _Py_RefTotal if Py_REF_DEBUG is defined */
+#else 
 	Py_INCREF(self);
-#endif /* !Py_TRACE_REFS */
-
-	/* Save the current exception, if any. */
+#endif 
+	
 	PyErr_Fetch(&error_type, &error_value, &error_traceback);
 
-	/* Execute __del__ method, if any. */
 	del = lookup_maybe(self, "__del__", &del_str);
-	if (del != NULL) {
+	if (del != NULL) 
+	{
 		res = PyEval_CallObject(del, NULL);
 		if (res == NULL)
+		{
 			PyErr_WriteUnraisable(del);
+		}
 		else
+		{
 			Py_DECREF(res);
+		}
 		Py_DECREF(del);
 	}
 
-	/* Restore the saved exception. */
 	PyErr_Restore(error_type, error_value, error_traceback);
 
-	/* Undo the temporary resurrection; can't use DECREF here, it would
-	 * cause a recursive call.
-	 */
 #ifdef Py_REF_DEBUG
-	/* _Py_RefTotal was boosted either by _Py_NewReference or
-	 * Py_INCREF above.
-	 */
 	_Py_RefTotal--;
 #endif
-	if (--self->ob_refcnt > 0) {
+	if (--self->ob_refcnt > 0) 
+	{
 #ifdef COUNT_ALLOCS
 		self->ob_type->tp_frees--;
 #endif
-		/* This should still be a tracked gc'ed object. */
 		assert(((PyGC_Head *)(self)-1)->gc.gc_next != NULL);
-		return -1; /* __del__ added a reference; don't delete now */
+		return -1;
 	}
 #ifdef Py_TRACE_REFS
 	_Py_ForgetReference((PyObject *)self);
 #ifdef COUNT_ALLOCS
-	/* compensate for increment in _Py_ForgetReference */
 	self->ob_type->tp_frees--;
 #endif
 #endif
@@ -423,167 +451,169 @@ call_finalizer(PyObject *self)
 	return 0;
 }
 
-static void
-subtype_dealloc(PyObject *self)
+static void subtype_dealloc(PyObject *self)
 {
 	PyTypeObject *type, *base;
 	destructor basedealloc;
 
-	/* This exists so we can DECREF self->ob_type */
-
 	if (call_finalizer(self) < 0)
+	{
 		return;
+	}
 
-	/* Find the nearest base with a different tp_dealloc
-	   and clear slots while we're at it */
 	type = self->ob_type;
 	base = type;
-	while ((basedealloc = base->tp_dealloc) == subtype_dealloc) {
+	while ((basedealloc = base->tp_dealloc) == subtype_dealloc) 
+	{
 		if (base->ob_size)
 			clear_slots(base, self);
 		base = base->tp_base;
 		assert(base);
 	}
 
-	/* If we added a dict, DECREF it */
-	if (type->tp_dictoffset && !base->tp_dictoffset) {
+	if (type->tp_dictoffset && !base->tp_dictoffset) 
+	{
 		PyObject **dictptr = _PyObject_GetDictPtr(self);
-		if (dictptr != NULL) {
+		if (dictptr != NULL) 
+		{
 			PyObject *dict = *dictptr;
-			if (dict != NULL) {
+			if (dict != NULL) 
+			{
 				Py_DECREF(dict);
 				*dictptr = NULL;
 			}
 		}
 	}
 
-	/* If we added weaklist, we clear it */
 	if (type->tp_weaklistoffset && !base->tp_weaklistoffset)
+	{
 		PyObject_ClearWeakRefs(self);
+	}
 
-	/* Finalize GC if the base doesn't do GC and we do */
 	if (PyType_IS_GC(type) && !PyType_IS_GC(base))
+	{
 		_PyObject_GC_UNTRACK(self);
+	}
 
-	/* Call the base tp_dealloc() */
 	assert(basedealloc);
 	basedealloc(self);
 
-	/* Can't reference self beyond this point */
-	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE) {
+	if (type->tp_flags & Py_TPFLAGS_HEAPTYPE) 
+	{
 		Py_DECREF(type);
 	}
 }
 
 staticforward PyTypeObject *solid_base(PyTypeObject *type);
 
-/* type test with subclassing support */
-
-int
-PyType_IsSubtype(PyTypeObject *a, PyTypeObject *b)
+int PyType_IsSubtype(PyTypeObject *a, PyTypeObject *b)
 {
 	PyObject *mro;
 
 	if (!(a->tp_flags & Py_TPFLAGS_HAVE_CLASS))
+	{
 		return b == a || b == &PyBaseObject_Type;
+	}
 
 	mro = a->tp_mro;
-	if (mro != NULL) {
-		/* Deal with multiple inheritance without recursion
-		   by walking the MRO tuple */
+	if (mro != NULL) 
+	{
 		int i, n;
 		assert(PyTuple_Check(mro));
 		n = PyTuple_GET_SIZE(mro);
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; i++) 
+		{
 			if (PyTuple_GET_ITEM(mro, i) == (PyObject *)b)
+			{
 				return 1;
+			}
 		}
 		return 0;
 	}
-	else {
-		/* a is not completely initilized yet; follow tp_base */
-		do {
+	else 
+	{
+		do 
+		{
 			if (a == b)
+			{
 				return 1;
+			}
 			a = a->tp_base;
 		} while (a != NULL);
 		return b == &PyBaseObject_Type;
 	}
 }
 
-/* Internal routines to do a method lookup in the type
-   without looking in the instance dictionary
-   (so we can't use PyObject_GetAttr) but still binding
-   it to the instance.  The arguments are the object,
-   the method name as a C string, and the address of a
-   static variable used to cache the interned Python string.
-
-   Two variants:
-
-   - lookup_maybe() returns NULL without raising an exception
-     when the _PyType_Lookup() call fails;
-
-   - lookup_method() always raises an exception upon errors.
-*/
-
-static PyObject *
-lookup_maybe(PyObject *self, char *attrstr, PyObject **attrobj)
+static PyObject *lookup_maybe(PyObject *self, char *attrstr, PyObject **attrobj)
 {
 	PyObject *res;
 
-	if (*attrobj == NULL) {
+	if (*attrobj == NULL) 
+	{
 		*attrobj = PyString_InternFromString(attrstr);
 		if (*attrobj == NULL)
+		{
 			return NULL;
+		}
 	}
 	res = _PyType_Lookup(self->ob_type, *attrobj);
-	if (res != NULL) {
+	if (res != NULL) 
+	{
 		descrgetfunc f;
 		if ((f = res->ob_type->tp_descr_get) == NULL)
+		{
 			Py_INCREF(res);
+		}
 		else
+		{
 			res = f(res, self, (PyObject *)(self->ob_type));
+		}
 	}
 	return res;
 }
 
-static PyObject *
-lookup_method(PyObject *self, char *attrstr, PyObject **attrobj)
+static PyObject *lookup_method(PyObject *self, char *attrstr, PyObject **attrobj)
 {
 	PyObject *res = lookup_maybe(self, attrstr, attrobj);
 	if (res == NULL && !PyErr_Occurred())
+	{
 		PyErr_SetObject(PyExc_AttributeError, *attrobj);
+	}
 	return res;
 }
 
-/* A variation of PyObject_CallMethod that uses lookup_method()
-   instead of PyObject_GetAttrString().  This uses the same convention
-   as lookup_method to cache the interned name string object. */
-
-static PyObject *
-call_method(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
+static PyObject *call_method(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
 {
 	va_list va;
 	PyObject *args, *func = 0, *retval;
 	va_start(va, format);
 
 	func = lookup_maybe(o, name, nameobj);
-	if (func == NULL) {
+	if (func == NULL) 
+	{
 		va_end(va);
 		if (!PyErr_Occurred())
+		{
 			PyErr_SetObject(PyExc_AttributeError, *nameobj);
+		}
 		return NULL;
 	}
 
 	if (format && *format)
+	{
 		args = Py_VaBuildValue(format, va);
+	}
 	else
+	{
 		args = PyTuple_New(0);
+	}
 
 	va_end(va);
 
 	if (args == NULL)
+	{
 		return NULL;
+	}
 
 	assert(PyTuple_Check(args));
 	retval = PyObject_Call(func, args, NULL);
@@ -594,19 +624,18 @@ call_method(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
 	return retval;
 }
 
-/* Clone of call_method() that returns NotImplemented when the lookup fails. */
-
-static PyObject *
-call_maybe(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
+static PyObject *call_maybe(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
 {
 	va_list va;
 	PyObject *args, *func = 0, *retval;
 	va_start(va, format);
 
 	func = lookup_maybe(o, name, nameobj);
-	if (func == NULL) {
+	if (func == NULL) 
+	{
 		va_end(va);
-		if (!PyErr_Occurred()) {
+		if (!PyErr_Occurred()) 
+		{
 			Py_INCREF(Py_NotImplemented);
 			return Py_NotImplemented;
 		}
@@ -614,14 +643,20 @@ call_maybe(PyObject *o, char *name, PyObject **nameobj, char *format, ...)
 	}
 
 	if (format && *format)
+	{
 		args = Py_VaBuildValue(format, va);
+	}
 	else
+	{
 		args = PyTuple_New(0);
+	}
 
 	va_end(va);
 
 	if (args == NULL)
+	{
 		return NULL;
+	}
 
 	assert(PyTuple_Check(args));
 	retval = PyObject_Call(func, args, NULL);
