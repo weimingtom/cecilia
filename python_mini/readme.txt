@@ -23,4 +23,7 @@ todo:
 6. rename new->new_
 7. \-> "xxx"
 8. remove (void) : (void)xxx(...); int xxx(void);
- 
+9. \n\ -> "...\n"
+
+
+stringobject.c:3032
