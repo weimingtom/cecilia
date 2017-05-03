@@ -24,6 +24,8 @@ todo:
 7. \-> "xxx"
 8. remove (void) : (void)xxx(...); int xxx(void);
 9. \n\ -> "...\n"
+10. remove \
+11. #if 0
 
 
 stringobject.c:3032
