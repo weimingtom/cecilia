@@ -13,3 +13,7 @@ https://www.python.org/download/releases/2.2.2/
 * decompyle  
 https://sourceforge.net/projects/decompyle/  
 https://github.com/weimingtom/decompyle-2.3.2_win32_build  
+
+* Python源码剖析  
+http://blog.csdn.net/balabalamerobert  
+http://blog.csdn.net/balabalamerobert/article/category/168910  
