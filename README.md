@@ -17,3 +17,4 @@ https://github.com/weimingtom/decompyle-2.3.2_win32_build
 * Python源码剖析  
 http://blog.csdn.net/balabalamerobert  
 http://blog.csdn.net/balabalamerobert/article/category/168910  
+https://github.com/shishujuan/python-source-code-analysis  
