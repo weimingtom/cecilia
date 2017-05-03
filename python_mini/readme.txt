@@ -29,3 +29,4 @@ todo:
 stringobject.c:3032
 unicodeobject.c:947
 unicodeobject.c:2183
+unicodeobject.c:2683
