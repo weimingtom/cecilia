@@ -18,3 +18,9 @@ https://github.com/weimingtom/decompyle-2.3.2_win32_build
 http://blog.csdn.net/balabalamerobert  
 http://blog.csdn.net/balabalamerobert/article/category/168910  
 https://github.com/shishujuan/python-source-code-analysis  
+
+* smython  
+https://github.com/sma/smython  
+
+* Python sources before v2.0  
+https://www.python.org/ftp/python/src/  
