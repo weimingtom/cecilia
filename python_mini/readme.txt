@@ -26,6 +26,8 @@ todo:
 9. \n\ -> "...\n"
 10. remove \
 11. #if 0
+12. remove (void)xxx() -> xxx()
+13. embeded struct  
 
 
 stringobject.c:3032
