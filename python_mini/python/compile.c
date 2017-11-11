@@ -1,14 +1,4 @@
-/* Compile an expression node to intermediate code */
-
-/* XXX TO DO:
-   XXX add __doc__ attribute == co_doc to code object attributes?
-   XXX   (it's currently the first item of the co_const tuple)
-   XXX Generate simple jump for break/return outside 'try...finally'
-   XXX Allow 'continue' inside finally clause of try-finally
-   XXX New opcode for loading the initial index for a for loop
-   XXX other JAR tricks?
-*/
-
+//20171111
 #include "python.h"
 
 #include "node.h"
@@ -21,10 +11,6 @@
 
 #include <ctype.h>
 
-/* Three symbols from graminit.h are also defined in python.h, with
-   Py_ prefixes to their names.  python.h can't include graminit.h
-   (which defines too many confusing symbols), but we can check here
-   that they haven't changed (which is very unlikely, but possible). */
 #if Py_single_input != single_input
   #error "single_input has changed -- update Py_single_input in python.h"
 #endif
@@ -46,28 +32,28 @@ int Py_OptimizeFlag = 0;
 #define VAR_DELETE 2
 
 #define DEL_CLOSURE_ERROR \
-"can not delete variable '%.400s' referenced in nested scope"
+	"can not delete variable '%.400s' referenced in nested scope"
 
 #define DUPLICATE_ARGUMENT \
-"duplicate argument '%s' in function definition"
+	"duplicate argument '%s' in function definition"
 
 #define ILLEGAL_DYNAMIC_SCOPE \
-"%.100s: exec or 'import *' makes names ambiguous in nested scope"
+	"%.100s: exec or 'import *' makes names ambiguous in nested scope"
 
 #define GLOBAL_AFTER_ASSIGN \
-"name '%.400s' is assigned to before global declaration"
+	"name '%.400s' is assigned to before global declaration"
 
 #define GLOBAL_AFTER_USE \
-"name '%.400s' is used prior to global declaration"
+	"name '%.400s' is used prior to global declaration"
 
 #define LOCAL_GLOBAL \
-"name '%.400s' is a function parameter and declared global"
+	"name '%.400s' is a function parameter and declared global"
 
 #define LATE_FUTURE \
-"from __future__ imports must occur at the beginning of the file"
+	"from __future__ imports must occur at the beginning of the file"
 
 #define ASSIGN_DEBUG \
-"can not assign to __debug__"
+	"can not assign to __debug__"
 
 #define MANGLE_LEN 256
 
@@ -88,11 +74,10 @@ static PyMemberDef code_memberlist[] = {
 	{"co_name",	T_OBJECT,	OFF(co_name),		READONLY},
 	{"co_firstlineno", T_INT,	OFF(co_firstlineno),	READONLY},
 	{"co_lnotab",	T_OBJECT,	OFF(co_lnotab),		READONLY},
-	{NULL}	/* Sentinel */
+	{NULL}
 };
 
-static void
-code_dealloc(PyCodeObject *co)
+static void code_dealloc(PyCodeObject *co)
 {
 	Py_XDECREF(co->co_code);
 	Py_XDECREF(co->co_consts);
@@ -106,8 +91,7 @@ code_dealloc(PyCodeObject *co)
 	PyObject_DEL(co);
 }
 
-static PyObject *
-code_repr(PyCodeObject *co)
+static PyObject *code_repr(PyCodeObject *co)
 {
 	char buf[500];
 	int lineno = -1;
@@ -115,68 +99,121 @@ code_repr(PyCodeObject *co)
 	char *name = "???";
 
 	if (co->co_firstlineno != 0)
+	{
 		lineno = co->co_firstlineno;
+	}
 	if (co->co_filename && PyString_Check(co->co_filename))
+	{
 		filename = PyString_AS_STRING(co->co_filename);
+	}
 	if (co->co_name && PyString_Check(co->co_name))
+	{
 		name = PyString_AS_STRING(co->co_name);
+	}
 	PyOS_snprintf(buf, sizeof(buf),
-		      "<code object %.100s at %p, file \"%.300s\", line %d>",
-		      name, co, filename, lineno);
+		"<code object %.100s at %p, file \"%.300s\", line %d>",
+		name, co, filename, lineno);
 	return PyString_FromString(buf);
 }
 
-static int
-code_compare(PyCodeObject *co, PyCodeObject *cp)
+static int code_compare(PyCodeObject *co, PyCodeObject *cp)
 {
 	int cmp;
 	cmp = PyObject_Compare(co->co_name, cp->co_name);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = co->co_argcount - cp->co_argcount;
-	if (cmp) return (cmp<0)?-1:1;
+	if (cmp) 
+	{
+		return (cmp < 0) ? -1 : 1;
+	}
 	cmp = co->co_nlocals - cp->co_nlocals;
-	if (cmp) return (cmp<0)?-1:1;
+	if (cmp) 
+	{
+		return (cmp < 0) ? -1 : 1;
+	}
 	cmp = co->co_flags - cp->co_flags;
-	if (cmp) return (cmp<0)?-1:1;
+	if (cmp) 
+	{
+		return (cmp < 0) ? -1 : 1;
+	}
 	cmp = PyObject_Compare(co->co_code, cp->co_code);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = PyObject_Compare(co->co_consts, cp->co_consts);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = PyObject_Compare(co->co_names, cp->co_names);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = PyObject_Compare(co->co_varnames, cp->co_varnames);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = PyObject_Compare(co->co_freevars, cp->co_freevars);
-	if (cmp) return cmp;
+	if (cmp) 
+	{
+		return cmp;
+	}
 	cmp = PyObject_Compare(co->co_cellvars, cp->co_cellvars);
 	return cmp;
 }
 
-static long
-code_hash(PyCodeObject *co)
+static long code_hash(PyCodeObject *co)
 {
 	long h, h0, h1, h2, h3, h4, h5, h6;
 	h0 = PyObject_Hash(co->co_name);
-	if (h0 == -1) return -1;
+	if (h0 == -1) 
+	{
+		return -1;
+	}
 	h1 = PyObject_Hash(co->co_code);
-	if (h1 == -1) return -1;
+	if (h1 == -1) 
+	{
+		return -1;
+	}
 	h2 = PyObject_Hash(co->co_consts);
-	if (h2 == -1) return -1;
+	if (h2 == -1) 
+	{
+		return -1;
+	}
 	h3 = PyObject_Hash(co->co_names);
-	if (h3 == -1) return -1;
+	if (h3 == -1) 
+	{
+		return -1;
+	}
 	h4 = PyObject_Hash(co->co_varnames);
-	if (h4 == -1) return -1;
+	if (h4 == -1) 
+	{
+		return -1;
+	}
 	h5 = PyObject_Hash(co->co_freevars);
-	if (h5 == -1) return -1;
+	if (h5 == -1) 
+	{
+		return -1;
+	}
 	h6 = PyObject_Hash(co->co_cellvars);
-	if (h6 == -1) return -1;
+	if (h6 == -1) 
+	{
+		return -1;
+	}
 	h = h0 ^ h1 ^ h2 ^ h3 ^ h4 ^ h5 ^ h6 ^
 		co->co_argcount ^ co->co_nlocals ^ co->co_flags;
-	if (h == -1) h = -2;
+	if (h == -1) 
+	{
+		h = -2;
+	}
 	return h;
 }
-
-/* XXX code objects need to participate in GC? */
 
 PyTypeObject PyCode_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
@@ -184,73 +221,77 @@ PyTypeObject PyCode_Type = {
 	"code",
 	sizeof(PyCodeObject),
 	0,
-	(destructor)code_dealloc, 	/* tp_dealloc */
-	0,				/* tp_print */
-	0, 				/* tp_getattr */
-	0,				/* tp_setattr */
-	(cmpfunc)code_compare, 		/* tp_compare */
-	(reprfunc)code_repr,		/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	(hashfunc)code_hash, 		/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	0,				/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
-	0,				/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	0,				/* tp_methods */
-	code_memberlist,		/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
+	(destructor)code_dealloc,
+	0,
+	0,
+	0,
+	(cmpfunc)code_compare,
+	(reprfunc)code_repr,
+	0,				
+	0,				
+	0,				
+	(hashfunc)code_hash,
+	0,				
+	0,				
+	PyObject_GenericGetAttr,
+	0,				
+	0,			
+	Py_TPFLAGS_DEFAULT,
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	code_memberlist,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
 };
 
 #define NAME_CHARS \
 	"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
-/* all_name_chars(s): true iff all chars in s are valid NAME_CHARS */
-
-static int
-all_name_chars(unsigned char *s)
+static int all_name_chars(unsigned char *s)
 {
 	static char ok_name_char[256];
 	static unsigned char *name_chars = (unsigned char *)NAME_CHARS;
 
-	if (ok_name_char[*name_chars] == 0) {
+	if (ok_name_char[*name_chars] == 0) 
+	{
 		unsigned char *p;
 		for (p = name_chars; *p; p++)
+		{
 			ok_name_char[*p] = 1;
+		}
 	}
-	while (*s) {
+	while (*s) 
+	{
 		if (ok_name_char[*s++] == 0)
+		{
 			return 0;
+		}
 	}
 	return 1;
 }
 
-static int
-intern_strings(PyObject *tuple)
+static int intern_strings(PyObject *tuple)
 {
 	int i;
 
-	for (i = PyTuple_GET_SIZE(tuple); --i >= 0; ) {
+	for (i = PyTuple_GET_SIZE(tuple); --i >= 0; ) 
+	{
 		PyObject *v = PyTuple_GET_ITEM(tuple, i);
-		if (v == NULL || !PyString_Check(v)) {
+		if (v == NULL || !PyString_Check(v)) 
+		{
 			Py_FatalError("non-string found in code slot");
 			PyErr_BadInternalCall();
 			return -1;
@@ -260,8 +301,7 @@ intern_strings(PyObject *tuple)
 	return 0;
 }
 
-PyCodeObject *
-PyCode_New(int argcount, int nlocals, int stacksize, int flags,
+PyCodeObject *PyCode_New(int argcount, int nlocals, int stacksize, int flags,
 	   PyObject *code, PyObject *consts, PyObject *names,
 	   PyObject *varnames, PyObject *freevars, PyObject *cellvars,
 	   PyObject *filename, PyObject *name, int firstlineno,
@@ -269,7 +309,6 @@ PyCode_New(int argcount, int nlocals, int stacksize, int flags,
 {
 	PyCodeObject *co;
 	int i;
-	/* Check argument types */
 	if (argcount < 0 || nlocals < 0 ||
 	    code == NULL ||
 	    consts == NULL || !PyTuple_Check(consts) ||
@@ -280,29 +319,39 @@ PyCode_New(int argcount, int nlocals, int stacksize, int flags,
 	    name == NULL || !PyString_Check(name) ||
 	    filename == NULL || !PyString_Check(filename) ||
 	    lnotab == NULL || !PyString_Check(lnotab) ||
-	    !PyObject_CheckReadBuffer(code)) {
+	    !PyObject_CheckReadBuffer(code)) 
+	{
 		PyErr_BadInternalCall();
 		return NULL;
 	}
 	intern_strings(names);
 	intern_strings(varnames);
 	if (freevars == NULL)
+	{
 		freevars = PyTuple_New(0);
+	}
 	intern_strings(freevars);
 	if (cellvars == NULL)
+	{
 		cellvars = PyTuple_New(0);
+	}
 	intern_strings(cellvars);
-	/* Intern selected string constants */
-	for (i = PyTuple_Size(consts); --i >= 0; ) {
+	for (i = PyTuple_Size(consts); --i >= 0; ) 
+	{
 		PyObject *v = PyTuple_GetItem(consts, i);
 		if (!PyString_Check(v))
+		{
 			continue;
+		}
 		if (!all_name_chars((unsigned char *)PyString_AS_STRING(v)))
+		{
 			continue;
+		}
 		PyString_InternInPlace(&PyTuple_GET_ITEM(consts, i));
 	}
 	co = PyObject_NEW(PyCodeObject, &PyCode_Type);
-	if (co != NULL) {
+	if (co != NULL) 
+	{
 		co->co_argcount = argcount;
 		co->co_nlocals = nlocals;
 		co->co_stacksize = stacksize;
@@ -330,188 +379,136 @@ PyCode_New(int argcount, int nlocals, int stacksize, int flags,
 	return co;
 }
 
-
-/* Data structure used internally */
-
-/* The compiler uses two passes to generate bytecodes.  The first pass
-   builds the symbol table.  The second pass generates the bytecode.
-
-   The first pass uses a single symtable struct.  The second pass uses
-   a compiling struct for each code block.  The compiling structs
-   share a reference to the symtable.
-
-   The two passes communicate via symtable_load_symbols() and via
-   is_local() and is_global().  The former initializes several slots
-   in the compiling struct: c_varnames, c_locals, c_nlocals,
-   c_argcount, c_globals, and c_flags.
-*/
-
-/* All about c_lnotab.
-
-c_lnotab is an array of unsigned bytes disguised as a Python string.  In -O
-mode, SET_LINENO opcodes aren't generated, and bytecode offsets are mapped
-to source code line #s (when needed for tracebacks) via c_lnotab instead.
-The array is conceptually a list of
-    (bytecode offset increment, line number increment)
-pairs.  The details are important and delicate, best illustrated by example:
-
-    byte code offset    source code line number
-        0		    1
-        6		    2
-       50		    7
-      350                 307
-      361                 308
-
-The first trick is that these numbers aren't stored, only the increments
-from one row to the next (this doesn't really work, but it's a start):
-
-    0, 1,  6, 1,  44, 5,  300, 300,  11, 1
-
-The second trick is that an unsigned byte can't hold negative values, or
-values larger than 255, so (a) there's a deep assumption that byte code
-offsets and their corresponding line #s both increase monotonically, and (b)
-if at least one column jumps by more than 255 from one row to the next, more
-than one pair is written to the table. In case #b, there's no way to know
-from looking at the table later how many were written.  That's the delicate
-part.  A user of c_lnotab desiring to find the source line number
-corresponding to a bytecode address A should do something like this
-
-    lineno = addr = 0
-    for addr_incr, line_incr in c_lnotab:
-        addr += addr_incr
-        if addr > A:
-            return lineno
-        lineno += line_incr
-
-In order for this to work, when the addr field increments by more than 255,
-the line # increment in each pair generated must be 0 until the remaining addr
-increment is < 256.  So, in the example above, com_set_lineno should not (as
-was actually done until 2.2) expand 300, 300 to 255, 255,  45, 45, but to
-255, 0,  45, 255,  0, 45.
-*/
-
 struct compiling {
-	PyObject *c_code;	/* string */
-	PyObject *c_consts;	/* list of objects */
-	PyObject *c_const_dict; /* inverse of c_consts */
-	PyObject *c_names;	/* list of strings (names) */
-	PyObject *c_name_dict;  /* inverse of c_names */
-	PyObject *c_globals;	/* dictionary (value=None) */
-	PyObject *c_locals;	/* dictionary (value=localID) */
-	PyObject *c_varnames;	/* list (inverse of c_locals) */
-	PyObject *c_freevars;	/* dictionary (value=None) */
-	PyObject *c_cellvars;	/* list */
-	int c_nlocals;		/* index of next local */
-	int c_argcount;		/* number of top-level arguments */
-	int c_flags;		/* same as co_flags */
-	int c_nexti;		/* index into c_code */
-	int c_errors;		/* counts errors occurred */
-	int c_infunction;	/* set when compiling a function */
-	int c_interactive;	/* generating code for interactive command */
-	int c_loops;		/* counts nested loops */
-	int c_begin;		/* begin of current loop, for 'continue' */
-	int c_block[CO_MAXBLOCKS]; /* stack of block types */
-	int c_nblocks;		/* current block stack level */
-	char *c_filename;	/* filename of current node */
-	char *c_name;		/* name of object (e.g. function) */
-	int c_lineno;		/* Current line number */
-	int c_stacklevel;	/* Current stack level */
-	int c_maxstacklevel;	/* Maximum stack level */
+	PyObject *c_code;	
+	PyObject *c_consts;	
+	PyObject *c_const_dict; 
+	PyObject *c_names;	
+	PyObject *c_name_dict; 
+	PyObject *c_globals;
+	PyObject *c_locals;
+	PyObject *c_varnames;
+	PyObject *c_freevars;
+	PyObject *c_cellvars;
+	int c_nlocals;	
+	int c_argcount;	
+	int c_flags;	
+	int c_nexti;	
+	int c_errors;	
+	int c_infunction;
+	int c_interactive;
+	int c_loops;	
+	int c_begin;		
+	int c_block[CO_MAXBLOCKS];
+	int c_nblocks;		
+	char *c_filename;	
+	char *c_name;		
+	int c_lineno;		
+	int c_stacklevel;	
+	int c_maxstacklevel;
 	int c_firstlineno;
-	PyObject *c_lnotab;	/* Table mapping address to line number */
+	PyObject *c_lnotab;	
 	int c_last_addr, c_last_line, c_lnotab_next;
-	char *c_private;	/* for private name mangling */
-	int c_tmpname;		/* temporary local name counter */
-	int c_nested;		/* Is block nested funcdef or lamdef? */
-	int c_closure;		/* Is nested w/freevars? */
-	struct symtable *c_symtable; /* pointer to module symbol table */
-        PyFutureFeatures *c_future; /* pointer to module's __future__ */
+	char *c_private;	
+	int c_tmpname;		
+	int c_nested;		
+	int c_closure;		
+	struct symtable *c_symtable; 
+    PyFutureFeatures *c_future; 
 };
 
-static int
-is_free(int v)
+static int is_free(int v)
 {
 	if ((v & (USE | DEF_FREE))
 	    && !(v & (DEF_LOCAL | DEF_PARAM | DEF_GLOBAL)))
+	{
 		return 1;
+	}
 	if (v & DEF_FREE_CLASS)
+	{
 		return 1;
+	}
 	return 0;
 }
 
-static void
-com_error(struct compiling *c, PyObject *exc, char *msg)
+static void com_error(struct compiling *c, PyObject *exc, char *msg)
 {
 	PyObject *t = NULL, *v = NULL, *w = NULL, *line = NULL;
 
-	if (c == NULL) {
-		/* Error occurred via symtable call to
-		   is_constant_false */
+	if (c == NULL) 
+	{
 		PyErr_SetString(exc, msg);
 		return;
 	}
 	c->c_errors++;
-	if (c->c_lineno < 1 || c->c_interactive) { 
-		/* Unknown line number or interactive input */
+	if (c->c_lineno < 1 || c->c_interactive) 
+	{ 
 		PyErr_SetString(exc, msg);
 		return;
 	}
 	v = PyString_FromString(msg);
 	if (v == NULL)
-		return; /* MemoryError, too bad */
+	{
+		return;
+	}
 
 	line = PyErr_ProgramText(c->c_filename, c->c_lineno);
-	if (line == NULL) {
+	if (line == NULL) 
+	{
 		Py_INCREF(Py_None);
 		line = Py_None;
 	}
-	if (exc == PyExc_SyntaxError) {
+	if (exc == PyExc_SyntaxError) 
+	{
 		t = Py_BuildValue("(ziOO)", c->c_filename, c->c_lineno,
 				  Py_None, line);
 		if (t == NULL)
+		{
 			goto exit;
+		}
 		w = Py_BuildValue("(OO)", v, t);
 		if (w == NULL)
+		{
 			goto exit;
+		}
 		PyErr_SetObject(exc, w);
-	} else {
-		/* Make sure additional exceptions are printed with
-		   file and line, also. */
+	} 
+	else 
+	{
 		PyErr_SetObject(exc, v);
 		PyErr_SyntaxLocation(c->c_filename, c->c_lineno);
 	}
- exit:
+exit:
 	Py_XDECREF(t);
 	Py_XDECREF(v);
 	Py_XDECREF(w);
 	Py_XDECREF(line);
 }
 
-/* Interface to the block stack */
-
-static void
-block_push(struct compiling *c, int type)
+static void block_push(struct compiling *c, int type)
 {
-	if (c->c_nblocks >= CO_MAXBLOCKS) {
+	if (c->c_nblocks >= CO_MAXBLOCKS) 
+	{
 		com_error(c, PyExc_SystemError,
 			  "too many statically nested blocks");
 	}
-	else {
+	else 
+	{
 		c->c_block[c->c_nblocks++] = type;
 	}
 }
 
-static void
-block_pop(struct compiling *c, int type)
+static void block_pop(struct compiling *c, int type)
 {
 	if (c->c_nblocks > 0)
+	{
 		c->c_nblocks--;
-	if (c->c_block[c->c_nblocks] != type && c->c_errors == 0) {
+	}
+	if (c->c_block[c->c_nblocks] != type && c->c_errors == 0) 
+	{
 		com_error(c, PyExc_SystemError, "bad block pop");
 	}
 }
-
-/* Prototype forward declarations */
 
 static int com_init(struct compiling *, char *);
 static void com_free(struct compiling *);
@@ -543,7 +540,6 @@ static node *get_rawdocstring(node *);
 
 static int get_ref_type(struct compiling *, char *);
 
-/* symtable operations */
 static int symtable_build(struct compiling *, node *);
 static int symtable_load_symbols(struct compiling *);
 static struct symtable *symtable_init(void);
@@ -566,51 +562,67 @@ static int symtable_update_free_vars(struct symtable *);
 static int symtable_undo_free(struct symtable *, PyObject *, PyObject *);
 static int symtable_check_global(struct symtable *, PyObject *, PyObject *);
 
-/* helper */
-static void
-do_pad(int pad)
+static void do_pad(int pad)
 {
 	int i;
 	for (i = 0; i < pad; ++i)
+	{
 		fprintf(stderr, "  ");
+	}
 }
 
-static void
-dump(node *n, int pad, int depth)
+static void dump(node *n, int pad, int depth)
 {
 	int i;
 	if (depth == 0)
-	    return;
+	{
+		return;
+	}
 	do_pad(pad);
 	fprintf(stderr, "%d: %s\n", TYPE(n), STR(n));
 	if (depth > 0)
-	    depth--;
+	{
+		depth--;
+	}
 	for (i = 0; i < NCH(n); ++i)
+	{
 		dump(CHILD(n, i), pad + 1, depth);
+	}
 }
 
 #define DUMP(N) dump(N, 0, -1)
 
-static int
-com_init(struct compiling *c, char *filename)
+static int com_init(struct compiling *c, char *filename)
 {
 	memset((void *)c, '\0', sizeof(struct compiling));
-	if ((c->c_code = PyString_FromStringAndSize((char *)NULL,
-						    1000)) == NULL)
+	if ((c->c_code = PyString_FromStringAndSize((char *)NULL, 1000)) == NULL)
+	{
 		goto fail;
+	}
 	if ((c->c_consts = PyList_New(0)) == NULL)
+	{
 		goto fail;
+	}
 	if ((c->c_const_dict = PyDict_New()) == NULL)
+	{
 		goto fail;
+	}
 	if ((c->c_names = PyList_New(0)) == NULL)
+	{
 		goto fail;
+	}
 	if ((c->c_name_dict = PyDict_New()) == NULL)
+	{
 		goto fail;
+	}
 	if ((c->c_locals = PyDict_New()) == NULL)
+	{
 		goto fail;
-	if ((c->c_lnotab = PyString_FromStringAndSize((char *)NULL,
-						      1000)) == NULL)
+	}
+	if ((c->c_lnotab = PyString_FromStringAndSize((char *)NULL, 1000)) == NULL)
+	{
 		goto fail;
+	}
 	c->c_globals = NULL;
 	c->c_varnames = NULL;
 	c->c_freevars = NULL;
@@ -640,7 +652,7 @@ com_init(struct compiling *c, char *filename)
 	c->c_symtable = NULL;
 	return 1;
 	
-  fail:
+fail:
 	com_free(c);
  	return 0;
 }
