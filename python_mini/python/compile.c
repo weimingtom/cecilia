@@ -657,8 +657,7 @@ fail:
  	return 0;
 }
 
-static void
-com_free(struct compiling *c)
+static void com_free(struct compiling *c)
 {
 	Py_XDECREF(c->c_code);
 	Py_XDECREF(c->c_consts);
@@ -672,77 +671,81 @@ com_free(struct compiling *c)
 	Py_XDECREF(c->c_cellvars);
 	Py_XDECREF(c->c_lnotab);
 	if (c->c_future)
+	{
 		PyMem_Free((void *)c->c_future);
-}
-
-static void
-com_push(struct compiling *c, int n)
-{
-	c->c_stacklevel += n;
-	if (c->c_stacklevel > c->c_maxstacklevel) {
-		c->c_maxstacklevel = c->c_stacklevel;
-		/*
-		fprintf(stderr, "%s:%s:%d max stack nexti=%d level=%d n=%d\n",
-			c->c_filename, c->c_name, c->c_lineno,
-			c->c_nexti, c->c_stacklevel, n);
-		*/
 	}
 }
 
-static void
-com_pop(struct compiling *c, int n)
+static void com_push(struct compiling *c, int n)
+{
+	c->c_stacklevel += n;
+	if (c->c_stacklevel > c->c_maxstacklevel) 
+	{
+		c->c_maxstacklevel = c->c_stacklevel;
+	}
+}
+
+static void com_pop(struct compiling *c, int n)
 {
 	if (c->c_stacklevel < n) 
+	{
 		c->c_stacklevel = 0;
+	}
 	else
+	{
 		c->c_stacklevel -= n;
+	}
 }
 
-static void
-com_done(struct compiling *c)
+static void com_done(struct compiling *c)
 {
 	if (c->c_code != NULL)
+	{
 		_PyString_Resize(&c->c_code, c->c_nexti);
+	}
 	if (c->c_lnotab != NULL)
+	{
 		_PyString_Resize(&c->c_lnotab, c->c_lnotab_next);
+	}
 }
 
-static int
-com_check_size(PyObject **s, int offset)
+static int com_check_size(PyObject **s, int offset)
 {
 	int len = PyString_GET_SIZE(*s);
 	if (offset >= len) 
+	{
 		return _PyString_Resize(s, len * 2);
+	}
 	return 0;
 }
 
-static void
-com_addbyte(struct compiling *c, int byte)
+static void com_addbyte(struct compiling *c, int byte)
 {
-	/*fprintf(stderr, "%3d: %3d\n", c->c_nexti, byte);*/
 	assert(byte >= 0 && byte <= 255);
 	assert(c->c_code);
-	if (com_check_size(&c->c_code, c->c_nexti)) {
+	if (com_check_size(&c->c_code, c->c_nexti)) 
+	{
 		c->c_errors++;
 		return;
 	}
 	PyString_AS_STRING(c->c_code)[c->c_nexti++] = byte;
 }
 
-static void
-com_addint(struct compiling *c, int x)
+static void com_addint(struct compiling *c, int x)
 {
 	com_addbyte(c, x & 0xff);
 	com_addbyte(c, x >> 8); /* XXX x should be positive */
 }
 
-static void
-com_add_lnotab(struct compiling *c, int addr, int line)
+static void com_add_lnotab(struct compiling *c, int addr, int line)
 {
 	char *p;
 	if (c->c_lnotab == NULL)
+	{
 		return;
-	if (com_check_size(&c->c_lnotab, c->c_lnotab_next + 2)) {
+	}
+	if (com_check_size(&c->c_lnotab, c->c_lnotab_next + 2)) 
+	{
 		c->c_errors++;
 		return;
 	}
@@ -752,42 +755,50 @@ com_add_lnotab(struct compiling *c, int addr, int line)
 	c->c_lnotab_next += 2;
 }
 
-static void
-com_set_lineno(struct compiling *c, int lineno)
+static void com_set_lineno(struct compiling *c, int lineno)
 {
 	c->c_lineno = lineno;
-	if (c->c_firstlineno == 0) {
+	if (c->c_firstlineno == 0) 
+	{
 		c->c_firstlineno = c->c_last_line = lineno;
 	}
-	else {
+	else 
+	{
 		int incr_addr = c->c_nexti - c->c_last_addr;
 		int incr_line = lineno - c->c_last_line;
-		while (incr_addr > 255) {
+		while (incr_addr > 255) 
+		{
 			com_add_lnotab(c, 255, 0);
 			incr_addr -= 255;
 		}
-		while (incr_line > 255) {
+		while (incr_line > 255) 
+		{
 			com_add_lnotab(c, incr_addr, 255);
 			incr_line -=255;
 			incr_addr = 0;
 		}
 		if (incr_addr > 0 || incr_line > 0)
+		{
 			com_add_lnotab(c, incr_addr, incr_line);
+		}
 		c->c_last_addr = c->c_nexti;
 		c->c_last_line = lineno;
 	}
 }
 
-static void
-com_addoparg(struct compiling *c, int op, int arg)
+static void com_addoparg(struct compiling *c, int op, int arg)
 {
 	int extended_arg = arg >> 16;
-	if (op == SET_LINENO) {
+	if (op == SET_LINENO) 
+	{
 		com_set_lineno(c, arg);
 		if (Py_OptimizeFlag)
+		{
 			return;
+		}
 	}
-	if (extended_arg){
+	if (extended_arg)
+	{
 		com_addbyte(c, EXTENDED_ARG);
 		com_addint(c, extended_arg);
 		arg &= 0xffff;
@@ -796,10 +807,8 @@ com_addoparg(struct compiling *c, int op, int arg)
 	com_addint(c, arg);
 }
 
-static void
-com_addfwref(struct compiling *c, int op, int *p_anchor)
+static void com_addfwref(struct compiling *c, int op, int *p_anchor)
 {
-	/* Compile a forward reference for backpatching */
 	int here;
 	int anchor;
 	com_addbyte(c, op);
@@ -809,120 +818,138 @@ com_addfwref(struct compiling *c, int op, int *p_anchor)
 	com_addint(c, anchor == 0 ? 0 : here - anchor);
 }
 
-static void
-com_backpatch(struct compiling *c, int anchor)
+static void com_backpatch(struct compiling *c, int anchor)
 {
 	unsigned char *code = (unsigned char *) PyString_AS_STRING(c->c_code);
 	int target = c->c_nexti;
 	int dist;
 	int prev;
-	for (;;) {
-		/* Make the JUMP instruction at anchor point to target */
+	for (;;) 
+	{
 		prev = code[anchor] + (code[anchor+1] << 8);
 		dist = target - (anchor+2);
 		code[anchor] = dist & 0xff;
 		dist >>= 8;
 		code[anchor+1] = dist;
 		dist >>= 8;
-		if (dist) {
+		if (dist) 
+		{
 			com_error(c, PyExc_SystemError,
 				  "com_backpatch: offset too large");
 			break;
 		}
 		if (!prev)
+		{
 			break;
+		}
 		anchor -= prev;
 	}
 }
 
-/* Handle literals and names uniformly */
-
-static int
-com_add(struct compiling *c, PyObject *list, PyObject *dict, PyObject *v)
+static int com_add(struct compiling *c, PyObject *list, PyObject *dict, PyObject *v)
 {
 	PyObject *w, *t, *np=NULL;
 	long n;
 	
 	t = Py_BuildValue("(OO)", v, v->ob_type);
 	if (t == NULL)
-	    goto fail;
+	{
+		goto fail;
+	}
 	w = PyDict_GetItem(dict, t);
-	if (w != NULL) {
+	if (w != NULL) 
+	{
 		n = PyInt_AsLong(w);
-	} else {
+	} 
+	else 
+	{
 		n = PyList_Size(list);
 		np = PyInt_FromLong(n);
 		if (np == NULL)
-		    goto fail;
+		{
+			goto fail;
+		}
 		if (PyList_Append(list, v) != 0)
-		    goto fail;
+		{
+			goto fail;
+		}
 		if (PyDict_SetItem(dict, t, np) != 0)
-		    goto fail;
+		{
+			goto fail;
+		}
 		Py_DECREF(np);
 	}
 	Py_DECREF(t);
 	return n;
-  fail:
+fail:
 	Py_XDECREF(np);
 	Py_XDECREF(t);
 	c->c_errors++;
 	return 0;
 }
 
-static int
-com_addconst(struct compiling *c, PyObject *v)
+static int com_addconst(struct compiling *c, PyObject *v)
 {
 	return com_add(c, c->c_consts, c->c_const_dict, v);
 }
 
-static int
-com_addname(struct compiling *c, PyObject *v)
+static int com_addname(struct compiling *c, PyObject *v)
 {
 	return com_add(c, c->c_names, c->c_name_dict, v);
 }
 
-static int
-mangle(char *p, char *name, char *buffer, size_t maxlen)
+static int mangle(char *p, char *name, char *buffer, size_t maxlen)
 {
-	/* Name mangling: __private becomes _classname__private.
-	   This is independent from how the name is used. */
 	size_t nlen, plen;
 	if (p == NULL || name == NULL || name[0] != '_' || name[1] != '_')
+	{
 		return 0;
+	}
 	nlen = strlen(name);
-	if (nlen+2 >= maxlen)
-		return 0; /* Don't mangle __extremely_long_names */
+	if (nlen + 2 >= maxlen)
+	{
+		return 0;
+	}
 	if (name[nlen-1] == '_' && name[nlen-2] == '_')
-		return 0; /* Don't mangle __whatever__ */
-	/* Strip leading underscores from class name */
+	{
+		return 0;
+	}
 	while (*p == '_')
+	{
 		p++;
+	}
 	if (*p == '\0')
-		return 0; /* Don't mangle if class is just underscores */
+	{
+		return 0;
+	}
 	plen = strlen(p);
 	if (plen + nlen >= maxlen)
-		plen = maxlen-nlen-2; /* Truncate class name if too long */
-	/* buffer = "_" + p[:plen] + name # i.e. 1+plen+nlen bytes */
+	{
+		plen = maxlen - nlen - 2;
+	}
 	buffer[0] = '_';
 	strncpy(buffer+1, p, plen);
 	strcpy(buffer+1+plen, name);
 	return 1;
 }
 
-static void
-com_addop_name(struct compiling *c, int op, char *name)
+static void com_addop_name(struct compiling *c, int op, char *name)
 {
 	PyObject *v;
 	int i;
 	char buffer[MANGLE_LEN];
 
 	if (mangle(c->c_private, name, buffer, sizeof(buffer)))
+	{
 		name = buffer;
-	if (name == NULL || (v = PyString_InternFromString(name)) == NULL) {
+	}
+	if (name == NULL || (v = PyString_InternFromString(name)) == NULL) 
+	{
 		c->c_errors++;
 		i = 255;
 	}
-	else {
+	else 
+	{
 		i = com_addname(c, v);
 		Py_DECREF(v);
 	}
@@ -934,18 +961,20 @@ com_addop_name(struct compiling *c, int op, char *name)
 #define NAME_DEFAULT 2
 #define NAME_CLOSURE 3
 
-static int
-com_lookup_arg(PyObject *dict, PyObject *name)
+static int com_lookup_arg(PyObject *dict, PyObject *name)
 {
 	PyObject *v = PyDict_GetItem(dict, name);
 	if (v == NULL)
+	{
 		return -1;
+	}
 	else
+	{
 		return PyInt_AS_LONG(v);
+	}
 }
 
-static void
-com_addop_varname(struct compiling *c, int kind, char *name)
+static void com_addop_varname(struct compiling *c, int kind, char *name)
 {
 	PyObject *v;
 	int i, reftype;
@@ -954,26 +983,37 @@ com_addop_varname(struct compiling *c, int kind, char *name)
 	char buffer[MANGLE_LEN];
 
 	if (mangle(c->c_private, name, buffer, sizeof(buffer)))
+	{
 		name = buffer;
-	if (name == NULL || (v = PyString_InternFromString(name)) == NULL) {
+	}
+	if (name == NULL || (v = PyString_InternFromString(name)) == NULL) 
+	{
 		c->c_errors++;
 		i = 255;
 		goto done;
 	}
 
 	reftype = get_ref_type(c, name);
-	switch (reftype) {
+	switch (reftype) 
+	{
 	case LOCAL:
 		if (c->c_symtable->st_cur->ste_type == TYPE_FUNCTION)
+		{
 			scope = NAME_LOCAL;
+		}
 		break;
+
 	case GLOBAL_EXPLICIT:
 		scope = NAME_GLOBAL;
 		break;
+	
 	case GLOBAL_IMPLICIT:
 		if (c->c_flags & CO_OPTIMIZED)
+		{
 			scope = NAME_GLOBAL;
+		}
 		break;
+	
 	case FREE:
 	case CELL:
 		scope = NAME_CLOSURE;
@@ -982,70 +1022,91 @@ com_addop_varname(struct compiling *c, int kind, char *name)
 
 	i = com_addname(c, v);
 	if (scope == NAME_LOCAL)
+	{
 		i = com_lookup_arg(c->c_locals, v);
+	}
 	else if (reftype == FREE)
+	{
 		i = com_lookup_arg(c->c_freevars, v);
+	}
 	else if (reftype == CELL)
+	{
 		i = com_lookup_arg(c->c_cellvars, v);
-	if (i == -1) {
-		c->c_errors++; /* XXX no exception set */
+	}
+	if (i == -1) 
+	{
+		c->c_errors++;
 		i = 255;
 		goto done;
 	}
 	Py_DECREF(v);
 
-	switch (kind) {
+	switch (kind) 
+	{
 	case VAR_LOAD:
-		switch (scope) {
+		switch (scope) 
+		{
 		case NAME_LOCAL:
 			op = LOAD_FAST;
 			break;
+		
 		case NAME_GLOBAL:
 			op = LOAD_GLOBAL;
 			break;
+		
 		case NAME_DEFAULT:
 			op = LOAD_NAME;
 			break;
+		
 		case NAME_CLOSURE:
 			op = LOAD_DEREF;
 			break;
 		}
 		break;
+	
 	case VAR_STORE:
 		switch (scope) {
 		case NAME_LOCAL:
 			op = STORE_FAST;
 			break;
+		
 		case NAME_GLOBAL:
 			op = STORE_GLOBAL;
 			break;
+		
 		case NAME_DEFAULT:
 			op = STORE_NAME;
 			break;
+		
 		case NAME_CLOSURE:
 			op = STORE_DEREF;
 			break;
 		}
 		break;
+	
 	case VAR_DELETE:
 		switch (scope) {
 		case NAME_LOCAL:
 			op = DELETE_FAST;
 			break;
+		
 		case NAME_GLOBAL:
 			op = DELETE_GLOBAL;
 			break;
+		
 		case NAME_DEFAULT:
 			op = DELETE_NAME;
 			break;
-		case NAME_CLOSURE: {
-			char buf[500];
-			PyOS_snprintf(buf, sizeof(buf),
-				      DEL_CLOSURE_ERROR, name);
-			com_error(c, PyExc_SyntaxError, buf);
-			i = 255;
-			break;
-		}
+		
+		case NAME_CLOSURE: 
+			{
+				char buf[500];
+				PyOS_snprintf(buf, sizeof(buf),
+						  DEL_CLOSURE_ERROR, name);
+				com_error(c, PyExc_SyntaxError, buf);
+				i = 255;
+				break;
+			}
 		}
 		break;
 	}
@@ -1053,43 +1114,46 @@ done:
 	com_addoparg(c, op, i);
 }
 
-static void
-com_addopname(struct compiling *c, int op, node *n)
+static void com_addopname(struct compiling *c, int op, node *n)
 {
 	char *name;
 	char buffer[1000];
-	/* XXX it is possible to write this code without the 1000
-	   chars on the total length of dotted names, I just can't be
-	   bothered right now */
 	if (TYPE(n) == STAR)
+	{
 		name = "*";
-	else if (TYPE(n) == dotted_name) {
+	}
+	else if (TYPE(n) == dotted_name) 
+	{
 		char *p = buffer;
 		int i;
 		name = buffer;
-		for (i = 0; i < NCH(n); i += 2) {
+		for (i = 0; i < NCH(n); i += 2) 
+		{
 			char *s = STR(CHILD(n, i));
-			if (p + strlen(s) > buffer + (sizeof buffer) - 2) {
+			if (p + strlen(s) > buffer + (sizeof buffer) - 2) 
+			{
 				com_error(c, PyExc_MemoryError,
 					  "dotted_name too long");
 				name = NULL;
 				break;
 			}
 			if (p != buffer)
+			{
 				*p++ = '.';
+			}
 			strcpy(p, s);
 			p = strchr(p, '\0');
 		}
 	}
-	else {
+	else 
+	{
 		REQ(n, NAME);
 		name = STR(n);
 	}
 	com_addop_name(c, op, name);
 }
 
-static PyObject *
-parsenumber(struct compiling *co, char *s)
+static PyObject *parsenumber(struct compiling *co, char *s)
 {
 	char *end;
 	long x;
@@ -1105,19 +1169,28 @@ parsenumber(struct compiling *co, char *s)
 	imflag = *end == 'j' || *end == 'J';
 #endif
 	if (*end == 'l' || *end == 'L')
+	{
 		return PyLong_FromString(s, (char **)0, 0);
+	}
 	if (s[0] == '0')
+	{
 		x = (long) PyOS_strtoul(s, &end, 0);
+	}
 	else
+	{
 		x = PyOS_strtol(s, &end, 0);
-	if (*end == '\0') {
+	}
+	if (*end == '\0') 
+	{
 		if (errno != 0)
+		{
 			return PyLong_FromString(s, (char **)0, 0);
+		}
 		return PyInt_FromLong(x);
 	}
-	/* XXX Huge floats may silently fail */
 #ifndef WITHOUT_COMPLEX
-	if (imflag) {
+	if (imflag) 
+	{
 		c.real = 0.;
 		PyFPE_START_PROTECT("atof", return 0)
 		c.imag = atof(s);
@@ -1134,8 +1207,7 @@ parsenumber(struct compiling *co, char *s)
 	}
 }
 
-static PyObject *
-parsestr(struct compiling *com, char *s)
+static PyObject *parsestr(struct compiling *com, char *s)
 {
 	PyObject *v;
 	size_t len;
@@ -1149,8 +1221,10 @@ parsestr(struct compiling *com, char *s)
 #ifdef Py_USING_UNICODE
 	int unicode = 0;
 #endif
-	if (isalpha(quote) || quote == '_') {
-		if (quote == 'u' || quote == 'U') {
+	if (isalpha(quote) || quote == '_') 
+	{
+		if (quote == 'u' || quote == 'U') 
+		{
 #ifdef Py_USING_UNICODE
 			quote = *++s;
 			unicode = 1;
@@ -1160,105 +1234,178 @@ parsestr(struct compiling *com, char *s)
 			return NULL;
 #endif
 		}
-		if (quote == 'r' || quote == 'R') {
+		if (quote == 'r' || quote == 'R') 
+		{
 			quote = *++s;
 			rawmode = 1;
 		}
 	}
-	if (quote != '\'' && quote != '\"') {
+	if (quote != '\'' && quote != '\"') 
+	{
 		PyErr_BadInternalCall();
 		return NULL;
 	}
 	s++;
 	len = strlen(s);
-	if (len > INT_MAX) {
+	if (len > INT_MAX) 
+	{
 		com_error(com, PyExc_OverflowError, 
 			  "string to parse is too long");
 		return NULL;
 	}
-	if (s[--len] != quote) {
+	if (s[--len] != quote) 
+	{
 		PyErr_BadInternalCall();
 		return NULL;
 	}
-	if (len >= 4 && s[0] == quote && s[1] == quote) {
+	if (len >= 4 && s[0] == quote && s[1] == quote) 
+	{
 		s += 2;
 		len -= 2;
-		if (s[--len] != quote || s[--len] != quote) {
+		if (s[--len] != quote || s[--len] != quote) 
+		{
 			PyErr_BadInternalCall();
 			return NULL;
 		}
 	}
 #ifdef Py_USING_UNICODE
-	if (unicode || Py_UnicodeFlag) {
+	if (unicode || Py_UnicodeFlag) 
+	{
 		if (rawmode)
+		{
 			v = PyUnicode_DecodeRawUnicodeEscape(
 				 s, len, NULL);
+		}
 		else
+		{
 			v = PyUnicode_DecodeUnicodeEscape(
 				s, len, NULL);
+		}
 		if (v == NULL)
+		{
 			PyErr_SyntaxLocation(com->c_filename, com->c_lineno);
+		}
 		return v;
-			
 	}
 #endif
 	if (rawmode || strchr(s, '\\') == NULL)
+	{
 		return PyString_FromStringAndSize(s, len);
+	}
 	v = PyString_FromStringAndSize((char *)NULL, len);
 	if (v == NULL)
+	{
 		return NULL;
+	}
 	p = buf = PyString_AsString(v);
 	end = s + len;
-	while (s < end) {
-		if (*s != '\\') {
+	while (s < end) 
+	{
+		if (*s != '\\') 
+		{
 			*p++ = *s++;
 			continue;
 		}
 		s++;
-		switch (*s++) {
-		/* XXX This assumes ASCII! */
-		case '\n': break;
-		case '\\': *p++ = '\\'; break;
-		case '\'': *p++ = '\''; break;
-		case '\"': *p++ = '\"'; break;
-		case 'b': *p++ = '\b'; break;
-		case 'f': *p++ = '\014'; break; /* FF */
-		case 't': *p++ = '\t'; break;
-		case 'n': *p++ = '\n'; break;
-		case 'r': *p++ = '\r'; break;
-		case 'v': *p++ = '\013'; break; /* VT */
-		case 'a': *p++ = '\007'; break; /* BEL, not classic C */
-		case '0': case '1': case '2': case '3':
-		case '4': case '5': case '6': case '7':
+		switch (*s++) 
+		{
+		case '\n': 
+			break;
+		
+		case '\\': 
+			*p++ = '\\'; 
+			break;
+		
+		case '\'': 
+			*p++ = '\''; 
+			break;
+		
+		case '\"': 
+			*p++ = '\"'; 
+			break;
+		
+		case 'b': 
+			*p++ = '\b'; 
+			break;
+		
+		case 'f': 
+			*p++ = '\014'; 
+			break;
+		
+		case 't': 
+			*p++ = '\t'; 
+			break;
+		
+		case 'n': 
+			*p++ = '\n'; 
+			break;
+		
+		case 'r': 
+			*p++ = '\r'; 
+			break;
+		
+		case 'v': 
+			*p++ = '\013'; 
+			break;
+		
+		case 'a': 
+			*p++ = '\007'; 
+			break;
+
+		case '0': 
+		case '1': 
+		case '2': 
+		case '3':
+		case '4': 
+		case '5': 
+		case '6': 
+		case '7':
 			c = s[-1] - '0';
-			if ('0' <= *s && *s <= '7') {
+			if ('0' <= *s && *s <= '7') 
+			{
 				c = (c<<3) + *s++ - '0';
 				if ('0' <= *s && *s <= '7')
+				{
 					c = (c<<3) + *s++ - '0';
+				}
 			}
 			*p++ = c;
 			break;
+
 		case 'x':
 			if (isxdigit(Py_CHARMASK(s[0])) 
-			    && isxdigit(Py_CHARMASK(s[1]))) {
+			    && isxdigit(Py_CHARMASK(s[1]))) 
+			{
 				unsigned int x = 0;
 				c = Py_CHARMASK(*s);
 				s++;
 				if (isdigit(c))
+				{
 					x = c - '0';
+				}
 				else if (islower(c))
+				{
 					x = 10 + c - 'a';
+				}
 				else
+				{
 					x = 10 + c - 'A';
+				}
 				x = x << 4;
 				c = Py_CHARMASK(*s);
 				s++;
 				if (isdigit(c))
+				{
 					x += c - '0';
+				}
 				else if (islower(c))
+				{
 					x += 10 + c - 'a';
+				}
 				else
+				{
 					x += 10 + c - 'A';
+				}
 				*p++ = x;
 				break;
 			}
@@ -1266,6 +1413,7 @@ parsestr(struct compiling *com, char *s)
 			com_error(com, PyExc_ValueError, 
 				  "invalid \\x escape");
 			return NULL;
+
 		default:
 			*p++ = '\\';
 			*p++ = s[-1];
@@ -1276,40 +1424,48 @@ parsestr(struct compiling *com, char *s)
 	return v;
 }
 
-static PyObject *
-parsestrplus(struct compiling* c, node *n)
+static PyObject *parsestrplus(struct compiling* c, node *n)
 {
 	PyObject *v;
 	int i;
 	REQ(CHILD(n, 0), STRING);
-	if ((v = parsestr(c, STR(CHILD(n, 0)))) != NULL) {
-		/* String literal concatenation */
-		for (i = 1; i < NCH(n); i++) {
+	if ((v = parsestr(c, STR(CHILD(n, 0)))) != NULL) 
+	{
+		for (i = 1; i < NCH(n); i++) 
+		{
 		    PyObject *s;
 		    s = parsestr(c, STR(CHILD(n, i)));
 		    if (s == NULL)
-			goto onError;
-		    if (PyString_Check(v) && PyString_Check(s)) {
-			PyString_ConcatAndDel(&v, s);
-			if (v == NULL)
-			    goto onError;
+			{
+				goto onError;
+			}
+			if (PyString_Check(v) && PyString_Check(s)) 
+			{
+				PyString_ConcatAndDel(&v, s);
+				if (v == NULL)
+				{
+					goto onError;
+				}
 		    }
 #ifdef Py_USING_UNICODE
-		    else {
-			PyObject *temp;
-			temp = PyUnicode_Concat(v, s);
-			Py_DECREF(s);
-			if (temp == NULL)
-			    goto onError;
-			Py_DECREF(v);
-			v = temp;
+		    else 
+			{
+				PyObject *temp;
+				temp = PyUnicode_Concat(v, s);
+				Py_DECREF(s);
+				if (temp == NULL)
+				{
+					goto onError;
+				}
+				Py_DECREF(v);
+				v = temp;
 		    }
 #endif
 		}
 	}
 	return v;
 
- onError:
+onError:
 	Py_XDECREF(v);
 	return NULL;
 }
