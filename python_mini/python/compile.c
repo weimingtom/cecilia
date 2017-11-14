@@ -1470,14 +1470,12 @@ onError:
 	return NULL;
 }
 
-static void
-com_list_for(struct compiling *c, node *n, node *e, char *t)
+static void com_list_for(struct compiling *c, node *n, node *e, char *t)
 {
 	int anchor = 0;
 	int save_begin = c->c_begin;
 
-	/* list_iter: for v in expr [list_iter] */
-	com_node(c, CHILD(n, 3)); /* expr */
+	com_node(c, CHILD(n, 3));
 	com_addbyte(c, GET_ITER);
 	c->c_begin = c->c_nexti;
 	com_addoparg(c, SET_LINENO, n->n_lineno);
@@ -1493,12 +1491,10 @@ com_list_for(struct compiling *c, node *n, node *e, char *t)
 	com_pop(c, 1); /* FOR_ITER has popped this */
 }  
 
-static void
-com_list_if(struct compiling *c, node *n, node *e, char *t)
+static void com_list_if(struct compiling *c, node *n, node *e, char *t)
 {
 	int anchor = 0;
 	int a = 0;
-	/* list_iter: 'if' test [list_iter] */
 	com_addoparg(c, SET_LINENO, n->n_lineno);
 	com_node(c, CHILD(n, 1));
 	com_addfwref(c, JUMP_IF_FALSE, &a);
@@ -1507,34 +1503,36 @@ com_list_if(struct compiling *c, node *n, node *e, char *t)
 	com_list_iter(c, n, e, t);
 	com_addfwref(c, JUMP_FORWARD, &anchor);
 	com_backpatch(c, a);
-	/* We jump here with an extra entry which we now pop */
 	com_addbyte(c, POP_TOP);
 	com_backpatch(c, anchor);
 }
 
-static void
-com_list_iter(struct compiling *c,
-	      node *p,		/* parent of list_iter node */
-	      node *e,		/* element expression node */
-	      char *t		/* name of result list temp local */)
+static void com_list_iter(struct compiling *c,
+	      node *p,
+	      node *e,
+	      char *t)
 {
-	/* list_iter is the last child in a listmaker, list_for, or list_if */
 	node *n = CHILD(p, NCH(p)-1);
-	if (TYPE(n) == list_iter) {
+	if (TYPE(n) == list_iter) 
+	{
 		n = CHILD(n, 0);
-		switch (TYPE(n)) {
+		switch (TYPE(n)) 
+		{
 		case list_for: 
 			com_list_for(c, n, e, t);
 			break;
+		
 		case list_if:
 			com_list_if(c, n, e, t);
 			break;
+		
 		default:
 			com_error(c, PyExc_SystemError,
 				  "invalid list_iter node type");
 		}
 	}
-	else {
+	else 
+	{
 		com_addop_varname(c, VAR_LOAD, t);
 		com_push(c, 1);
 		com_node(c, e);
@@ -1544,10 +1542,8 @@ com_list_iter(struct compiling *c,
 	}
 }
 
-static void
-com_list_comprehension(struct compiling *c, node *n)
+static void com_list_comprehension(struct compiling *c, node *n)
 {
-	/* listmaker: test list_for */
 	char tmpname[30];
 	PyOS_snprintf(tmpname, sizeof(tmpname), "_[%d]", ++c->c_tmpname);
 	com_addoparg(c, BUILD_LIST, 0);
@@ -1561,127 +1557,150 @@ com_list_comprehension(struct compiling *c, node *n)
 	--c->c_tmpname;
 }
 
-static void
-com_listmaker(struct compiling *c, node *n)
+static void com_listmaker(struct compiling *c, node *n)
 {
-	/* listmaker: test ( list_for | (',' test)* [','] ) */
 	if (NCH(n) > 1 && TYPE(CHILD(n, 1)) == list_for)
+	{
 		com_list_comprehension(c, n);
-	else {
+	}
+	else 
+	{
 		int len = 0;
 		int i;
 		for (i = 0; i < NCH(n); i += 2, len++)
+		{
 			com_node(c, CHILD(n, i));
+		}
 		com_addoparg(c, BUILD_LIST, len);
 		com_pop(c, len-1);
 	}
 }
 
-static void
-com_dictmaker(struct compiling *c, node *n)
+static void com_dictmaker(struct compiling *c, node *n)
 {
 	int i;
-	/* dictmaker: test ':' test (',' test ':' value)* [','] */
-	for (i = 0; i+2 < NCH(n); i += 4) {
-		/* We must arrange things just right for STORE_SUBSCR.
-		   It wants the stack to look like (value) (dict) (key) */
+	for (i = 0; i+2 < NCH(n); i += 4) 
+	{
 		com_addbyte(c, DUP_TOP);
 		com_push(c, 1);
-		com_node(c, CHILD(n, i+2)); /* value */
+		com_node(c, CHILD(n, i+2)); 
 		com_addbyte(c, ROT_TWO);
-		com_node(c, CHILD(n, i)); /* key */
+		com_node(c, CHILD(n, i)); 
 		com_addbyte(c, STORE_SUBSCR);
 		com_pop(c, 3);
 	}
 }
 
-static void
-com_atom(struct compiling *c, node *n)
+static void com_atom(struct compiling *c, node *n)
 {
 	node *ch;
 	PyObject *v;
 	int i;
 	REQ(n, atom);
 	ch = CHILD(n, 0);
-	switch (TYPE(ch)) {
+	switch (TYPE(ch)) 
+	{
 	case LPAR:
-		if (TYPE(CHILD(n, 1)) == RPAR) {
+		if (TYPE(CHILD(n, 1)) == RPAR) 
+		{
 			com_addoparg(c, BUILD_TUPLE, 0);
 			com_push(c, 1);
 		}
 		else
+		{
 			com_node(c, CHILD(n, 1));
+		}
 		break;
-	case LSQB: /* '[' [listmaker] ']' */
-		if (TYPE(CHILD(n, 1)) == RSQB) {
+	
+	case LSQB:
+		if (TYPE(CHILD(n, 1)) == RSQB) 
+		{
 			com_addoparg(c, BUILD_LIST, 0);
 			com_push(c, 1);
 		}
 		else
+		{
 			com_listmaker(c, CHILD(n, 1));
+		}
 		break;
-	case LBRACE: /* '{' [dictmaker] '}' */
+	
+	case LBRACE:
 		com_addoparg(c, BUILD_MAP, 0);
 		com_push(c, 1);
 		if (TYPE(CHILD(n, 1)) == dictmaker)
+		{
 			com_dictmaker(c, CHILD(n, 1));
+		}
 		break;
+	
 	case BACKQUOTE:
 		com_node(c, CHILD(n, 1));
 		com_addbyte(c, UNARY_CONVERT);
 		break;
+	
 	case NUMBER:
-		if ((v = parsenumber(c, STR(ch))) == NULL) {
+		if ((v = parsenumber(c, STR(ch))) == NULL) 
+		{
 			i = 255;
 		}
-		else {
+		else 
+		{
 			i = com_addconst(c, v);
 			Py_DECREF(v);
 		}
 		com_addoparg(c, LOAD_CONST, i);
 		com_push(c, 1);
 		break;
+	
 	case STRING:
 		v = parsestrplus(c, n);
-		if (v == NULL) {
+		if (v == NULL) 
+		{
 			c->c_errors++;
 			i = 255;
 		}
-		else {
+		else 
+		{
 			i = com_addconst(c, v);
 			Py_DECREF(v);
 		}
 		com_addoparg(c, LOAD_CONST, i);
 		com_push(c, 1);
 		break;
+	
 	case NAME:
 		com_addop_varname(c, VAR_LOAD, STR(ch));
 		com_push(c, 1);
 		break;
+	
 	default:
 		com_error(c, PyExc_SystemError,
 			  "com_atom: unexpected node type");
 	}
 }
 
-static void
-com_slice(struct compiling *c, node *n, int op)
+static void com_slice(struct compiling *c, node *n, int op)
 {
-	if (NCH(n) == 1) {
+	if (NCH(n) == 1) 
+	{
 		com_addbyte(c, op);
 	}
-	else if (NCH(n) == 2) {
-		if (TYPE(CHILD(n, 0)) != COLON) {
+	else if (NCH(n) == 2) 
+	{
+		if (TYPE(CHILD(n, 0)) != COLON) 
+		{
 			com_node(c, CHILD(n, 0));
 			com_addbyte(c, op+1);
 		}
-		else {
+		else 
+		{
 			com_node(c, CHILD(n, 1));
 			com_addbyte(c, op+2);
 		}
 		com_pop(c, 1);
 	}
-	else {
+	else 
+	{
 		com_node(c, CHILD(n, 0));
 		com_node(c, CHILD(n, 2));
 		com_addbyte(c, op+3);
@@ -1689,10 +1708,10 @@ com_slice(struct compiling *c, node *n, int op)
 	}
 }
 
-static void
-com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
+static void com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
 {
-	if (NCH(n) == 1) {
+	if (NCH(n) == 1) 
+	{
 		com_addbyte(c, DUP_TOP);
 		com_push(c, 1);
 		com_addbyte(c, SLICE);
@@ -1702,7 +1721,9 @@ com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
 		com_addbyte(c, ROT_TWO);
 		com_addbyte(c, STORE_SLICE);
 		com_pop(c, 2);
-	} else if (NCH(n) == 2 && TYPE(CHILD(n, 0)) != COLON) {
+	} 
+	else if (NCH(n) == 2 && TYPE(CHILD(n, 0)) != COLON) 
+	{
 		com_node(c, CHILD(n, 0));
 		com_addoparg(c, DUP_TOPX, 2);
 		com_push(c, 2);
@@ -1714,7 +1735,9 @@ com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
 		com_addbyte(c, ROT_THREE);
 		com_addbyte(c, STORE_SLICE+1);
 		com_pop(c, 3);
-	} else if (NCH(n) == 2) {
+	} 
+	else if (NCH(n) == 2) 
+	{
 		com_node(c, CHILD(n, 1));
 		com_addoparg(c, DUP_TOPX, 2);
 		com_push(c, 2);
@@ -1726,7 +1749,9 @@ com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
 		com_addbyte(c, ROT_THREE);
 		com_addbyte(c, STORE_SLICE+2);
 		com_pop(c, 3);
-	} else {
+	} 
+	else 
+	{
 		com_node(c, CHILD(n, 0));
 		com_node(c, CHILD(n, 2));
 		com_addoparg(c, DUP_TOPX, 3);
@@ -1742,52 +1767,62 @@ com_augassign_slice(struct compiling *c, node *n, int opcode, node *augn)
 	}
 }
 
-static void
-com_argument(struct compiling *c, node *n, PyObject **pkeywords)
+static void com_argument(struct compiling *c, node *n, PyObject **pkeywords)
 {
 	node *m;
-	REQ(n, argument); /* [test '='] test; really [keyword '='] test */
-	if (NCH(n) == 1) {
-		if (*pkeywords != NULL) {
+	REQ(n, argument);
+	if (NCH(n) == 1) 
+	{
+		if (*pkeywords != NULL) 
+		{
 			com_error(c, PyExc_SyntaxError,
 				  "non-keyword arg after keyword arg");
 		}
-		else {
+		else 
+		{
 			com_node(c, CHILD(n, 0));
 		}
 		return;
 	}
 	m = n;
-	do {
+	do 
+	{
 		m = CHILD(m, 0);
 	} while (NCH(m) == 1);
-	if (TYPE(m) != NAME) {
-		/* f(lambda x: x[0] = 3) ends up getting parsed with
-		 * LHS test = lambda x: x[0], and RHS test = 3.
-		 * SF bug 132313 points out that complaining about a keyword
-		 * then is very confusing.
-		 */
+	if (TYPE(m) != NAME) 
+	{
 		com_error(c, PyExc_SyntaxError,
 			  TYPE(m) == lambdef ?
 				  "lambda cannot contain assignment" :
 				  "keyword can't be an expression");
 	}
-	else {
+	else 
+	{
 		PyObject *v = PyString_InternFromString(STR(m));
 		if (v != NULL && *pkeywords == NULL)
+		{
 			*pkeywords = PyDict_New();
+		}
 		if (v == NULL)
+		{
 			c->c_errors++;
-		else if (*pkeywords == NULL) {
+		}
+		else if (*pkeywords == NULL) 
+		{
 			c->c_errors++;
 			Py_DECREF(v);
-		} else {
+		} 
+		else 
+		{
 			if (PyDict_GetItem(*pkeywords, v) != NULL)
+			{
 				com_error(c, PyExc_SyntaxError,
 					  "duplicate keyword argument");
-			else
-				if (PyDict_SetItem(*pkeywords, v, v) != 0)
-					c->c_errors++;
+			}
+			else if (PyDict_SetItem(*pkeywords, v, v) != 0)
+			{
+				c->c_errors++;
+			}
 			com_addoparg(c, LOAD_CONST, com_addconst(c, v));
 			com_push(c, 1);
 			Py_DECREF(v);
@@ -1796,13 +1831,14 @@ com_argument(struct compiling *c, node *n, PyObject **pkeywords)
 	com_node(c, CHILD(n, 2));
 }
 
-static void
-com_call_function(struct compiling *c, node *n)
+static void com_call_function(struct compiling *c, node *n)
 {
-	if (TYPE(n) == RPAR) {
+	if (TYPE(n) == RPAR) 
+	{
 		com_addoparg(c, CALL_FUNCTION, 0);
 	}
-	else {
+	else 
+	{
 		PyObject *keywords = NULL;
 		int i, na, nk;
 		int lineno = n->n_lineno;
@@ -1812,179 +1848,214 @@ com_call_function(struct compiling *c, node *n)
 		REQ(n, arglist);
 		na = 0;
 		nk = 0;
-		for (i = 0; i < NCH(n); i += 2) {
+		for (i = 0; i < NCH(n); i += 2) 
+		{
 			node *ch = CHILD(n, i);
 			if (TYPE(ch) == STAR ||
 			    TYPE(ch) == DOUBLESTAR)
-			  break;
-			if (ch->n_lineno != lineno) {
+			{
+				break;
+			}
+			if (ch->n_lineno != lineno) 
+			{
 				lineno = ch->n_lineno;
 				com_addoparg(c, SET_LINENO, lineno);
 			}
 			com_argument(c, ch, &keywords);
 			if (keywords == NULL)
+			{
 				na++;
+			}
 			else
+			{
 				nk++;
+			}
 		}
 		Py_XDECREF(keywords);
-		while (i < NCH(n)) {
+		while (i < NCH(n)) 
+		{
 		    node *tok = CHILD(n, i);
 		    node *ch = CHILD(n, i+1);
 		    i += 3;
-		    switch (TYPE(tok)) {
-		    case STAR:       star_flag = 1;     break;
-		    case DOUBLESTAR: starstar_flag = 1;	break;
+		    switch (TYPE(tok)) 
+			{
+		    case STAR:       
+				star_flag = 1;     
+				break;
+
+		    case DOUBLESTAR: 
+				starstar_flag = 1;	
+				break;
 		    }
 		    com_node(c, ch);
 		}
-		if (na > 255 || nk > 255) {
+		if (na > 255 || nk > 255) 
+		{
 			com_error(c, PyExc_SyntaxError,
 				  "more than 255 arguments");
 		}
 		if (star_flag || starstar_flag)
+		{
 		    opcode = CALL_FUNCTION_VAR - 1 + 
-			star_flag + (starstar_flag << 1);
+				star_flag + (starstar_flag << 1);
+		}
 		else
-		    opcode = CALL_FUNCTION;
+		{
+			opcode = CALL_FUNCTION;
+		}
 		com_addoparg(c, opcode, na | (nk << 8));
 		com_pop(c, na + 2*nk + star_flag + starstar_flag);
 	}
 }
 
-static void
-com_select_member(struct compiling *c, node *n)
+static void com_select_member(struct compiling *c, node *n)
 {
 	com_addopname(c, LOAD_ATTR, n);
 }
 
-static void
-com_sliceobj(struct compiling *c, node *n)
+static void com_sliceobj(struct compiling *c, node *n)
 {
 	int i=0;
-	int ns=2; /* number of slice arguments */
+	int ns=2;
 	node *ch;
 
-	/* first argument */
-	if (TYPE(CHILD(n,i)) == COLON) {
+	if (TYPE(CHILD(n, i)) == COLON) 
+	{
 		com_addoparg(c, LOAD_CONST, com_addconst(c, Py_None));
 		com_push(c, 1);
 		i++;
 	}
-	else {
-		com_node(c, CHILD(n,i));
+	else 
+	{
+		com_node(c, CHILD(n, i));
 		i++;
-		REQ(CHILD(n,i),COLON);
-		i++;
-	}
-	/* second argument */
-	if (i < NCH(n) && TYPE(CHILD(n,i)) == test) {
-		com_node(c, CHILD(n,i));
+		REQ(CHILD(n, i), COLON);
 		i++;
 	}
-	else {
+	if (i < NCH(n) && TYPE(CHILD(n, i)) == test) 
+	{
+		com_node(c, CHILD(n, i));
+		i++;
+	}
+	else 
+	{
 		com_addoparg(c, LOAD_CONST, com_addconst(c, Py_None));
 		com_push(c, 1);
 	}
-	/* remaining arguments */
-	for (; i < NCH(n); i++) {
+	for (; i < NCH(n); i++) 
+	{
 		ns++;
-		ch=CHILD(n,i);
+		ch = CHILD(n,i);
 		REQ(ch, sliceop);
-		if (NCH(ch) == 1) {
-			/* right argument of ':' missing */
+		if (NCH(ch) == 1) 
+		{
 			com_addoparg(c, LOAD_CONST, com_addconst(c, Py_None));
 			com_push(c, 1);
 		}
 		else
-			com_node(c, CHILD(ch,1));
+		{
+			com_node(c, CHILD(ch, 1));
+		}
 	}
 	com_addoparg(c, BUILD_SLICE, ns);
 	com_pop(c, 1 + (ns == 3));
 }
 
-static void
-com_subscript(struct compiling *c, node *n)
+static void com_subscript(struct compiling *c, node *n)
 {
 	node *ch;
 	REQ(n, subscript);
 	ch = CHILD(n,0);
-	/* check for rubber index */
-	if (TYPE(ch) == DOT && TYPE(CHILD(n,1)) == DOT) {
+	if (TYPE(ch) == DOT && TYPE(CHILD(n,1)) == DOT) 
+	{
 		com_addoparg(c, LOAD_CONST, com_addconst(c, Py_Ellipsis));
 		com_push(c, 1);
 	}
-	else {
-		/* check for slice */
+	else 
+	{
 		if ((TYPE(ch) == COLON || NCH(n) > 1))
+		{
 			com_sliceobj(c, n);
-		else {
+		}
+		else 
+		{
 			REQ(ch, test);
 			com_node(c, ch);
 		}
 	}
 }
 
-static void
-com_subscriptlist(struct compiling *c, node *n, int assigning, node *augn)
+static void com_subscriptlist(struct compiling *c, node *n, int assigning, node *augn)
 {
 	int i, op;
 	REQ(n, subscriptlist);
-	/* Check to make backward compatible slice behavior for '[i:j]' */
-	if (NCH(n) == 1) {
+	if (NCH(n) == 1) 
+	{
 		node *sub = CHILD(n, 0); /* subscript */
-		/* 'Basic' slice, should have exactly one colon. */
 		if ((TYPE(CHILD(sub, 0)) == COLON
 		     || (NCH(sub) > 1 && TYPE(CHILD(sub, 1)) == COLON))
 		    && (TYPE(CHILD(sub,NCH(sub)-1)) != sliceop))
 		{
-			switch (assigning) {
+			switch (assigning) 
+			{
 			case OP_DELETE:
 				op = DELETE_SLICE;
 				break;
+			
 			case OP_ASSIGN:
 				op = STORE_SLICE;
 				break;
+			
 			case OP_APPLY:
 				op = SLICE;
 				break;
+			
 			default:
 				com_augassign_slice(c, sub, assigning, augn);
 				return;
 			}
 			com_slice(c, sub, op);
 			if (op == STORE_SLICE)
+			{
 				com_pop(c, 2);
+			}
 			else if (op == DELETE_SLICE)
+			{
 				com_pop(c, 1);
+			}
 			return;
 		}
 	}
-	/* Else normal subscriptlist.  Compile each subscript. */
 	for (i = 0; i < NCH(n); i += 2)
+	{
 		com_subscript(c, CHILD(n, i));
-	/* Put multiple subscripts into a tuple */
-	if (NCH(n) > 1) {
-		i = (NCH(n)+1) / 2;
-		com_addoparg(c, BUILD_TUPLE, i);
-		com_pop(c, i-1);
 	}
-	switch (assigning) {
+	if (NCH(n) > 1) 
+	{
+		i = (NCH(n) + 1) / 2;
+		com_addoparg(c, BUILD_TUPLE, i);
+		com_pop(c, i - 1);
+	}
+	switch (assigning) 
+	{
 	case OP_DELETE:
 		op = DELETE_SUBSCR;
 		i = 2;
 		break;
+	
 	default:
 	case OP_ASSIGN:
 		op = STORE_SUBSCR;
 		i = 3;
 		break;
+	
 	case OP_APPLY:
 		op = BINARY_SUBSCR;
 		i = 1;
 		break;
 	}
-	if (assigning > OP_APPLY) {
+	if (assigning > OP_APPLY) 
+	{
 		com_addoparg(c, DUP_TOPX, 2);
 		com_push(c, 2);
 		com_addbyte(c, BINARY_SUBSCR);
