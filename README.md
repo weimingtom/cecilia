@@ -1,9 +1,9 @@
-# cecilia
+﻿# cecilia
 [WIP] My mod version of Python 2.2.2, and try to port to CSharp/Java
 
 ## About  
 Python 2.2.2 CSharp/Java port.   
-Cecilia is the name of Cecilia Alcott (セシリア・オルコット) , a heroine in Infinite Stratos.  
+Cecilia is the name of Cecilia Alcott (セシリア?オルコット) , a heroine in Infinite Stratos.  
 
 ## Ref  
 * Python 2.2.2  
@@ -24,3 +24,8 @@ https://github.com/sma/smython
 
 * Python sources before v2.0  
 https://www.python.org/ftp/python/src/  
+
+* code.google.com/p/pspstacklesspython  
+https://github.com/carlosedp/PSP-StacklessPython  
+https://github.com/SamuelKlein/pspstacklesspython  
+http://www.blogjava.net/wqnashqu/archive/2009/06/15/216892.html  

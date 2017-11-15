@@ -2069,64 +2069,70 @@ static void com_subscriptlist(struct compiling *c, node *n, int assigning, node 
 	com_pop(c, i);
 }
 
-static void
-com_apply_trailer(struct compiling *c, node *n)
+static void com_apply_trailer(struct compiling *c, node *n)
 {
 	REQ(n, trailer);
 	switch (TYPE(CHILD(n, 0))) {
 	case LPAR:
 		com_call_function(c, CHILD(n, 1));
 		break;
+
 	case DOT:
 		com_select_member(c, CHILD(n, 1));
 		break;
+
 	case LSQB:
 		com_subscriptlist(c, CHILD(n, 1), OP_APPLY, NULL);
 		break;
+
 	default:
 		com_error(c, PyExc_SystemError,
 			  "com_apply_trailer: unknown trailer type");
 	}
 }
 
-static void
-com_power(struct compiling *c, node *n)
+static void com_power(struct compiling *c, node *n)
 {
 	int i;
 	REQ(n, power);
 	com_atom(c, CHILD(n, 0));
-	for (i = 1; i < NCH(n); i++) {
-		if (TYPE(CHILD(n, i)) == DOUBLESTAR) {
+	for (i = 1; i < NCH(n); i++) 
+	{
+		if (TYPE(CHILD(n, i)) == DOUBLESTAR) 
+		{
 			com_factor(c, CHILD(n, i+1));
 			com_addbyte(c, BINARY_POWER);
 			com_pop(c, 1);
 			break;
 		}
 		else
+		{
 			com_apply_trailer(c, CHILD(n, i));
+		}
 	}
 }
 
-static void
-com_invert_constant(struct compiling *c, node *n)
+static void com_invert_constant(struct compiling *c, node *n)
 {
-	/* Compute the inverse of int and longs and use them directly,
-	   but be prepared to generate code for all other
-	   possibilities (invalid numbers, floats, complex).
-	*/
 	PyObject *num, *inv = NULL;
 	int i;
 
 	REQ(n, NUMBER);
 	num = parsenumber(c, STR(n));
 	if (num == NULL) 
+	{
 		i = 255;
-	else {
+	}
+	else 
+	{
 		inv = PyNumber_Invert(num);
-		if (inv == NULL) {
+		if (inv == NULL) 
+		{
 			PyErr_Clear();
 			i = com_addconst(c, num);
-		} else {
+		} 
+		else 
+		{
 			i = com_addconst(c, inv);
 			Py_DECREF(inv);
 		}
@@ -2135,27 +2141,25 @@ com_invert_constant(struct compiling *c, node *n)
 	com_addoparg(c, LOAD_CONST, i);
 	com_push(c, 1);
 	if (num != NULL && inv == NULL)
+	{
 		com_addbyte(c, UNARY_INVERT);
+	}
 }
 
-static int
-is_float_zero(const char *p)
+static int is_float_zero(const char *p)
 {
 	int found_radix_point = 0;
 	int ch;
-	while ((ch = Py_CHARMASK(*p++)) != '\0') {
+	while ((ch = Py_CHARMASK(*p++)) != '\0') 
+	{
 		switch (ch) {
 		case '0':
-			/* no reason to believe it's not 0 -- continue */
 			break;
 
-		case 'e': case 'E': case 'j': case 'J':
-			/* If this was a hex constant, we already would have
-			   returned 0 due to the 'x' or 'X', so 'e' or 'E'
-			   must be an exponent marker, and we haven't yet
-			   seen a non-zero digit, and it doesn't matter what
-			   the exponent is then.  For 'j' or 'J' similarly,
-			   except that this is an imaginary 0 then. */
+		case 'e': 
+		case 'E': 
+		case 'j': 
+		case 'J':
 			return 1;
 
 		case '.':
@@ -2169,20 +2173,11 @@ is_float_zero(const char *p)
 	return found_radix_point;
 }
 
-static void
-com_factor(struct compiling *c, node *n)
+static void com_factor(struct compiling *c, node *n)
 {
 	int childtype = TYPE(CHILD(n, 0));
 	node *pfactor, *ppower, *patom, *pnum;
 	REQ(n, factor);
-	/* If the unary +, -, or ~ operator is applied to a constant,
-	   don't generate a UNARY_xxx opcode.  Just store the
-	   approriate value as a constant.  If the value is negative,
-	   extend the string containing the constant and insert a
-	   negative in the 0th position -- unless we're doing unary minus
-	   of a floating zero!  In that case the sign is significant, but
-	   the const dict can't distinguish +0.0 from -0.0.
-	 */
 	if ((childtype == PLUS || childtype == MINUS || childtype == TILDE)
 	    && NCH(n) == 2
 	    && TYPE((pfactor = CHILD(n, 1))) == factor
@@ -2191,14 +2186,18 @@ com_factor(struct compiling *c, node *n)
  	    && NCH(ppower) == 1
 	    && TYPE((patom = CHILD(ppower, 0))) == atom
 	    && TYPE((pnum = CHILD(patom, 0))) == NUMBER
-	    && !(childtype == MINUS && is_float_zero(STR(pnum)))) {
-		if (childtype == TILDE) {
+	    && !(childtype == MINUS && is_float_zero(STR(pnum)))) 
+	{
+		if (childtype == TILDE) 
+		{
 			com_invert_constant(c, pnum);
 			return;
 		}
-		if (childtype == MINUS) {
+		if (childtype == MINUS) 
+		{
 			char *s = PyMem_Malloc(strlen(STR(pnum)) + 2);
-			if (s == NULL) {
+			if (s == NULL) 
+			{
 				com_error(c, PyExc_MemoryError, "");
 				com_addbyte(c, 255);
 				return;
@@ -2210,48 +2209,61 @@ com_factor(struct compiling *c, node *n)
 		}
 		com_atom(c, patom);
 	}
-	else if (childtype == PLUS) {
+	else if (childtype == PLUS) 
+	{
 		com_factor(c, CHILD(n, 1));
 		com_addbyte(c, UNARY_POSITIVE);
 	}
-	else if (childtype == MINUS) {
+	else if (childtype == MINUS) 
+	{
 		com_factor(c, CHILD(n, 1));
 		com_addbyte(c, UNARY_NEGATIVE);
 	}
-	else if (childtype == TILDE) {
+	else if (childtype == TILDE) 
+	{
 		com_factor(c, CHILD(n, 1));
 		com_addbyte(c, UNARY_INVERT);
 	}
-	else {
+	else 
+	{
 		com_power(c, CHILD(n, 0));
 	}
 }
 
-static void
-com_term(struct compiling *c, node *n)
+static void com_term(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, term);
 	com_factor(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_factor(c, CHILD(n, i));
-		switch (TYPE(CHILD(n, i-1))) {
+		switch (TYPE(CHILD(n, i-1))) 
+		{
 		case STAR:
 			op = BINARY_MULTIPLY;
 			break;
+		
 		case SLASH:
 			if (c->c_flags & CO_FUTURE_DIVISION)
+			{
 				op = BINARY_TRUE_DIVIDE;
+			}
 			else
+			{
 				op = BINARY_DIVIDE;
+			}
 			break;
+		
 		case PERCENT:
 			op = BINARY_MODULO;
 			break;
+
 		case DOUBLESLASH:
 			op = BINARY_FLOOR_DIVIDE;
 			break;
+
 		default:
 			com_error(c, PyExc_SystemError,
 				  "com_term: operator not *, /, // or %");
@@ -2262,22 +2274,25 @@ com_term(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_arith_expr(struct compiling *c, node *n)
+static void com_arith_expr(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, arith_expr);
 	com_term(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_term(c, CHILD(n, i));
-		switch (TYPE(CHILD(n, i-1))) {
+		switch (TYPE(CHILD(n, i-1))) 
+		{
 		case PLUS:
 			op = BINARY_ADD;
 			break;
+		
 		case MINUS:
 			op = BINARY_SUBTRACT;
 			break;
+		
 		default:
 			com_error(c, PyExc_SystemError,
 				  "com_arith_expr: operator not + or -");
@@ -2288,22 +2303,25 @@ com_arith_expr(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_shift_expr(struct compiling *c, node *n)
+static void com_shift_expr(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, shift_expr);
 	com_arith_expr(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_arith_expr(c, CHILD(n, i));
-		switch (TYPE(CHILD(n, i-1))) {
+		switch (TYPE(CHILD(n, i-1))) 
+		{
 		case LEFTSHIFT:
 			op = BINARY_LSHIFT;
 			break;
+		
 		case RIGHTSHIFT:
 			op = BINARY_RSHIFT;
 			break;
+		
 		default:
 			com_error(c, PyExc_SystemError,
 				  "com_shift_expr: operator not << or >>");
@@ -2314,19 +2332,21 @@ com_shift_expr(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_and_expr(struct compiling *c, node *n)
+static void com_and_expr(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, and_expr);
 	com_shift_expr(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_shift_expr(c, CHILD(n, i));
-		if (TYPE(CHILD(n, i-1)) == AMPER) {
+		if (TYPE(CHILD(n, i-1)) == AMPER) 
+		{
 			op = BINARY_AND;
 		}
-		else {
+		else 
+		{
 			com_error(c, PyExc_SystemError,
 				  "com_and_expr: operator not &");
 			op = 255;
@@ -2336,19 +2356,21 @@ com_and_expr(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_xor_expr(struct compiling *c, node *n)
+static void com_xor_expr(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, xor_expr);
 	com_and_expr(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_and_expr(c, CHILD(n, i));
-		if (TYPE(CHILD(n, i-1)) == CIRCUMFLEX) {
+		if (TYPE(CHILD(n, i-1)) == CIRCUMFLEX) 
+		{
 			op = BINARY_XOR;
 		}
-		else {
+		else 
+		{
 			com_error(c, PyExc_SystemError,
 				  "com_xor_expr: operator not ^");
 			op = 255;
@@ -2358,19 +2380,21 @@ com_xor_expr(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_expr(struct compiling *c, node *n)
+static void com_expr(struct compiling *c, node *n)
 {
 	int i;
 	int op;
 	REQ(n, expr);
 	com_xor_expr(c, CHILD(n, 0));
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_xor_expr(c, CHILD(n, i));
-		if (TYPE(CHILD(n, i-1)) == VBAR) {
+		if (TYPE(CHILD(n, i-1)) == VBAR) 
+		{
 			op = BINARY_OR;
 		}
-		else {
+		else 
+		{
 			com_error(c, PyExc_SystemError,
 				  "com_expr: expr operator not |");
 			op = 255;
@@ -2380,105 +2404,102 @@ com_expr(struct compiling *c, node *n)
 	}
 }
 
-static enum cmp_op
-cmp_type(node *n)
+static enum cmp_op cmp_type(node *n)
 {
 	REQ(n, comp_op);
-	/* comp_op: '<' | '>' | '=' | '>=' | '<=' | '<>' | '!=' | '=='
-	          | 'in' | 'not' 'in' | 'is' | 'is' not' */
-	if (NCH(n) == 1) {
+	if (NCH(n) == 1) 
+	{
 		n = CHILD(n, 0);
 		switch (TYPE(n)) {
-		case LESS:	return LT;
-		case GREATER:	return GT;
-		case EQEQUAL:			/* == */
-		case EQUAL:	return EQ;
-		case LESSEQUAL:	return LE;
-		case GREATEREQUAL: return GE;
-		case NOTEQUAL:	return NE;	/* <> or != */
-		case NAME:	if (strcmp(STR(n), "in") == 0) return IN;
-				if (strcmp(STR(n), "is") == 0) return IS;
+		case LESS:	
+			return LT;
+		
+		case GREATER:	
+			return GT;
+		
+		case EQEQUAL:
+		case EQUAL:	
+			return EQ;
+		
+		case LESSEQUAL:	
+			return LE;
+		
+		case GREATEREQUAL: 
+			return GE;
+		
+		case NOTEQUAL:	
+			return NE;
+		
+		case NAME:	
+			if (strcmp(STR(n), "in") == 0) 
+			{
+				return IN;
+			}
+			if (strcmp(STR(n), "is") == 0) 
+			{
+				return IS;
+			}
 		}
 	}
-	else if (NCH(n) == 2) {
-		switch (TYPE(CHILD(n, 0))) {
-		case NAME:	if (strcmp(STR(CHILD(n, 1)), "in") == 0)
-					return NOT_IN;
-				if (strcmp(STR(CHILD(n, 0)), "is") == 0)
-					return IS_NOT;
+	else if (NCH(n) == 2) 
+	{
+		switch (TYPE(CHILD(n, 0))) 
+		{
+		case NAME:	
+			if (strcmp(STR(CHILD(n, 1)), "in") == 0)
+			{
+				return NOT_IN;
+			}
+			if (strcmp(STR(CHILD(n, 0)), "is") == 0)
+			{
+				return IS_NOT;
+			}
 		}
 	}
 	return BAD;
 }
 
-static void
-com_comparison(struct compiling *c, node *n)
+static void com_comparison(struct compiling *c, node *n)
 {
 	int i;
 	enum cmp_op op;
 	int anchor;
-	REQ(n, comparison); /* comparison: expr (comp_op expr)* */
+	REQ(n, comparison);
 	com_expr(c, CHILD(n, 0));
 	if (NCH(n) == 1)
+	{
 		return;
-	
-	/****************************************************************
-	   The following code is generated for all but the last
-	   comparison in a chain:
-	   
-	   label:	on stack:	opcode:		jump to:
-	   
-			a		<code to load b>
-			a, b		DUP_TOP
-			a, b, b		ROT_THREE
-			b, a, b		COMPARE_OP
-			b, 0-or-1	JUMP_IF_FALSE	L1
-			b, 1		POP_TOP
-			b		
-	
-	   We are now ready to repeat this sequence for the next
-	   comparison in the chain.
-	   
-	   For the last we generate:
-	   
-	   		b		<code to load c>
-	   		b, c		COMPARE_OP
-	   		0-or-1		
-	   
-	   If there were any jumps to L1 (i.e., there was more than one
-	   comparison), we generate:
-	   
-	   		0-or-1		JUMP_FORWARD	L2
-	   L1:		b, 0		ROT_TWO
-	   		0, b		POP_TOP
-	   		0
-	   L2:		0-or-1
-	****************************************************************/
-	
+	}
+
 	anchor = 0;
 	
-	for (i = 2; i < NCH(n); i += 2) {
+	for (i = 2; i < NCH(n); i += 2) 
+	{
 		com_expr(c, CHILD(n, i));
-		if (i+2 < NCH(n)) {
+		if (i+2 < NCH(n)) 
+		{
 			com_addbyte(c, DUP_TOP);
 			com_push(c, 1);
 			com_addbyte(c, ROT_THREE);
 		}
 		op = cmp_type(CHILD(n, i-1));
-		if (op == BAD) {
+		if (op == BAD) 
+		{
 			com_error(c, PyExc_SystemError,
 				  "com_comparison: unknown comparison op");
 		}
 		com_addoparg(c, COMPARE_OP, op);
 		com_pop(c, 1);
-		if (i+2 < NCH(n)) {
+		if (i + 2 < NCH(n)) 
+		{
 			com_addfwref(c, JUMP_IF_FALSE, &anchor);
 			com_addbyte(c, POP_TOP);
 			com_pop(c, 1);
 		}
 	}
 	
-	if (anchor) {
+	if (anchor) 
+	{
 		int anchor2 = 0;
 		com_addfwref(c, JUMP_FORWARD, &anchor2);
 		com_backpatch(c, anchor);
@@ -2488,64 +2509,67 @@ com_comparison(struct compiling *c, node *n)
 	}
 }
 
-static void
-com_not_test(struct compiling *c, node *n)
+static void com_not_test(struct compiling *c, node *n)
 {
-	REQ(n, not_test); /* 'not' not_test | comparison */
-	if (NCH(n) == 1) {
+	REQ(n, not_test);
+	if (NCH(n) == 1) 
+	{
 		com_comparison(c, CHILD(n, 0));
 	}
-	else {
+	else 
+	{
 		com_not_test(c, CHILD(n, 1));
 		com_addbyte(c, UNARY_NOT);
 	}
 }
 
-static void
-com_and_test(struct compiling *c, node *n)
+static void com_and_test(struct compiling *c, node *n)
 {
 	int i;
 	int anchor;
-	REQ(n, and_test); /* not_test ('and' not_test)* */
+	REQ(n, and_test);
 	anchor = 0;
 	i = 0;
-	for (;;) {
+	for (;;) 
+	{
 		com_not_test(c, CHILD(n, i));
 		if ((i += 2) >= NCH(n))
+		{
 			break;
+		}
 		com_addfwref(c, JUMP_IF_FALSE, &anchor);
 		com_addbyte(c, POP_TOP);
 		com_pop(c, 1);
 	}
 	if (anchor)
+	{
 		com_backpatch(c, anchor);
+	}
 }
 
-static int
-com_make_closure(struct compiling *c, PyCodeObject *co)
+static int com_make_closure(struct compiling *c, PyCodeObject *co)
 {
 	int i, free = PyCode_GetNumFree(co);
 	if (free == 0)
+	{
 		return 0;
-	for (i = 0; i < free; ++i) {
-		/* Bypass com_addop_varname because it will generate
-		   LOAD_DEREF but LOAD_CLOSURE is needed. 
-		*/
+	}
+	for (i = 0; i < free; ++i) 
+	{
 		PyObject *name = PyTuple_GET_ITEM(co->co_freevars, i);
 		int arg, reftype;
 
-		/* Special case: If a class contains a method with a
-		   free variable that has the same name as a method,
-		   the name will be considered free *and* local in the
-		   class.  It should be handled by the closure, as
-		   well as by the normal name loookup logic.
-		*/
 		reftype = get_ref_type(c, PyString_AS_STRING(name));	
 		if (reftype == CELL)
+		{
 			arg = com_lookup_arg(c->c_cellvars, name);
-		else /* (reftype == FREE) */
+		}
+		else
+		{
 			arg = com_lookup_arg(c->c_freevars, name);
-		if (arg == -1) {
+		}
+		if (arg == -1) 
+		{
 			fprintf(stderr, "lookup %s in %s %d %d\n"
 				"freevars of %s: %s\n",
 				PyObject_REPR(name), 
@@ -2556,24 +2580,24 @@ com_make_closure(struct compiling *c, PyCodeObject *co)
 			Py_FatalError("com_make_closure()");
 		}
 		com_addoparg(c, LOAD_CLOSURE, arg);
-
 	}
 	com_push(c, free);
 	return 1;
 }
 
-static void
-com_test(struct compiling *c, node *n)
+static void com_test(struct compiling *c, node *n)
 {
-	REQ(n, test); /* and_test ('or' and_test)* | lambdef */
-	if (NCH(n) == 1 && TYPE(CHILD(n, 0)) == lambdef) {
+	REQ(n, test);
+	if (NCH(n) == 1 && TYPE(CHILD(n, 0)) == lambdef) 
+	{
 		PyCodeObject *co;
 		int i, closure;
 		int ndefs = com_argdefs(c, CHILD(n, 0));
 		symtable_enter_scope(c->c_symtable, "lambda", lambdef,
 				     n->n_lineno);
 		co = icompile(CHILD(n, 0), c);
-		if (co == NULL) {
+		if (co == NULL) 
+		{
 			c->c_errors++;
 			return;
 		}
@@ -2582,27 +2606,37 @@ com_test(struct compiling *c, node *n)
 		closure = com_make_closure(c, co);
 		com_addoparg(c, LOAD_CONST, i);
 		com_push(c, 1);
-		if (closure) {
+		if (closure) 
+		{
 			com_addoparg(c, MAKE_CLOSURE, ndefs);
 			com_pop(c, PyCode_GetNumFree(co));
-		} else
+		} 
+		else
+		{
 			com_addoparg(c, MAKE_FUNCTION, ndefs);
+		}
 		Py_DECREF(co);
 		com_pop(c, ndefs);
 	}
-	else {
+	else 
+	{
 		int anchor = 0;
 		int i = 0;
-		for (;;) {
+		for (;;) 
+		{
 			com_and_test(c, CHILD(n, i));
 			if ((i += 2) >= NCH(n))
+			{
 				break;
+			}
 			com_addfwref(c, JUMP_IF_TRUE, &anchor);
 			com_addbyte(c, POP_TOP);
 			com_pop(c, 1);
 		}
 		if (anchor)
+		{
 			com_backpatch(c, anchor);
+		}
 	}
 }
 
