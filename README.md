@@ -29,3 +29,6 @@ https://www.python.org/ftp/python/src/
 https://github.com/carlosedp/PSP-StacklessPython  
 https://github.com/SamuelKlein/pspstacklesspython  
 http://www.blogjava.net/wqnashqu/archive/2009/06/15/216892.html  
+
+* eriri_python  
+https://github.com/weimingtom/eriri_python  
