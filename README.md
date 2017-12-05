@@ -35,3 +35,6 @@ https://github.com/weimingtom/eriri_python
 
 * boo  
 https://github.com/boo-lang/boo  
+
+* jython_playground  
+https://github.com/weimingtom/jython_playground  
