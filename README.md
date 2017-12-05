@@ -32,3 +32,6 @@ http://www.blogjava.net/wqnashqu/archive/2009/06/15/216892.html
 
 * eriri_python  
 https://github.com/weimingtom/eriri_python  
+
+* boo  
+https://github.com/boo-lang/boo  
