@@ -1,5 +1,6 @@
 Ctrl + Z : exit
 
+----------------------------------
 __lltrace__ = True
 del __lltrace__
 
@@ -12,6 +13,16 @@ https://svn.python.org/projects/python/trunk/
 http://akaptur.com/blog/2013/11/15/introduction-to-the-python-interpreter/
 http://developer.51cto.com/art/201401/428125.htm
 https://github.com/akaptur/akaptur.github.com
+
+----------------------------------
+python/exceptions.c
+	_PyExc_Init() line 990
+	Py_Initialize() line 170
+	Py_Main(int 1, char * * 0x005f0ec0) line 325
+http://tieba.baidu.com/p/3192220799
+>>> import exceptions
+>>> dir(exceptions)
+----------------------------------
 
 
 todo:
@@ -28,6 +39,7 @@ todo:
 11. #if 0
 12. remove (void)xxx() -> xxx()
 13. embeded struct  
+----------------------------------
 
 
 stringobject.c:3032
