@@ -1,14 +1,7 @@
-
-/* Thread package.
-   This is intended to be usable independently from Python.
-   The implementation for system foobar is in a file thread_foobar.h
-   which is included by this file dependent on config settings.
-   Stuff shared by all thread_*.h files is collected here. */
-
+//20180114
 #include "python.h"
 
-/* pyconfig.h may or may not define DL_IMPORT */
-#ifndef DL_IMPORT	/* declarations for DLL import/export */
+#ifndef DL_IMPORT
 #define DL_IMPORT(RTYPE) RTYPE
 #endif
 
@@ -29,7 +22,7 @@ extern char *getenv(const char *);
 #endif
 
 #ifdef __sgi
-#ifndef HAVE_PTHREAD_H /* XXX Need to check in configure.in */
+#ifndef HAVE_PTHREAD_H
 #undef _POSIX_THREADS
 #endif
 #endif
@@ -58,7 +51,7 @@ extern char *getenv(const char *);
 #define _POSIX_THREADS
 #endif
 
-#endif /* _POSIX_THREADS */
+#endif
 
 
 #ifdef Py_DEBUG
@@ -72,22 +65,29 @@ static int thread_debug = 0;
 
 static int initialized;
 
-static void PyThread__init_thread(void); /* Forward */
+static void PyThread__init_thread(void);
 
-void PyThread_init_thread(void)
+void PyThread_init_thread()
 {
 #ifdef Py_DEBUG
 	char *p = getenv("THREADDEBUG");
 
-	if (p) {
+	if (p) 
+	{
 		if (*p)
+		{
 			thread_debug = atoi(p);
+		}
 		else
+		{
 			thread_debug = 1;
+		}
 	}
-#endif /* Py_DEBUG */
+#endif
 	if (initialized)
+	{
 		return;
+	}
 	initialized = 1;
 	dprintf(("PyThread_init_thread called\n"));
 	PyThread__init_thread();
@@ -132,9 +132,3 @@ void PyThread_init_thread(void)
 #ifdef WINCE_THREADS
 #include "thread_wince.h"
 #endif
-
-/*
-#ifdef FOOBAR_THREADS
-#include "thread_foobar.h"
-#endif
-*/
