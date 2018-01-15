@@ -1,15 +1,5 @@
-
-/* Dummy frozen modules initializer */
-
+//20180111
 #include "python.h"
-
-/* In order to test the support for frozen modules, by default we
-   define a single frozen module, __hello__.  Loading it will print
-   some famous words... */
-
-/* To regenerate this data after the bytecode or marshal format has changed,
-   go to ../Tools/freeze/ and freeze the hello.py file; then copy and paste
-   the appropriate bytes from M___main__.c. */
 
 static unsigned char M___hello__[] = {
 	99,0,0,0,0,1,0,0,0,115,15,0,0,0,127,0,
@@ -24,15 +14,10 @@ static unsigned char M___hello__[] = {
 #define SIZE (int)sizeof(M___hello__)
 
 static struct _frozen _PyImport_FrozenModules[] = {
-	/* Test module */
 	{"__hello__", M___hello__, SIZE},
-	/* Test package (negative size indicates package-ness) */
 	{"__phello__", M___hello__, -SIZE},
 	{"__phello__.spam", M___hello__, SIZE},
-	{0, 0, 0} /* sentinel */
+	{0, 0, 0}
 };
-
-/* Embedding apps may change this pointer to point to their favorite
-   collection of frozen modules: */
 
 struct _frozen *PyImport_FrozenModules = _PyImport_FrozenModules;

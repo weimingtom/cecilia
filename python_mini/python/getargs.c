@@ -1,10 +1,6 @@
-
-/* New getargs implementation */
-
+//20180111
 #include "python.h"
-
 #include <ctype.h>
-
 
 int PyArg_Parse(PyObject *, char *, ...);
 int PyArg_ParseTuple(PyObject *, char *, ...);
@@ -13,7 +9,6 @@ int PyArg_VaParse(PyObject *, char *, va_list);
 int PyArg_ParseTupleAndKeywords(PyObject *, PyObject *,
 				char *, char **, ...);
 
-/* Forward */
 static int vgetargs1(PyObject *, char *, va_list *, int);
 static void seterror(int, char *, int *, char *, char *);
 static char *convertitem(PyObject *, char **, va_list *, int *, char *, 
@@ -27,8 +22,7 @@ static int vgetargskeywords(PyObject *, PyObject *,
 			    char *, char **, va_list *);
 static char *skipitem(char **, va_list *);
 
-int
-PyArg_Parse(PyObject *args, char *format, ...)
+int PyArg_Parse(PyObject *args, char *format, ...)
 {
 	int retval;
 	va_list va;
@@ -39,9 +33,7 @@ PyArg_Parse(PyObject *args, char *format, ...)
 	return retval;
 }
 
-
-int
-PyArg_ParseTuple(PyObject *args, char *format, ...)
+int PyArg_ParseTuple(PyObject *args, char *format, ...)
 {
 	int retval;
 	va_list va;
@@ -52,9 +44,7 @@ PyArg_ParseTuple(PyObject *args, char *format, ...)
 	return retval;
 }
 
-
-int
-PyArg_VaParse(PyObject *args, char *format, va_list va)
+int PyArg_VaParse(PyObject *args, char *format, va_list va)
 {
 	va_list lva;
 
@@ -71,9 +61,7 @@ PyArg_VaParse(PyObject *args, char *format, va_list va)
 	return vgetargs1(args, format, &lva, 0);
 }
 
-
-static int
-vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
+static int vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 {
 	char msgbuf[256];
 	int levels[32];
@@ -89,57 +77,87 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 	
 	assert(compat || (args != (PyObject*)NULL));
 
-	while (endfmt == 0) {
+	while (endfmt == 0) 
+	{
 		int c = *format++;
-		switch (c) {
+		switch (c) 
+		{
 		case '(':
 			if (level == 0)
+			{
 				max++;
+			}
 			level++;
 			break;
+		
 		case ')':
 			if (level == 0)
+			{
 				Py_FatalError("excess ')' in getargs format");
+			}
 			else
+			{
 				level--;
+			}
 			break;
+		
 		case '\0':
 			endfmt = 1;
 			break;
+
 		case ':':
 			fname = format;
 			endfmt = 1;
 			break;
+
 		case ';':
 			message = format;
 			endfmt = 1;
 			break;
+
 		default:
-			if (level == 0) {
+			if (level == 0) 
+			{
 				if (c == 'O')
+				{
 					max++;
-				else if (isalpha(c)) {
-					if (c != 'e') /* skip encoded */
+				}
+				else if (isalpha(c)) 
+				{
+					if (c != 'e')
+					{
 						max++;
-				} else if (c == '|')
+					}
+				} 
+				else if (c == '|')
+				{
 					min = max;
+				}
 			}
 			break;
 		}
 	}
 	
 	if (level != 0)
-		Py_FatalError(/* '(' */ "missing ')' in getargs format");
-	
+	{
+		Py_FatalError("missing ')' in getargs format");
+	}
+
 	if (min < 0)
+	{
 		min = max;
-	
+	}
+
 	format = formatsave;
 	
-	if (compat) {
-		if (max == 0) {
+	if (compat) 
+	{
+		if (max == 0) 
+		{
 			if (args == NULL)
+			{
 				return 1;
+			}
 			PyOS_snprintf(msgbuf, sizeof(msgbuf),
 				      "%.200s%s takes no arguments",
 				      fname==NULL ? "function" : fname,
@@ -147,8 +165,10 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 			PyErr_SetString(PyExc_TypeError, msgbuf);
 			return 0;
 		}
-		else if (min == 1 && max == 1) {
-			if (args == NULL) {
+		else if (min == 1 && max == 1) 
+		{
+			if (args == NULL) 
+			{
 				PyOS_snprintf(msgbuf, sizeof(msgbuf),
 				      "%.200s%s takes at least one argument",
 					      fname==NULL ? "function" : fname,
@@ -159,18 +179,22 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 			msg = convertitem(args, &format, p_va, levels, msgbuf,
 					  sizeof(msgbuf));
 			if (msg == NULL)
+			{
 				return 1;
-			seterror(levels[0], msg, levels+1, fname, message);
+			}
+			seterror(levels[0], msg, levels + 1, fname, message);
 			return 0;
 		}
-		else {
+		else 
+		{
 			PyErr_SetString(PyExc_SystemError,
 			    "old style getargs format uses new features");
 			return 0;
 		}
 	}
 	
-	if (!PyTuple_Check(args)) {
+	if (!PyTuple_Check(args)) 
+	{
 		PyErr_SetString(PyExc_SystemError,
 		    "new style getargs format but argument is not a tuple");
 		return 0;
@@ -178,8 +202,10 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 	
 	len = PyTuple_GET_SIZE(args);
 	
-	if (len < min || max < len) {
-		if (message == NULL) {
+	if (len < min || max < len) 
+	{
+		if (message == NULL) 
+		{
 			PyOS_snprintf(msgbuf, sizeof(msgbuf),
 				      "%.150s%s takes %s %d argument%s "
 				      "(%d given)",
@@ -196,20 +222,25 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 		return 0;
 	}
 	
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++) 
+	{
 		if (*format == '|')
+		{
 			format++;
+		}
 		msg = convertitem(PyTuple_GET_ITEM(args, i), &format, p_va,
 				  levels, msgbuf, sizeof(msgbuf));
-		if (msg) {
-			seterror(i+1, msg, levels, fname, message);
+		if (msg) 
+		{
+			seterror(i + 1, msg, levels, fname, message);
 			return 0;
 		}
 	}
 
 	if (*format != '\0' && !isalpha((int)(*format)) &&
 	    *format != '(' &&
-	    *format != '|' && *format != ':' && *format != ';') {
+	    *format != '|' && *format != ':' && *format != ';') 
+	{
 		PyErr_Format(PyExc_SystemError,
 			     "bad format string: %.200s", formatsave);
 		return 0;
@@ -218,35 +249,39 @@ vgetargs1(PyObject *args, char *format, va_list *p_va, int compat)
 	return 1;
 }
 
-
-
-static void
-seterror(int iarg, char *msg, int *levels, char *fname, char *message)
+static void seterror(int iarg, char *msg, int *levels, char *fname, char *message)
 {
 	char buf[512];
 	int i;
 	char *p = buf;
 
 	if (PyErr_Occurred())
+	{
 		return;
-	else if (message == NULL) {
-		if (fname != NULL) {
+	}
+	else if (message == NULL) 
+	{
+		if (fname != NULL) 
+		{
 			PyOS_snprintf(p, sizeof(buf), "%.200s() ", fname);
 			p += strlen(p);
 		}
-		if (iarg != 0) {
+		if (iarg != 0) 
+		{
 			PyOS_snprintf(p, sizeof(buf) - (p - buf),
 				      "argument %d", iarg);
 			i = 0;
 			p += strlen(p);
-			while (levels[i] > 0 && (int)(p-buf) < 220) {
+			while (levels[i] > 0 && (int)(p - buf) < 220) 
+			{
 				PyOS_snprintf(p, sizeof(buf) - (buf - p),
 					      ", item %d", levels[i]-1);
 				p += strlen(p);
 				i++;
 			}
 		}
-		else {
+		else 
+		{
 			PyOS_snprintf(p, sizeof(buf) - (p - buf), "argument");
 			p += strlen(p);
 		}
@@ -256,27 +291,7 @@ seterror(int iarg, char *msg, int *levels, char *fname, char *message)
 	PyErr_SetString(PyExc_TypeError, message);
 }
 
-
-/* Convert a tuple argument.
-   On entry, *p_format points to the character _after_ the opening '('.
-   On successful exit, *p_format points to the closing ')'.
-   If successful:
-      *p_format and *p_va are updated,
-      *levels and *msgbuf are untouched,
-      and NULL is returned.
-   If the argument is invalid:
-      *p_format is unchanged,
-      *p_va is undefined,
-      *levels is a 0-terminated list of item numbers,
-      *msgbuf contains an error message, whose format is:
-         "must be <typename1>, not <typename2>", where:
-            <typename1> is the name of the expected type, and
-            <typename2> is the name of the actual type,
-      and msgbuf is returned.
-*/
-
-static char *
-converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
+static char *converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 	     char *msgbuf, size_t bufsize, int toplevel)
 {
 	int level = 0;
@@ -284,25 +299,37 @@ converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 	char *format = *p_format;
 	int i;
 	
-	for (;;) {
+	for (;;) 
+	{
 		int c = *format++;
-		if (c == '(') {
+		if (c == '(') 
+		{
 			if (level == 0)
+			{
 				n++;
+			}
 			level++;
 		}
-		else if (c == ')') {
+		else if (c == ')') 
+		{
 			if (level == 0)
+			{
 				break;
+			}
 			level--;
 		}
 		else if (c == ':' || c == ';' || c == '\0')
+		{
 			break;
+		}
 		else if (level == 0 && isalpha(c))
+		{
 			n++;
+		}
 	}
 	
-	if (!PySequence_Check(arg) || PyString_Check(arg)) {
+	if (!PySequence_Check(arg) || PyString_Check(arg)) 
+	{
 		levels[0] = 0;
 		PyOS_snprintf(msgbuf, bufsize,
 			      toplevel ? "expected %d arguments, not %.50s" :
@@ -312,7 +339,8 @@ converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 		return msgbuf;
 	}
 	
-	if ((i = PySequence_Size(arg)) != n) {
+	if ((i = PySequence_Size(arg)) != n) 
+	{
 		levels[0] = 0;
 		PyOS_snprintf(msgbuf, bufsize,
 			      toplevel ? "expected %d arguments, not %d" :
@@ -322,15 +350,16 @@ converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 	}
 
 	format = *p_format;
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; i++) 
+	{
 		char *msg;
 		PyObject *item;
 		item = PySequence_GetItem(arg, i);
 		msg = convertitem(item, &format, p_va, levels+1, msgbuf,
 				  bufsize);
-		/* PySequence_GetItem calls tp->sq_item, which INCREFs */
 		Py_XDECREF(item);
-		if (msg != NULL) {
+		if (msg != NULL) 
+		{
 			levels[0] = i+1;
 			return msg;
 		}
@@ -340,30 +369,34 @@ converttuple(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 	return NULL;
 }
 
-
-/* Convert a single item. */
-
-static char *
-convertitem(PyObject *arg, char **p_format, va_list *p_va, int *levels,
+static char *convertitem(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 	    char *msgbuf, size_t bufsize)
 {
 	char *msg;
 	char *format = *p_format;
 	
-	if (*format == '(' /* ')' */) {
+	if (*format == '(') 
+	{
 		format++;
 		msg = converttuple(arg, &format, p_va, levels, msgbuf, 
 				   bufsize, 0);
 		if (msg == NULL)
+		{
 			format++;
+		}
 	}
-	else {
+	else 
+	{
 		msg = convertsimple(arg, &format, p_va, msgbuf, bufsize);
 		if (msg != NULL)
+		{
 			levels[0] = 0;
+		}
 	}
 	if (msg == NULL)
+	{
 		*p_format = format;
+	}
 	return msg;
 }
 
@@ -372,10 +405,7 @@ convertitem(PyObject *arg, char **p_format, va_list *p_va, int *levels,
 #define UNICODE_DEFAULT_ENCODING(arg) \
         _PyUnicode_AsDefaultEncodedString(arg, NULL)
 
-/* Format an error message generated by convertsimple(). */
-
-static char *
-converterr(char *expected, PyObject *arg, char *msgbuf, size_t bufsize)
+static char *converterr(char *expected, PyObject *arg, char *msgbuf, size_t bufsize)
 {
 	assert(expected != NULL);
 	assert(arg != NULL); 
@@ -387,134 +417,164 @@ converterr(char *expected, PyObject *arg, char *msgbuf, size_t bufsize)
 
 #define CONV_UNICODE "(unicode conversion error)"
 
-/* Convert a non-tuple argument.  Return NULL if conversion went OK,
-   or a string with a message describing the failure.  The message is
-   formatted as "must be <desired type>, not <actual type>".
-   When failing, an exception may or may not have been raised.
-   Don't call if a tuple is expected. 
-*/
-
-static char *
-convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *msgbuf,
+static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *msgbuf,
 	      size_t bufsize)
 {
 	char *format = *p_format;
 	char c = *format++;
 	PyObject *uarg;
 	
-	switch (c) {
+	switch (c) 
+	{
+	case 'b': 
+		{
+			char *p = va_arg(*p_va, char *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<b>", arg, msgbuf, bufsize);
+			}
+			else if (ival < 0) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"unsigned byte integer is less than minimum");
+				return converterr("integer<b>", arg, msgbuf, bufsize);
+			}
+			else if (ival > UCHAR_MAX) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"unsigned byte integer is greater than maximum");
+				return converterr("integer<b>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = (unsigned char) ival;
+			}
+			break;
+		}
 	
-	case 'b': { /* unsigned byte -- very short int */
-		char *p = va_arg(*p_va, char *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<b>", arg, msgbuf, bufsize);
-		else if (ival < 0) {
-			PyErr_SetString(PyExc_OverflowError,
-			"unsigned byte integer is less than minimum");
-			return converterr("integer<b>", arg, msgbuf, bufsize);
+	case 'B': 
+		{  
+			char *p = va_arg(*p_va, char *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<b>", arg, msgbuf, bufsize);
+			}
+			else if (ival < SCHAR_MIN) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"byte-sized integer bitfield is less than minimum");
+				return converterr("integer<B>", arg, msgbuf, bufsize);
+			}
+			else if (ival > (int)UCHAR_MAX) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"byte-sized integer bitfield is greater than maximum");
+				return converterr("integer<B>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = (unsigned char) ival;
+			}
+			break;
 		}
-		else if (ival > UCHAR_MAX) {
-			PyErr_SetString(PyExc_OverflowError,
-			"unsigned byte integer is greater than maximum");
-			return converterr("integer<b>", arg, msgbuf, bufsize);
-		}
-		else
-			*p = (unsigned char) ival;
-		break;
-	}
 	
-	case 'B': {/* byte sized bitfield - both signed and unsigned
-		      values allowed */  
-		char *p = va_arg(*p_va, char *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<b>", arg, msgbuf, bufsize);
-		else if (ival < SCHAR_MIN) {
-			PyErr_SetString(PyExc_OverflowError,
-			"byte-sized integer bitfield is less than minimum");
-			return converterr("integer<B>", arg, msgbuf, bufsize);
+	case 'h': 
+		{
+			short *p = va_arg(*p_va, short *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<h>", arg, msgbuf, bufsize);
+			}
+			else if (ival < SHRT_MIN) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"signed short integer is less than minimum");
+				return converterr("integer<h>", arg, msgbuf, bufsize);
+			}
+			else if (ival > SHRT_MAX) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"signed short integer is greater than maximum");
+				return converterr("integer<h>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = (short) ival;
+			}
+			break;
 		}
-		else if (ival > (int)UCHAR_MAX) {
-			PyErr_SetString(PyExc_OverflowError,
-			"byte-sized integer bitfield is greater than maximum");
-			return converterr("integer<B>", arg, msgbuf, bufsize);
-		}
-		else
-			*p = (unsigned char) ival;
-		break;
-	}
 	
-	case 'h': {/* signed short int */
-		short *p = va_arg(*p_va, short *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<h>", arg, msgbuf, bufsize);
-		else if (ival < SHRT_MIN) {
-			PyErr_SetString(PyExc_OverflowError,
-			"signed short integer is less than minimum");
-			return converterr("integer<h>", arg, msgbuf, bufsize);
+	case 'H': 
+		{
+			unsigned short *p = va_arg(*p_va, unsigned short *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<H>", arg, msgbuf, bufsize);
+			}
+			else if (ival < SHRT_MIN) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"short integer bitfield is less than minimum");
+				return converterr("integer<H>", arg, msgbuf, bufsize);
+			}
+			else if (ival > USHRT_MAX) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"short integer bitfield is greater than maximum");
+				return converterr("integer<H>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = (unsigned short) ival;
+			}
+			break;
 		}
-		else if (ival > SHRT_MAX) {
-			PyErr_SetString(PyExc_OverflowError,
-			"signed short integer is greater than maximum");
-			return converterr("integer<h>", arg, msgbuf, bufsize);
-		}
-		else
-			*p = (short) ival;
-		break;
-	}
 	
-	case 'H': { /* short int sized bitfield, both signed and
-		       unsigned allowed */ 
-		unsigned short *p = va_arg(*p_va, unsigned short *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<H>", arg, msgbuf, bufsize);
-		else if (ival < SHRT_MIN) {
-			PyErr_SetString(PyExc_OverflowError,
-			"short integer bitfield is less than minimum");
-			return converterr("integer<H>", arg, msgbuf, bufsize);
+	case 'i': 
+		{
+			int *p = va_arg(*p_va, int *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<i>", arg, msgbuf, bufsize);
+			}
+			else if (ival > INT_MAX) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"signed integer is greater than maximum");
+				return converterr("integer<i>", arg, msgbuf, bufsize);
+			}
+			else if (ival < INT_MIN) 
+			{
+				PyErr_SetString(PyExc_OverflowError,
+					"signed integer is less than minimum");
+				return converterr("integer<i>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = ival;
+			}
+			break;
 		}
-		else if (ival > USHRT_MAX) {
-			PyErr_SetString(PyExc_OverflowError,
-			"short integer bitfield is greater than maximum");
-			return converterr("integer<H>", arg, msgbuf, bufsize);
-		}
-		else
-			*p = (unsigned short) ival;
-		break;
-	}
-	
-	case 'i': {/* signed int */
-		int *p = va_arg(*p_va, int *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<i>", arg, msgbuf, bufsize);
-		else if (ival > INT_MAX) {
-			PyErr_SetString(PyExc_OverflowError,
-				"signed integer is greater than maximum");
-			return converterr("integer<i>", arg, msgbuf, bufsize);
-		}
-		else if (ival < INT_MIN) {
-			PyErr_SetString(PyExc_OverflowError,
-				"signed integer is less than minimum");
-			return converterr("integer<i>", arg, msgbuf, bufsize);
-		}
-		else
-			*p = ival;
-		break;
-	}
 
-	case 'l': {/* long int */
-		long *p = va_arg(*p_va, long *);
-		long ival = PyInt_AsLong(arg);
-		if (ival == -1 && PyErr_Occurred())
-			return converterr("integer<l>", arg, msgbuf, bufsize);
-		else
-			*p = ival;
-		break;
-	}
+	case 'l': 
+		{
+			long *p = va_arg(*p_va, long *);
+			long ival = PyInt_AsLong(arg);
+			if (ival == -1 && PyErr_Occurred())
+			{
+				return converterr("integer<l>", arg, msgbuf, bufsize);
+			}
+			else
+			{
+				*p = ival;
+			}
+			break;
+		}
 	
 #ifdef HAVE_LONG_LONG
 	case 'L': {/* LONG_LONG */
@@ -1237,130 +1297,124 @@ vgetargskeywords(PyObject *args, PyObject *keywords, char *format,
 }
 
 
-static char *
-skipitem(char **p_format, va_list *p_va)
+static char *skipitem(char **p_format, va_list *p_va)
 {
 	char *format = *p_format;
 	char c = *format++;
 	
-	switch (c) {
-	
-	case 'b': /* byte -- very short int */
-	case 'B': /* byte as bitfield */
+	switch (c) 
+	{
+	case 'b': 
+	case 'B':
 		{
-			(void) va_arg(*p_va, char *);
+			va_arg(*p_va, char *);
 			break;
 		}
 	
-	case 'h': /* short int */
+	case 'h':
 		{
-			(void) va_arg(*p_va, short *);
+			va_arg(*p_va, short *);
 			break;
 		}
 	
-	case 'H': /* short int as bitfield */
+	case 'H':
 		{
-			(void) va_arg(*p_va, unsigned short *);
+			va_arg(*p_va, unsigned short *);
 			break;
 		}
 	
-	case 'i': /* int */
+	case 'i':
 		{
-			(void) va_arg(*p_va, int *);
+			va_arg(*p_va, int *);
 			break;
 		}
 	
-	case 'l': /* long int */
+	case 'l':
 		{
-			(void) va_arg(*p_va, long *);
+			va_arg(*p_va, long *);
 			break;
 		}
 	
 #ifdef HAVE_LONG_LONG
-	case 'L': /* LONG_LONG int */
+	case 'L':
 		{
-			(void) va_arg(*p_va, LONG_LONG *);
+			va_arg(*p_va, LONG_LONG *);
 			break;
 		}
 #endif
 	
-	case 'f': /* float */
+	case 'f':
 		{
-			(void) va_arg(*p_va, float *);
+			va_arg(*p_va, float *);
 			break;
 		}
 	
-	case 'd': /* double */
+	case 'd':
 		{
-			(void) va_arg(*p_va, double *);
+			va_arg(*p_va, double *);
 			break;
 		}
 	
 #ifndef WITHOUT_COMPLEX
-	case 'D': /* complex double */
+	case 'D':
 		{
-			(void) va_arg(*p_va, Py_complex *);
+			va_arg(*p_va, Py_complex *);
 			break;
 		}
-#endif /* WITHOUT_COMPLEX */
-	
-	case 'c': /* char */
-		{
-			(void) va_arg(*p_va, char *);
-			break;
-		}
-	
-	case 's': /* string */
-		{
-			(void) va_arg(*p_va, char **);
-			if (*format == '#') {
-				(void) va_arg(*p_va, int *);
-				format++;
-			}
-			break;
-		}
-	
-	case 'z': /* string */
-		{
-			(void) va_arg(*p_va, char **);
-			if (*format == '#') {
-				(void) va_arg(*p_va, int *);
-				format++;
-			}
-			break;
-		}
-	
-	case 'S': /* string object */
-		{
-			(void) va_arg(*p_va, PyObject **);
-			break;
-		}
-	
-	case 'O': /* object */
-		{
-			if (*format == '!') {
-				format++;
-				(void) va_arg(*p_va, PyTypeObject*);
-				(void) va_arg(*p_va, PyObject **);
-			}
-#if 0
-/* I don't know what this is for */
-			else if (*format == '?') {
-				inquiry pred = va_arg(*p_va, inquiry);
-				format++;
-				if ((*pred)(arg)) {
-					(void) va_arg(*p_va, PyObject **);
-				}
-			}
 #endif
-			else if (*format == '&') {
-				typedef int (*converter)(PyObject *, void *);
-				(void) va_arg(*p_va, converter);
-				(void) va_arg(*p_va, void *);
+	
+	case 'c':
+		{
+			va_arg(*p_va, char *);
+			break;
+		}
+	
+	case 's':
+		{
+			va_arg(*p_va, char **);
+			if (*format == '#') 
+			{
+				va_arg(*p_va, int *);
 				format++;
 			}
-			else {
-				(void) va_arg(*p_va, PyObject **);
+			break;
+		}
+	
+	case 'z':
+		{
+			va_arg(*p_va, char **);
+			if (*format == '#') 
+			{
+				va_arg(*p_va, int *);
+				format++;
+			}
+			break;
+		}
+	
+	case 'S':
+		{
+			va_arg(*p_va, PyObject **);
+			break;
+		}
+	
+	case 'O':
+		{
+			if (*format == '!') 
+			{
+				format++;
+				va_arg(*p_va, PyTypeObject*);
+				va_arg(*p_va, PyObject **);
+			}
+			else if (*format == '&') 
+			{
+				typedef int (*converter)(PyObject *, void *);
+				va_arg(*p_va, converter);
+				va_arg(*p_va, void *);
+				format++;
+			}
+			else 
+			{
+				va_arg(*p_va, PyObject **);
 			}
 			break;
 		}
@@ -1375,8 +1429,7 @@ skipitem(char **p_format, va_list *p_va)
 }
 
 
-int
-PyArg_UnpackTuple(PyObject *args, char *name, int min, int max, ...)
+int PyArg_UnpackTuple(PyObject *args, char *name, int min, int max, ...)
 {
 	int i, l;
 	PyObject **o;
@@ -1390,43 +1443,55 @@ PyArg_UnpackTuple(PyObject *args, char *name, int min, int max, ...)
 
 	assert(min >= 0);
 	assert(min <= max);
-	if (!PyTuple_Check(args)) {
+	if (!PyTuple_Check(args)) 
+	{
 		PyErr_SetString(PyExc_SystemError,
 		    "PyArg_UnpackTuple() argument list is not a tuple");
 		return 0;
 	}	
 	l = PyTuple_GET_SIZE(args);
-	if (l < min) {
+	if (l < min) 
+	{
 		if (name != NULL)
+		{
 			PyErr_Format(
 			    PyExc_TypeError,
 			    "%s expected %s%d arguments, got %d", 
 			    name, (min == max ? "" : "at least "), min, l);
+		}
 		else
+		{
 			PyErr_Format(
 			    PyExc_TypeError,
 			    "unpacked tuple should have %s%d elements,"
 			    " but has %d", 
 			    (min == max ? "" : "at least "), min, l);
+		}
 		va_end(vargs);
 		return 0;
 	}
-	if (l > max) {
+	if (l > max) 
+	{
 		if (name != NULL)
+		{
 			PyErr_Format(
 			    PyExc_TypeError,
 			    "%s expected %s%d arguments, got %d", 
 			    name, (min == max ? "" : "at most "), max, l);
+		}
 		else
+		{
 			PyErr_Format(
 			    PyExc_TypeError,
 			    "unpacked tuple should have %s%d elements,"
 			    " but has %d", 
 			    (min == max ? "" : "at most "), max, l);
+		}
 		va_end(vargs);
 		return 0;
 	}
-	for (i = 0; i < l; i++) {
+	for (i = 0; i < l; i++) 
+	{
 		o = va_arg(vargs, PyObject **);
 		*o = PyTuple_GET_ITEM(args, i);
 	}
