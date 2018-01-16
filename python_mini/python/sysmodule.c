@@ -1,131 +1,134 @@
-
-/* System module */
-
-/*
-Various bits of information used by the interpreter are collected in
-module 'sys'.
-Function member:
-- exit(sts): raise SystemExit
-Data members:
-- stdin, stdout, stderr: standard file objects
-- modules: the table of modules (dictionary)
-- path: module search path (list of strings)
-- argv: script arguments (list of strings)
-- ps1, ps2: optional primary and secondary prompts (strings)
-*/
+//20180116
 
 #include "python.h"
 #include "compile.h"
 #include "frameobject.h"
-
 #include "osdefs.h"
 
 #ifdef MS_COREDLL
 extern void *PyWin_DLLhModule;
-/* A string loaded from the DLL at startup: */
 extern const char *PyWin_DLLVersionString;
 #endif
 
-PyObject *
-PySys_GetObject(char *name)
+PyObject *PySys_GetObject(char *name)
 {
 	PyThreadState *tstate = PyThreadState_Get();
 	PyObject *sd = tstate->interp->sysdict;
 	if (sd == NULL)
+	{
 		return NULL;
+	}
 	return PyDict_GetItemString(sd, name);
 }
 
-FILE *
-PySys_GetFile(char *name, FILE *def)
+FILE *PySys_GetFile(char *name, FILE *def)
 {
 	FILE *fp = NULL;
 	PyObject *v = PySys_GetObject(name);
 	if (v != NULL && PyFile_Check(v))
+	{
 		fp = PyFile_AsFile(v);
+	}
 	if (fp == NULL)
+	{
 		fp = def;
+	}
 	return fp;
 }
 
-int
-PySys_SetObject(char *name, PyObject *v)
+int PySys_SetObject(char *name, PyObject *v)
 {
 	PyThreadState *tstate = PyThreadState_Get();
 	PyObject *sd = tstate->interp->sysdict;
-	if (v == NULL) {
+	if (v == NULL) 
+	{
 		if (PyDict_GetItemString(sd, name) == NULL)
+		{
 			return 0;
+		}
 		else
+		{
 			return PyDict_DelItemString(sd, name);
+		}
 	}
 	else
+	{
 		return PyDict_SetItemString(sd, name, v);
+	}
 }
 
-static PyObject *
-sys_displayhook(PyObject *self, PyObject *o)
+static PyObject *sys_displayhook(PyObject *self, PyObject *o)
 {
 	PyObject *outf;
 	PyInterpreterState *interp = PyThreadState_Get()->interp;
 	PyObject *modules = interp->modules;
 	PyObject *builtins = PyDict_GetItemString(modules, "__builtin__");
 
-	if (builtins == NULL) {
+	if (builtins == NULL) 
+	{
 		PyErr_SetString(PyExc_RuntimeError, "lost __builtin__");
 		return NULL;
 	}
 
-	/* Print value except if None */
-	/* After printing, also assign to '_' */
-	/* Before, set '_' to None to avoid recursion */
-	if (o == Py_None) {
+	if (o == Py_None) 
+	{
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 	if (PyObject_SetAttrString(builtins, "_", Py_None) != 0)
+	{
 		return NULL;
+	}
 	if (Py_FlushLine() != 0)
+	{
 		return NULL;
+	}
 	outf = PySys_GetObject("stdout");
-	if (outf == NULL) {
+	if (outf == NULL) 
+	{
 		PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
 		return NULL;
 	}
 	if (PyFile_WriteObject(o, outf, 0) != 0)
+	{
 		return NULL;
+	}
 	PyFile_SoftSpace(outf, 1);
 	if (Py_FlushLine() != 0)
+	{
 		return NULL;
+	}
 	if (PyObject_SetAttrString(builtins, "_", o) != 0)
+	{
 		return NULL;
+	}
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 static char displayhook_doc[] =
-"displayhook(object) -> None\n"
-"\n"
-"Print an object to sys.stdout and also save it in __builtin__._\n";
+	"displayhook(object) -> None\n"
+	"\n"
+	"Print an object to sys.stdout and also save it in __builtin__._\n";
 
-static PyObject *
-sys_excepthook(PyObject* self, PyObject* args)
+static PyObject *sys_excepthook(PyObject* self, PyObject* args)
 {
 	PyObject *exc, *value, *tb;
 	if (!PyArg_UnpackTuple(args, "excepthook", 3, 3, &exc, &value, &tb))
+	{
 		return NULL;
+	}
 	PyErr_Display(exc, value, tb);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 static char excepthook_doc[] =
-"excepthook(exctype, value, traceback) -> None\n"
-"\n"
-"Handle an exception by displaying it with a traceback on sys.stderr.\n";
+	"excepthook(exctype, value, traceback) -> None\n"
+	"\n"
+	"Handle an exception by displaying it with a traceback on sys.stderr.\n";
 
-static PyObject *
-sys_exc_info(PyObject *self)
+static PyObject *sys_exc_info(PyObject *self)
 {
 	PyThreadState *tstate;
 	tstate = PyThreadState_Get();
@@ -138,87 +141,84 @@ sys_exc_info(PyObject *self)
 }
 
 static char exc_info_doc[] =
-"exc_info() -> (type, value, traceback)\n\
-\n\
-Return information about the exception that is currently being handled.\n\
-This should be called from inside an except clause only.";
+	"exc_info() -> (type, value, traceback)\n"
+	"\n"
+	"Return information about the exception that is currently being handled.\n"
+	"This should be called from inside an except clause only.";
 
-static PyObject *
-sys_exit(PyObject *self, PyObject *args)
+static PyObject *sys_exit(PyObject *self, PyObject *args)
 {
-	/* Raise SystemExit so callers may catch it or clean up. */
 	PyErr_SetObject(PyExc_SystemExit, args);
 	return NULL;
 }
 
 static char exit_doc[] =
-"exit([status])\n\
-\n\
-Exit the interpreter by raising SystemExit(status).\n\
-If the status is omitted or None, it defaults to zero (i.e., success).\n\
-If the status is numeric, it will be used as the system exit status.\n\
-If it is another kind of object, it will be printed and the system\n\
-exit status will be one (i.e., failure).";
+	"exit([status])\n"
+	"\n"
+	"Exit the interpreter by raising SystemExit(status).\n"
+	"If the status is omitted or None, it defaults to zero (i.e., success).\n"
+	"If the status is numeric, it will be used as the system exit status.\n"
+	"If it is another kind of object, it will be printed and the system\n"
+	"exit status will be one (i.e., failure).";
 
 #ifdef Py_USING_UNICODE
 
-static PyObject *
-sys_getdefaultencoding(PyObject *self)
+static PyObject *sys_getdefaultencoding(PyObject *self)
 {
 	return PyString_FromString(PyUnicode_GetDefaultEncoding());
 }
 
 static char getdefaultencoding_doc[] =
-"getdefaultencoding() -> string\n\
-\n\
-Return the current default string encoding used by the Unicode \n\
-implementation.";
+	"getdefaultencoding() -> string\n"
+	"\n"
+	"Return the current default string encoding used by the Unicode \n"
+	"implementation.";
 
-static PyObject *
-sys_setdefaultencoding(PyObject *self, PyObject *args)
+static PyObject *sys_setdefaultencoding(PyObject *self, PyObject *args)
 {
 	char *encoding;
 	if (!PyArg_ParseTuple(args, "s:setdefaultencoding", &encoding))
+	{
 		return NULL;
+	}
 	if (PyUnicode_SetDefaultEncoding(encoding))
-	    	return NULL;
+	{
+		return NULL;
+	}
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 static char setdefaultencoding_doc[] =
-"setdefaultencoding(encoding)\n\
-\n\
-Set the current default string encoding used by the Unicode implementation.";
+	"setdefaultencoding(encoding)\n"
+	"\n"
+	"Set the current default string encoding used by the Unicode implementation.";
 
 #endif
 
-/*
- * Cached interned string objects used for calling the profile and
- * trace functions.  Initialized by trace_init().
- */
 static PyObject *whatstrings[4] = {NULL, NULL, NULL, NULL};
 
-static int
-trace_init(void)
+static int trace_init()
 {
 	static char *whatnames[4] = {"call", "exception", "line", "return"};
 	PyObject *name;
 	int i;
-	for (i = 0; i < 4; ++i) {
-		if (whatstrings[i] == NULL) {
+	for (i = 0; i < 4; ++i) 
+	{
+		if (whatstrings[i] == NULL) 
+		{
 			name = PyString_InternFromString(whatnames[i]);
 			if (name == NULL)
+			{
 				return -1;
+			}
 			whatstrings[i] = name;
-                }
+        }
 	}
 	return 0;
 }
 
-
-static PyObject *
-call_trampoline(PyThreadState *tstate, PyObject* callback,
+static PyObject *call_trampoline(PyThreadState *tstate, PyObject* callback,
 		PyFrameObject *frame, int what, PyObject *arg)
 {
 	PyObject *args = PyTuple_New(3);
@@ -226,40 +226,45 @@ call_trampoline(PyThreadState *tstate, PyObject* callback,
 	PyObject *result;
 
 	if (args == NULL)
+	{
 		return NULL;
+	}
 	Py_INCREF(frame);
 	whatstr = whatstrings[what];
 	Py_INCREF(whatstr);
 	if (arg == NULL)
+	{
 		arg = Py_None;
+	}
 	Py_INCREF(arg);
 	PyTuple_SET_ITEM(args, 0, (PyObject *)frame);
 	PyTuple_SET_ITEM(args, 1, whatstr);
 	PyTuple_SET_ITEM(args, 2, arg);
 
-	/* call the Python-level function */
 	PyFrame_FastToLocals(frame);
 	result = PyEval_CallObject(callback, args);
 	PyFrame_LocalsToFast(frame, 1);
 	if (result == NULL)
+	{
 		PyTraceBack_Here(frame);
-
-	/* cleanup */
+	}
 	Py_DECREF(args);
 	return result;
 }
 
-static int
-profile_trampoline(PyObject *self, PyFrameObject *frame,
+static int profile_trampoline(PyObject *self, PyFrameObject *frame,
 		   int what, PyObject *arg)
 {
 	PyThreadState *tstate = frame->f_tstate;
 	PyObject *result;
 
 	if (arg == NULL)
+	{
 		arg = Py_None;
+	}
 	result = call_trampoline(tstate, self, frame, what, arg);
-	if (result == NULL) {
+	if (result == NULL) 
+	{
 		PyEval_SetProfile(NULL, NULL);
 		return -1;
 	}
@@ -267,8 +272,7 @@ profile_trampoline(PyObject *self, PyFrameObject *frame,
 	return 0;
 }
 
-static int
-trace_trampoline(PyObject *self, PyFrameObject *frame,
+static int trace_trampoline(PyObject *self, PyFrameObject *frame,
 		 int what, PyObject *arg)
 {
 	PyThreadState *tstate = frame->f_tstate;
@@ -276,25 +280,34 @@ trace_trampoline(PyObject *self, PyFrameObject *frame,
 	PyObject *result;
 
 	if (what == PyTrace_CALL)
+	{
 		callback = self;
+	}
 	else
+	{
 		callback = frame->f_trace;
+	}
 	if (callback == NULL)
+	{
 		return 0;
+	}
 	result = call_trampoline(tstate, callback, frame, what, arg);
-	if (result == NULL) {
+	if (result == NULL) 
+	{
 		PyEval_SetTrace(NULL, NULL);
 		Py_XDECREF(frame->f_trace);
 		frame->f_trace = NULL;
 		return -1;
 	}
-	if (result != Py_None) {
+	if (result != Py_None) 
+	{
 		PyObject *temp = frame->f_trace;
 		frame->f_trace = NULL;
 		Py_XDECREF(temp);
 		frame->f_trace = result;
 	}
-	else {
+	else 
+	{
 		Py_DECREF(result);
 	}
 	return 0;
