@@ -1,8 +1,6 @@
-
-/* Python interpreter top-level routines, including init/exit */
+//20180118
 
 #include "python.h"
-
 #include "grammar.h"
 #include "node.h"
 #include "token.h"
@@ -33,9 +31,8 @@
 #endif
 extern char *Py_GetPath(void);
 
-extern grammar _PyParser_Grammar; /* From graminit.c */
+extern grammar _PyParser_Grammar;
 
-/* Forward */
 static void initmain(void);
 static void initsite(void);
 static PyObject *run_err_node(node *, char *, PyObject *, PyObject *,
@@ -58,54 +55,38 @@ extern void _PyUnicode_Fini(void);
 extern void _PyCodecRegistry_Init(void);
 extern void _PyCodecRegistry_Fini(void);
 
-int Py_DebugFlag; /* Needed by parser.c */
-int Py_VerboseFlag; /* Needed by import.c */
-int Py_InteractiveFlag; /* Needed by Py_FdIsInteractive() below */
-int Py_NoSiteFlag; /* Suppress 'import site' */
-int Py_UseClassExceptionsFlag = 1; /* Needed by bltinmodule.c: deprecated */
-int Py_FrozenFlag; /* Needed by getpath.c */
-int Py_UnicodeFlag = 0; /* Needed by compile.c */
-int Py_IgnoreEnvironmentFlag; /* e.g. PYTHONPATH, PYTHONHOME */
-/* _XXX Py_QnewFlag should go away in 2.3.  It's true iff -Qnew is passed,
-  on the command line, and is used in 2.2 by ceval.c to make all "/" divisions
-  true divisions (which they will be in 2.3). */
+int Py_DebugFlag; 
+int Py_VerboseFlag;
+int Py_InteractiveFlag;
+int Py_NoSiteFlag;
+int Py_UseClassExceptionsFlag = 1;
+int Py_FrozenFlag;
+int Py_UnicodeFlag = 0;
+int Py_IgnoreEnvironmentFlag;
 int _Py_QnewFlag = 0;
 
 static int initialized = 0;
 
-/* API to access the initialized flag -- useful for esoteric use */
-
-int
-Py_IsInitialized(void)
+int Py_IsInitialized()
 {
 	return initialized;
 }
 
-/* Global initializations.  Can be undone by Py_Finalize().  Don't
-   call this twice without an intervening Py_Finalize() call.  When
-   initializations fail, a fatal error is issued and the function does
-   not return.  On return, the first thread and interpreter state have
-   been created.
-
-   Locking: you must hold the interpreter lock while calling this.
-   (If the lock has not yet been initialized, that's equivalent to
-   having the lock, but you cannot use multiple threads.)
-
-*/
-
-static int
-add_flag(int flag, const char *envs)
+static int add_flag(int flag, const char *envs)
 {
 	int env = atoi(envs);
 	if (flag < env)
+	{
 		flag = env;
+	}
 	if (flag < 1)
+	{
 		flag = 1;
+	}
 	return flag;
 }
 
-void
-Py_Initialize(void)
+void Py_Initialize()
 {
 	PyInterpreterState *interp;
 	PyThreadState *tstate;
@@ -114,48 +95,64 @@ Py_Initialize(void)
 	extern void _Py_ReadyTypes(void);
 
 	if (initialized)
+	{
 		return;
+	}
 	initialized = 1;
 	
 	if ((p = Py_GETENV("PYTHONDEBUG")) && *p != '\0')
+	{
 		Py_DebugFlag = add_flag(Py_DebugFlag, p);
+	}
 	if ((p = Py_GETENV("PYTHONVERBOSE")) && *p != '\0')
+	{
 		Py_VerboseFlag = add_flag(Py_VerboseFlag, p);
+	}
 	if ((p = Py_GETENV("PYTHONOPTIMIZE")) && *p != '\0')
+	{
 		Py_OptimizeFlag = add_flag(Py_OptimizeFlag, p);
+	}
 
 	interp = PyInterpreterState_New();
 	if (interp == NULL)
+	{
 		Py_FatalError("Py_Initialize: can't make first interpreter");
+	}
 
 	tstate = PyThreadState_New(interp);
 	if (tstate == NULL)
+	{
 		Py_FatalError("Py_Initialize: can't make first thread");
-	(void) PyThreadState_Swap(tstate);
+	}
+	PyThreadState_Swap(tstate);
 
 	_Py_ReadyTypes();
 
 	interp->modules = PyDict_New();
 	if (interp->modules == NULL)
+	{
 		Py_FatalError("Py_Initialize: can't make modules dictionary");
+	}
 
-	/* Init codec registry */
 	_PyCodecRegistry_Init();
 
 #ifdef Py_USING_UNICODE
-	/* Init Unicode implementation; relies on the codec registry */
 	_PyUnicode_Init();
 #endif
 
 	bimod = _PyBuiltin_Init();
 	if (bimod == NULL)
+	{
 		Py_FatalError("Py_Initialize: can't initialize __builtin__");
+	}
 	interp->builtins = PyModule_GetDict(bimod);
 	Py_INCREF(interp->builtins);
 
 	sysmod = _PySys_Init();
 	if (sysmod == NULL)
+	{
 		Py_FatalError("Py_Initialize: can't initialize sys");
+	}
 	interp->sysdict = PyModule_GetDict(sysmod);
 	Py_INCREF(interp->sysdict);
 	_PyImport_FixupExtension("sys", "sys");
@@ -165,76 +162,46 @@ Py_Initialize(void)
 
 	_PyImport_Init();
 
-	/* initialize builtin exceptions */
 	_PyExc_Init();
 	_PyImport_FixupExtension("exceptions", "exceptions");
 
-	/* phase 2 of builtins */
 	_PyImport_FixupExtension("__builtin__", "__builtin__");
 
-	initsigs(); /* Signal handling stuff, including initintr() */
+	initsigs();
 
-	initmain(); /* Module __main__ */
+	initmain();
 	if (!Py_NoSiteFlag)
-		initsite(); /* Module site */
+		initsite();
 }
 
 #ifdef COUNT_ALLOCS
 extern void dump_counts(void);
 #endif
 
-/* Undo the effect of Py_Initialize().
-
-   Beware: if multiple interpreter and/or thread states exist, these
-   are not wiped out; only the current thread and interpreter state
-   are deleted.  But since everything else is deleted, those other
-   interpreter and thread states should no longer be used.
-
-   (XXX We should do better, e.g. wipe out all interpreters and
-   threads.)
-
-   Locking: as above.
-
-*/
-
-void
-Py_Finalize(void)
+void Py_Finalize()
 {
 	PyInterpreterState *interp;
 	PyThreadState *tstate;
 
 	if (!initialized)
+	{
 		return;
+	}
 
-	/* The interpreter is still entirely intact at this point, and the
-	 * exit funcs may be relying on that.  In particular, if some thread
-	 * or exit func is still waiting to do an import, the import machinery
-	 * expects Py_IsInitialized() to return true.  So don't say the
-	 * interpreter is uninitialized until after the exit funcs have run.
-	 * Note that Threading.py uses an exit func to do a join on all the
-	 * threads created thru it, so this also protects pending imports in
-	 * the threads created via Threading.
-	 */
 	call_sys_exitfunc();
 	initialized = 0;
 
-	/* Get current thread state and interpreter pointer */
 	tstate = PyThreadState_Get();
 	interp = tstate->interp;
 
-	/* Disable signal handling */
 	PyOS_FiniInterrupts();
 
-	/* Cleanup Codec registry */
 	_PyCodecRegistry_Fini();
 
-	/* Destroy all modules */
 	PyImport_Cleanup();
 
-	/* Destroy the database used by _PyImport_{Fixup,Find}Extension */
 	_PyImport_Fini();
 
-	/* Debugging stuff */
 #ifdef COUNT_ALLOCS
 	dump_counts();
 #endif
@@ -242,26 +209,21 @@ Py_Finalize(void)
 #ifdef Py_REF_DEBUG
 	fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
 #ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "pythonrun.c", 
-			"[%s:%d %s][%ld refs]", __FILE__, __LINE__, __FUNCTION__, 
-			_Py_RefTotal);
+	__android_log_print(ANDROID_LOG_ERROR, "pythonrun.c", 
+		"[%s:%d %s][%ld refs]", __FILE__, __LINE__, __FUNCTION__, 
+		_Py_RefTotal);
 #endif
 #endif
 
 #ifdef Py_TRACE_REFS
-	if (Py_GETENV("PYTHONDUMPREFS")) {
+	if (Py_GETENV("PYTHONDUMPREFS")) 
+	{
 		_Py_PrintReferences(stderr);
 	}
-#endif /* Py_TRACE_REFS */
+#endif
 
-	/* Now we decref the exception classes.  After this point nothing
-	   can raise an exception.  That's okay, because each Fini() method
-	   below has been checked to make sure no exceptions are ever
-	   raised.
-	*/
 	_PyExc_Fini();
 
-	/* Delete current thread */
 	PyInterpreterState_Clear(interp);
 	PyThreadState_Swap(NULL);
 	PyInterpreterState_Delete(interp);
@@ -275,15 +237,8 @@ Py_Finalize(void)
 	PyFloat_Fini();
 
 #ifdef Py_USING_UNICODE
-	/* Cleanup Unicode implementation */
 	_PyUnicode_Fini();
 #endif
-
-	/* XXX Still allocated:
-	   - various static ad-hoc pointers to interned strings
-	   - int and float free list blocks
-	   - whatever various modules and libraries allocate
-	*/
 
 	PyGrammar_RemoveAccelerators(&_PyParser_Grammar);
 
@@ -291,55 +246,46 @@ Py_Finalize(void)
 
 #ifdef Py_TRACE_REFS
 	_Py_ResetReferences();
-#endif /* Py_TRACE_REFS */
+#endif
 }
 
-/* Create and initialize a new interpreter and thread, and return the
-   new thread.  This requires that Py_Initialize() has been called
-   first.
-
-   Unsuccessful initialization yields a NULL pointer.  Note that *no*
-   exception information is available even in this case -- the
-   exception information is held in the thread, and there is no
-   thread.
-
-   Locking: as above.
-
-*/
-
-PyThreadState *
-Py_NewInterpreter(void)
+PyThreadState *Py_NewInterpreter()
 {
 	PyInterpreterState *interp;
 	PyThreadState *tstate, *save_tstate;
 	PyObject *bimod, *sysmod;
 
 	if (!initialized)
+	{
 		Py_FatalError("Py_NewInterpreter: call Py_Initialize first");
+	}
 
 	interp = PyInterpreterState_New();
 	if (interp == NULL)
+	{
 		return NULL;
+	}
 
 	tstate = PyThreadState_New(interp);
-	if (tstate == NULL) {
+	if (tstate == NULL) 
+	{
 		PyInterpreterState_Delete(interp);
 		return NULL;
 	}
 
 	save_tstate = PyThreadState_Swap(tstate);
 
-	/* XXX The following is lax in error checking */
-
 	interp->modules = PyDict_New();
 
 	bimod = _PyImport_FindExtension("__builtin__", "__builtin__");
-	if (bimod != NULL) {
+	if (bimod != NULL) 
+	{
 		interp->builtins = PyModule_GetDict(bimod);
 		Py_INCREF(interp->builtins);
 	}
 	sysmod = _PyImport_FindExtension("sys", "sys");
-	if (bimod != NULL && sysmod != NULL) {
+	if (bimod != NULL && sysmod != NULL) 
+	{
 		interp->sysdict = PyModule_GetDict(sysmod);
 		Py_INCREF(interp->sysdict);
 		PySys_SetPath(Py_GetPath());
@@ -347,13 +293,15 @@ Py_NewInterpreter(void)
 				     interp->modules);
 		initmain();
 		if (!Py_NoSiteFlag)
+		{
 			initsite();
+		}
 	}
 
 	if (!PyErr_Occurred())
+	{
 		return tstate;
-
-	/* Oops, it didn't work.  Undo it all. */
+	}
 
 	PyErr_Print();
 	PyThreadState_Clear(tstate);
@@ -364,29 +312,22 @@ Py_NewInterpreter(void)
 	return NULL;
 }
 
-/* Delete an interpreter and its last thread.  This requires that the
-   given thread state is current, that the thread has no remaining
-   frames, and that it is its interpreter's only remaining thread.
-   It is a fatal error to violate these constraints.
-
-   (Py_Finalize() doesn't have these constraints -- it zaps
-   everything, regardless.)
-
-   Locking: as above.
-
-*/
-
-void
-Py_EndInterpreter(PyThreadState *tstate)
+void Py_EndInterpreter(PyThreadState *tstate)
 {
 	PyInterpreterState *interp = tstate->interp;
 
 	if (tstate != PyThreadState_Get())
+	{
 		Py_FatalError("Py_EndInterpreter: thread is not current");
+	}
 	if (tstate->frame != NULL)
+	{
 		Py_FatalError("Py_EndInterpreter: thread still has a frame");
+	}
 	if (tstate != interp->tstate_head || tstate->next != NULL)
+	{
 		Py_FatalError("Py_EndInterpreter: not the last thread");
+	}
 
 	PyImport_Cleanup();
 	PyInterpreterState_Clear(interp);
@@ -396,144 +337,150 @@ Py_EndInterpreter(PyThreadState *tstate)
 
 static char *progname = "python";
 
-void
-Py_SetProgramName(char *pn)
+void Py_SetProgramName(char *pn)
 {
 	if (pn && *pn)
+	{
 		progname = pn;
+	}
 }
 
-char *
-Py_GetProgramName(void)
+char *Py_GetProgramName()
 {
 	return progname;
 }
 
 static char *default_home = NULL;
 
-void
-Py_SetPythonHome(char *home)
+void Py_SetPythonHome(char *home)
 {
 	default_home = home;
 }
 
-char *
-Py_GetPythonHome(void)
+char *Py_GetPythonHome()
 {
 	char *home = default_home;
 	if (home == NULL && !Py_IgnoreEnvironmentFlag)
+	{
 		home = Py_GETENV("PYTHONHOME");
+	}
 	return home;
 }
 
-/* Create __main__ module */
-
-static void
-initmain(void)
+static void initmain()
 {
 	PyObject *m, *d;
 	m = PyImport_AddModule("__main__");
 	if (m == NULL)
+	{
 		Py_FatalError("can't create __main__ module");
+	}
 	d = PyModule_GetDict(m);
-	if (PyDict_GetItemString(d, "__builtins__") == NULL) {
+	if (PyDict_GetItemString(d, "__builtins__") == NULL) 
+	{
 		PyObject *bimod = PyImport_ImportModule("__builtin__");
 		if (bimod == NULL ||
 		    PyDict_SetItemString(d, "__builtins__", bimod) != 0)
+		{
 			Py_FatalError("can't add __builtins__ to __main__");
+		}
 		Py_DECREF(bimod);
 	}
 }
 
-/* Import the site module (not into __main__ though) */
-
-static void
-initsite(void)
+static void initsite()
 {
 	PyObject *m, *f;
 	m = PyImport_ImportModule("site");
-	if (m == NULL) {
+	if (m == NULL) 
+	{
 		f = PySys_GetObject("stderr");
-		if (Py_VerboseFlag) {
+		if (Py_VerboseFlag) 
+		{
 			PyFile_WriteString(
 				"'import site' failed; traceback:\n", f);
 			PyErr_Print();
 		}
-		else {
+		else 
+		{
 			PyFile_WriteString(
 			  "'import site' failed; use -v for traceback\n", f);
 			PyErr_Clear();
 		}
 	}
-	else {
+	else 
+	{
 		Py_DECREF(m);
 	}
 }
 
-/* Parse input from a file and execute it */
-
-int
-PyRun_AnyFile(FILE *fp, char *filename)
+int PyRun_AnyFile(FILE *fp, char *filename)
 {
 	return PyRun_AnyFileExFlags(fp, filename, 0, NULL);
 }
 
-int
-PyRun_AnyFileFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
+int PyRun_AnyFileFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 {
 	return PyRun_AnyFileExFlags(fp, filename, 0, flags);
 }
 
-int
-PyRun_AnyFileEx(FILE *fp, char *filename, int closeit)
+int PyRun_AnyFileEx(FILE *fp, char *filename, int closeit)
 {
 	return PyRun_AnyFileExFlags(fp, filename, closeit, NULL);
 }
 
-int
-PyRun_AnyFileExFlags(FILE *fp, char *filename, int closeit, 
+int PyRun_AnyFileExFlags(FILE *fp, char *filename, int closeit, 
 		     PyCompilerFlags *flags)
 {
 	if (filename == NULL)
+	{
 		filename = "???";
-	if (Py_FdIsInteractive(fp, filename)) {
+	}
+	if (Py_FdIsInteractive(fp, filename)) 
+	{
 		int err = PyRun_InteractiveLoopFlags(fp, filename, flags);
 		if (closeit)
+		{
 			fclose(fp);
+		}
 		return err;
 	}
 	else
+	{
 		return PyRun_SimpleFileExFlags(fp, filename, closeit, flags);
+	}
 }
 
-int
-PyRun_InteractiveLoop(FILE *fp, char *filename)
+int PyRun_InteractiveLoop(FILE *fp, char *filename)
 {
 	return PyRun_InteractiveLoopFlags(fp, filename, NULL);
 }
 
-int
-PyRun_InteractiveLoopFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
+int PyRun_InteractiveLoopFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 {
 	PyObject *v;
 	int ret;
 	PyCompilerFlags local_flags;
 
-	if (flags == NULL) {
+	if (flags == NULL) 
+	{
 		flags = &local_flags;
 		local_flags.cf_flags = 0;
 	}
 	v = PySys_GetObject("ps1");
-	if (v == NULL) {
+	if (v == NULL) 
+	{
 		PySys_SetObject("ps1", v = PyString_FromString(">>> "));
 		Py_XDECREF(v);
 	}
 	v = PySys_GetObject("ps2");
-	if (v == NULL) {
+	if (v == NULL) 
+	{
 		PySys_SetObject("ps2", v = PyString_FromString("... "));
 		Py_XDECREF(v);
 	}
-	for (;;) {
+	for (;;) 
+	{
 		ret = PyRun_InteractiveOneFlags(fp, filename, flags);
 #ifdef Py_REF_DEBUG
 		fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
@@ -544,22 +491,18 @@ PyRun_InteractiveLoopFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 #endif
 #endif
 		if (ret == E_EOF)
+		{
 			return 0;
-		/*
-		if (ret == E_NOMEM)
-			return -1;
-		*/
+		}
 	}
 }
 
-int
-PyRun_InteractiveOne(FILE *fp, char *filename)
+int PyRun_InteractiveOne(FILE *fp, char *filename)
 {
 	return PyRun_InteractiveOneFlags(fp, filename, NULL);
 }
 
-int
-PyRun_InteractiveOneFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
+int PyRun_InteractiveOneFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 {
 	PyObject *m, *d, *v, *w;
 	node *n;
@@ -567,20 +510,30 @@ PyRun_InteractiveOneFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 	char *ps1 = "", *ps2 = "";
 
 	v = PySys_GetObject("ps1");
-	if (v != NULL) {
+	if (v != NULL) 
+	{
 		v = PyObject_Str(v);
 		if (v == NULL)
+		{
 			PyErr_Clear();
+		}
 		else if (PyString_Check(v))
+		{
 			ps1 = PyString_AsString(v);
+		}
 	}
 	w = PySys_GetObject("ps2");
-	if (w != NULL) {
+	if (w != NULL) 
+	{
 		w = PyObject_Str(w);
 		if (w == NULL)
+		{
 			PyErr_Clear();
+		}
 		else if (PyString_Check(w))
+		{
 			ps2 = PyString_AsString(w);
+		}
 	}
 	n = PyParser_ParseFileFlags(fp, filename, &_PyParser_Grammar,
 			    	    Py_single_input, ps1, ps2, &err,
@@ -589,10 +542,14 @@ PyRun_InteractiveOneFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 			    	    	PyPARSE_YIELD_IS_KEYWORD : 0);
 	Py_XDECREF(v);
 	Py_XDECREF(w);
-	if (n == NULL) {
-		if (err.error == E_EOF) {
+	if (n == NULL) 
+	{
+		if (err.error == E_EOF) 
+		{
 			if (err.text)
+			{
 				PyMem_DEL(err.text);
+			}
 			return E_EOF;
 		}
 		err_input(&err);
@@ -601,65 +558,56 @@ PyRun_InteractiveOneFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 	}
 	m = PyImport_AddModule("__main__");
 	if (m == NULL)
+	{
 		return -1;
+	}
 	d = PyModule_GetDict(m);
 	v = run_node(n, filename, d, d, flags);
-	if (v == NULL) {
+	if (v == NULL) 
+	{
 		PyErr_Print();
 		return -1;
 	}
 	Py_DECREF(v);
 	if (Py_FlushLine())
+	{
 		PyErr_Clear();
+	}
 	return 0;
 }
 
-int
-PyRun_SimpleFile(FILE *fp, char *filename)
+int PyRun_SimpleFile(FILE *fp, char *filename)
 {
 	return PyRun_SimpleFileEx(fp, filename, 0);
 }
 
-/* Check whether a file maybe a pyc file: Look at the extension,
-   the file type, and, if we may close it, at the first few bytes. */
-
-static int
-maybe_pyc_file(FILE *fp, char* filename, char* ext, int closeit)
+static int maybe_pyc_file(FILE *fp, char* filename, char* ext, int closeit)
 {
 	if (strcmp(ext, ".pyc") == 0 || strcmp(ext, ".pyo") == 0)
+	{
 		return 1;
+	}
 
 #ifdef macintosh
-	/* On a mac, we also assume a pyc file for types 'PYC ' and 'APPL' */
 	if (PyMac_getfiletype(filename) == 'PYC '
 	    || PyMac_getfiletype(filename) == 'APPL')
+	{
 		return 1;
-#endif /* macintosh */
+	}
+#endif
 
-	/* Only look into the file if we are allowed to close it, since
-	   it then should also be seekable. */
-	if (closeit) {
-		/* Read only two bytes of the magic. If the file was opened in
-		   text mode, the bytes 3 and 4 of the magic (\r\n) might not
-		   be read as they are on disk. */
+	if (closeit) 
+	{
 		unsigned int halfmagic = PyImport_GetMagicNumber() & 0xFFFF;
 		unsigned char buf[2];
-		/* Mess:  In case of -x, the stream is NOT at its start now,
-		   and ungetc() was used to push back the first newline,
-		   which makes the current stream position formally undefined,
-		   and a x-platform nightmare.
-		   Unfortunately, we have no direct way to know whether -x
-		   was specified.  So we use a terrible hack:  if the current
-		   stream position is not 0, we assume -x was specified, and
-		   give up.  Bug 132850 on SourceForge spells out the
-		   hopelessness of trying anything else (fseek and ftell
-		   don't work predictably x-platform for text-mode files).
-		*/
 		int ispyc = 0;
-		if (ftell(fp) == 0) {
+		if (ftell(fp) == 0) 
+		{
 			if (fread(buf, 1, 2, fp) == 2 &&
-			    ((unsigned int)buf[1]<<8 | buf[0]) == halfmagic) 
+			    ((unsigned int)buf[1]<<8 | buf[0]) == halfmagic)
+			{
 				ispyc = 1;
+			}
 			rewind(fp);
 		}
 		return ispyc;
@@ -667,14 +615,12 @@ maybe_pyc_file(FILE *fp, char* filename, char* ext, int closeit)
 	return 0;
 } 
 
-int
-PyRun_SimpleFileEx(FILE *fp, char *filename, int closeit)
+int PyRun_SimpleFileEx(FILE *fp, char *filename, int closeit)
 {
 	return PyRun_SimpleFileExFlags(fp, filename, closeit, NULL);
 }
 
-int
-PyRun_SimpleFileExFlags(FILE *fp, char *filename, int closeit,
+int PyRun_SimpleFileExFlags(FILE *fp, char *filename, int closeit,
 			PyCompilerFlags *flags)
 {
 	PyObject *m, *d, *v;
@@ -682,32 +628,43 @@ PyRun_SimpleFileExFlags(FILE *fp, char *filename, int closeit,
 
 	m = PyImport_AddModule("__main__");
 	if (m == NULL)
+	{
 		return -1;
+	}
 	d = PyModule_GetDict(m);
 	ext = filename + strlen(filename) - 4;
-	if (maybe_pyc_file(fp, filename, ext, closeit)) {
-		/* Try to run a pyc file. First, re-open in binary */
+	if (maybe_pyc_file(fp, filename, ext, closeit)) 
+	{
 		if (closeit)
+		{
 			fclose(fp);
-		if( (fp = fopen(filename, "rb")) == NULL ) {
+		}
+		if( (fp = fopen(filename, "rb")) == NULL ) 
+		{
 			fprintf(stderr, "python: Can't reopen .pyc file\n");
 			return -1;
 		}
-		/* Turn on optimization if a .pyo file is given */
 		if (strcmp(ext, ".pyo") == 0)
+		{
 			Py_OptimizeFlag = 1;
+		}
 		v = run_pyc_file(fp, filename, d, d, flags);
-	} else {
+	} 
+	else 
+	{
 		v = PyRun_FileExFlags(fp, filename, Py_file_input, d, d, 
 				      closeit, flags);
 	}
-	if (v == NULL) {
+	if (v == NULL) 
+	{
 		PyErr_Print();
 		return -1;
 	}
 	Py_DECREF(v);
 	if (Py_FlushLine())
+	{
 		PyErr_Clear();
+	}
 	return 0;
 }
 
