@@ -38,3 +38,8 @@ https://github.com/boo-lang/boo
 
 * jython_playground  
 https://github.com/weimingtom/jython_playground  
+
+* Python internals: adding a new statement to Python  
+https://eli.thegreenplace.net/2010/06/30/python-internals-adding-a-new-statement-to-python/  
+走进Python: 为Python增加新语法  
+http://www.360doc.com/content/15/0502/20/12067640_467521969.shtml  
