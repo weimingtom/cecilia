@@ -1,3 +1,4 @@
+//20180119
 #ifndef Py_IMPORTDL_H
 #define Py_IMPORTDL_H
 
@@ -5,18 +6,16 @@
 extern "C" {
 #endif
 
-
-/* Definitions for dynamic loading of extension modules */
 enum filetype {
 	SEARCH_ERROR,
 	PY_SOURCE,
 	PY_COMPILED,
 	C_EXTENSION,
-	PY_RESOURCE, /* Mac only */
+	PY_RESOURCE,
 	PKG_DIRECTORY,
 	C_BUILTIN,
 	PY_FROZEN,
-	PY_CODERESOURCE /* Mac only */
+	PY_CODERESOURCE
 };
 
 struct filedescr {
@@ -30,7 +29,6 @@ extern const struct filedescr _PyImport_DynLoadFiletab[];
 extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname,
 					     FILE *);
 
-/* Max length of module suffix searched for -- accommodates "module.slb" */
 #define MAXSUFFIXSIZE 12
 
 #ifdef MS_WINDOWS
@@ -45,8 +43,7 @@ typedef void (*dl_funcptr)(void);
 #endif
 #endif
 
-
 #ifdef __cplusplus
 }
 #endif
-#endif /* !Py_IMPORTDL_H */
+#endif

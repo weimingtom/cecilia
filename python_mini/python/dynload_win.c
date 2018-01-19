@@ -81,9 +81,9 @@ static char *GetPythonImport (HINSTANCE hModule)
 						 import_off);
 		while (DWORD_AT(import_data)) 
 		{
-			import_name = dllbase + DWORD_AT(import_data+12);
+			import_name = dllbase + DWORD_AT(import_data + 12);
 			if (strlen(import_name) >= 6 &&
-			    !strncmp(import_name,"python",6)) 
+			    !strncmp(import_name,"python", 6)) 
 			{
 				char *pch;
 				pch = import_name + 6;
