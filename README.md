@@ -1,4 +1,4 @@
-﻿# cecilia
+# cecilia
 [WIP] My mod version of Python 2.2.2, and try to port to CSharp/Java
 
 ## About  
@@ -64,4 +64,6 @@ https://github.com/antlr/grammars-v3/blob/master/python/Python.g
 * 如何用Yacc实现一个Python的编译器？ - 知乎  
 https://www.zhihu.com/question/22963284  
 
+* jython-legacy  
+https://github.com/varialus/jython-legacy  
 
