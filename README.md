@@ -44,3 +44,10 @@ https://eli.thegreenplace.net/2010/06/30/python-internals-adding-a-new-statement
 走进Python: 为Python增加新语法  
 http://everet.org/add-new-grammer-to-python.html  
 http://www.360doc.com/content/15/0502/20/12067640_467521969.shtml  
+
+* hinus/railgun  
+https://github.com/hinus/railgun  
+
+* 有没有内容类似于《Python源码剖析》，但内容更新过，针对新版本的Python书籍？ - 知乎  
+https://www.zhihu.com/question/40787248  
+
