@@ -54,3 +54,14 @@ https://www.zhihu.com/question/40787248
 * CoCo  
 http://knuth.luther.edu/~leekent/CoCo/  
 https://github.com/kentdlee/CoCo  
+
+* PLY  
+http://www.dabeaz.com/ply/  
+
+* ANTLR  
+https://github.com/antlr/grammars-v3/blob/master/python/Python.g  
+
+* 如何用Yacc实现一个Python的编译器？ - 知乎  
+https://www.zhihu.com/question/22963284  
+
+
