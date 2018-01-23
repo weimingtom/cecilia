@@ -1,6 +1,4 @@
-
-/* Thread and interpreter state structures and their interfaces */
-
+//20180123
 #include "python.h"
 
 #ifdef HAVE_DLOPEN
@@ -12,24 +10,22 @@
 #endif
 #endif
 
-
 #define ZAP(x) { \
 	PyObject *tmp = (PyObject *)(x); \
 	(x) = NULL; \
 	Py_XDECREF(tmp); \
 }
 
-
 #ifdef WITH_THREAD
 #include "pythread.h"
-static PyThread_type_lock head_mutex = NULL; /* Protects interp->tstate_head */
+static PyThread_type_lock head_mutex = NULL;
 #define HEAD_INIT() (void)(head_mutex || (head_mutex = PyThread_allocate_lock()))
 #define HEAD_LOCK() PyThread_acquire_lock(head_mutex, WAIT_LOCK)
 #define HEAD_UNLOCK() PyThread_release_lock(head_mutex)
 #else
-#define HEAD_INIT() /* Nothing */
-#define HEAD_LOCK() /* Nothing */
-#define HEAD_UNLOCK() /* Nothing */
+#define HEAD_INIT()
+#define HEAD_LOCK()
+#define HEAD_UNLOCK()
 #endif
 
 static PyInterpreterState *interp_head = NULL;
@@ -37,13 +33,12 @@ static PyInterpreterState *interp_head = NULL;
 PyThreadState *_PyThreadState_Current = NULL;
 unaryfunc _PyThreadState_GetFrame = NULL;
 
-
-PyInterpreterState *
-PyInterpreterState_New(void)
+PyInterpreterState *PyInterpreterState_New()
 {
 	PyInterpreterState *interp = PyMem_NEW(PyInterpreterState, 1);
 
-	if (interp != NULL) {
+	if (interp != NULL) 
+	{
 		HEAD_INIT();
 		interp->modules = NULL;
 		interp->sysdict = NULL;
@@ -52,7 +47,7 @@ PyInterpreterState_New(void)
 		interp->tstate_head = NULL;
 #ifdef HAVE_DLOPEN
 #ifdef RTLD_NOW
-                interp->dlopenflags = RTLD_NOW;
+        interp->dlopenflags = RTLD_NOW;
 #else
 		interp->dlopenflags = RTLD_LAZY;
 #endif
@@ -67,69 +62,70 @@ PyInterpreterState_New(void)
 	return interp;
 }
 
-
-void
-PyInterpreterState_Clear(PyInterpreterState *interp)
+void PyInterpreterState_Clear(PyInterpreterState *interp)
 {
 	PyThreadState *p;
 	HEAD_LOCK();
 	for (p = interp->tstate_head; p != NULL; p = p->next)
+	{
 		PyThreadState_Clear(p);
+	}
 	HEAD_UNLOCK();
 	ZAP(interp->modules);
 	ZAP(interp->sysdict);
 	ZAP(interp->builtins);
 }
 
-
-static void
-zapthreads(PyInterpreterState *interp)
+static void zapthreads(PyInterpreterState *interp)
 {
 	PyThreadState *p;
-	/* No need to lock the mutex here because this should only happen
-	   when the threads are all really dead (XXX famous last words). */
-	while ((p = interp->tstate_head) != NULL) {
+	while ((p = interp->tstate_head) != NULL) 
+	{
 		PyThreadState_Delete(p);
 	}
 }
 
-
-void
-PyInterpreterState_Delete(PyInterpreterState *interp)
+void PyInterpreterState_Delete(PyInterpreterState *interp)
 {
 	PyInterpreterState **p;
 	zapthreads(interp);
 	HEAD_LOCK();
-	for (p = &interp_head; ; p = &(*p)->next) {
+	for (p = &interp_head; ; p = &(*p)->next) 
+	{
 		if (*p == NULL)
+		{
 			Py_FatalError(
 				"PyInterpreterState_Delete: invalid interp");
+		}
 		if (*p == interp)
+		{
 			break;
+		}
 	}
 	if (interp->tstate_head != NULL)
+	{
 		Py_FatalError("PyInterpreterState_Delete: remaining threads");
+	}
 	*p = interp->next;
 	HEAD_UNLOCK();
 	PyMem_DEL(interp);
 }
 
-
-/* Default implementation for _PyThreadState_GetFrame */
-static struct _frame *
-threadstate_getframe(PyThreadState *self)
+static struct _frame *threadstate_getframe(PyThreadState *self)
 {
 	return self->frame;
 }
 
-PyThreadState *
-PyThreadState_New(PyInterpreterState *interp)
+PyThreadState *PyThreadState_New(PyInterpreterState *interp)
 {
 	PyThreadState *tstate = PyMem_NEW(PyThreadState, 1);
 	if (_PyThreadState_GetFrame == NULL)
+	{
 		_PyThreadState_GetFrame = (unaryfunc)threadstate_getframe;
+	}
 
-	if (tstate != NULL) {
+	if (tstate != NULL) 
+	{
 		tstate->interp = interp;
 
 		tstate->frame = NULL;
@@ -163,14 +159,13 @@ PyThreadState_New(PyInterpreterState *interp)
 	return tstate;
 }
 
-
-void
-PyThreadState_Clear(PyThreadState *tstate)
+void PyThreadState_Clear(PyThreadState *tstate)
 {
 	if (Py_VerboseFlag && tstate->frame != NULL)
+	{
 		fprintf(stderr,
 		  "PyThreadState_Clear: warning: thread still has a frame\n");
-
+	}
 	ZAP(tstate->frame);
 
 	ZAP(tstate->dict);
@@ -189,68 +184,71 @@ PyThreadState_Clear(PyThreadState *tstate)
 	ZAP(tstate->c_traceobj);
 }
 
-
-/* Common code for PyThreadState_Delete() and PyThreadState_DeleteCurrent() */
-static void
-tstate_delete_common(PyThreadState *tstate)
+static void tstate_delete_common(PyThreadState *tstate)
 {
 	PyInterpreterState *interp;
 	PyThreadState **p;
 	if (tstate == NULL)
+	{
 		Py_FatalError("PyThreadState_Delete: NULL tstate");
+	}
 	interp = tstate->interp;
 	if (interp == NULL)
+	{
 		Py_FatalError("PyThreadState_Delete: NULL interp");
+	}
 	HEAD_LOCK();
-	for (p = &interp->tstate_head; ; p = &(*p)->next) {
+	for (p = &interp->tstate_head; ; p = &(*p)->next) 
+	{
 		if (*p == NULL)
+		{
 			Py_FatalError(
 				"PyThreadState_Delete: invalid tstate");
+		}
 		if (*p == tstate)
+		{
 			break;
+		}
 	}
 	*p = tstate->next;
 	HEAD_UNLOCK();
 	PyMem_DEL(tstate);
 }
 
-
-void
-PyThreadState_Delete(PyThreadState *tstate)
+void PyThreadState_Delete(PyThreadState *tstate)
 {
 	if (tstate == _PyThreadState_Current)
+	{
 		Py_FatalError("PyThreadState_Delete: tstate is still current");
+	}
 	tstate_delete_common(tstate);
 }
 
-
 #ifdef WITH_THREAD
-void
-PyThreadState_DeleteCurrent()
+void PyThreadState_DeleteCurrent()
 {
 	PyThreadState *tstate = _PyThreadState_Current;
 	if (tstate == NULL)
+	{
 		Py_FatalError(
 			"PyThreadState_DeleteCurrent: no current tstate");
+	}
 	_PyThreadState_Current = NULL;
 	tstate_delete_common(tstate);
 	PyEval_ReleaseLock();
 }
-#endif /* WITH_THREAD */
+#endif
 
-
-PyThreadState *
-PyThreadState_Get(void)
+PyThreadState *PyThreadState_Get()
 {
 	if (_PyThreadState_Current == NULL)
+	{
 		Py_FatalError("PyThreadState_Get: no current thread");
-
+	}
 	return _PyThreadState_Current;
 }
 
-
-PyThreadState *
-PyThreadState_Swap(PyThreadState *new)
+PyThreadState *PyThreadState_Swap(PyThreadState *new)
 {
 	PyThreadState *old = _PyThreadState_Current;
 
@@ -259,44 +257,36 @@ PyThreadState_Swap(PyThreadState *new)
 	return old;
 }
 
-/* An extension mechanism to store arbitrary additional per-thread state.
-   PyThreadState_GetDict() returns a dictionary that can be used to hold such
-   state; the caller should pick a unique key and store its state there.  If
-   PyThreadState_GetDict() returns NULL, an exception has been raised (most
-   likely MemoryError) and the caller should pass on the exception. */
-
-PyObject *
-PyThreadState_GetDict(void)
+PyObject *PyThreadState_GetDict()
 {
 	if (_PyThreadState_Current == NULL)
+	{
 		Py_FatalError("PyThreadState_GetDict: no current thread");
+	}
 
 	if (_PyThreadState_Current->dict == NULL)
+	{
 		_PyThreadState_Current->dict = PyDict_New();
+	}
 	return _PyThreadState_Current->dict;
 }
 
-
-/* Routines for advanced debuggers, requested by David Beazley.
-   Don't use unless you know what you are doing! */
-
-PyInterpreterState *
-PyInterpreterState_Head(void)
+PyInterpreterState *PyInterpreterState_Head()
 {
 	return interp_head;
 }
 
-PyInterpreterState *
-PyInterpreterState_Next(PyInterpreterState *interp) {
+PyInterpreterState *PyInterpreterState_Next(PyInterpreterState *interp) 
+{
 	return interp->next;
 }
 
-PyThreadState *
-PyInterpreterState_ThreadHead(PyInterpreterState *interp) {
+PyThreadState *PyInterpreterState_ThreadHead(PyInterpreterState *interp) 
+{
 	return interp->tstate_head;
 }
 
-PyThreadState *
-PyThreadState_Next(PyThreadState *tstate) {
+PyThreadState *PyThreadState_Next(PyThreadState *tstate) 
+{
 	return tstate->next;
 }
