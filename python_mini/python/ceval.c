@@ -3766,7 +3766,7 @@ int _PyEval_SliceIndex(PyObject *v, int *pi)
 #undef ISINT
 #define ISINT(x) ((x) == NULL || PyInt_Check(x) || PyLong_Check(x))
 
-static PyObject *apply_slice(PyObject *u, PyObject *v, PyObject *w) /* return u[v:w] */
+static PyObject *apply_slice(PyObject *u, PyObject *v, PyObject *w)
 {
 	PyTypeObject *tp = u->ob_type;
 	PySequenceMethods *sq = tp->tp_as_sequence;

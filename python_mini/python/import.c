@@ -1194,7 +1194,6 @@ static int case_ok(char *buf, int len, int namelen, char *name)
 	}
 	return 0; 
 
-/* RISC OS */
 #elif defined(RISCOS)
 	char canon[MAXPATHLEN + 1];
 	char buf2[MAXPATHLEN + 2];

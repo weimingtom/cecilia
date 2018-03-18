@@ -17,14 +17,16 @@ static PVOID WINAPI interlocked_cmp_xchg(PVOID *dest, PVOID exc, PVOID comperand
 	PVOID result ;
 	DWORD dwSleep = 0;
 
-	while(InterlockedExchange(&spinlock, 1))
+	while (InterlockedExchange(&spinlock, 1))
 	{
 		Sleep(dwSleep);
 		dwSleep = !dwSleep;
 	}
 	result = *dest;
 	if (result == comperand)
+	{
 		*dest = exc;
+	}
 	spinlock = 0;
 	return result;
 }

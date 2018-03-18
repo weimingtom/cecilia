@@ -67,13 +67,12 @@ typedef struct {
 #define CHECK_STATUS(name)  if (status != 0) { perror(name); error = 1; }
 
 #ifdef _HAVE_BSDI
-static
-void _noop(void)
+static void _noop(void)
 {
+
 }
 
-static void
-PyThread__init_thread(void)
+static void PyThread__init_thread()
 {
 	static int dummy = 0;
 	pthread_t thread1;
@@ -83,8 +82,7 @@ PyThread__init_thread(void)
 
 #else
 
-static void
-PyThread__init_thread(void)
+static void PyThread__init_thread()
 {
 #if defined(_AIX) && defined(__GNUC__)
 	pthread_init();
@@ -114,7 +112,7 @@ long PyThread_start_new_thread(void (*func)(void *), void *arg)
 	pthread_attr_setstacksize(&attrs, THREAD_STACK_SIZE);
 #endif
 #ifdef PTHREAD_SYSTEM_SCHED_SUPPORTED
-        pthread_attr_setscope(&attrs, PTHREAD_SCOPE_SYSTEM);
+    pthread_attr_setscope(&attrs, PTHREAD_SCOPE_SYSTEM);
 #endif
 
 	sigfillset(&newmask);
@@ -149,7 +147,8 @@ long PyThread_start_new_thread(void (*func)(void *), void *arg)
 #if defined(THREAD_STACK_SIZE) || defined(PTHREAD_SYSTEM_SCHED_SUPPORTED)
 	pthread_attr_destroy(&attrs);
 #endif
-	if (success == 0) {
+	if (success == 0) 
+	{
 #if defined(PY_PTHREAD_D4) || defined(PY_PTHREAD_D6) || defined(PY_PTHREAD_D7)
 		pthread_detach(&th);
 #elif defined(PY_PTHREAD_STD)
@@ -289,25 +288,28 @@ int PyThread_acquire_lock(PyThread_type_lock lock, int waitflag)
 
 	dprintf(("PyThread_acquire_lock(%p, %d) called\n", lock, waitflag));
 
-	status = pthread_mutex_lock( &thelock->mut );
+	status = pthread_mutex_lock(&thelock->mut);
 	CHECK_STATUS("pthread_mutex_lock[1]");
 	success = thelock->locked == 0;
-	if (success) thelock->locked = 1;
+	if (success) 
+	{
+		thelock->locked = 1;
+	}
 	status = pthread_mutex_unlock( &thelock->mut );
 	CHECK_STATUS("pthread_mutex_unlock[1]");
 
-	if ( !success && waitflag ) 
+	if (!success && waitflag) 
 	{
-		status = pthread_mutex_lock( &thelock->mut );
+		status = pthread_mutex_lock(&thelock->mut);
 		CHECK_STATUS("pthread_mutex_lock[2]");
-		while ( thelock->locked ) 
+		while (thelock->locked) 
 		{
 			status = pthread_cond_wait(&thelock->lock_released,
 						   &thelock->mut);
 			CHECK_STATUS("pthread_cond_wait");
 		}
 		thelock->locked = 1;
-		status = pthread_mutex_unlock( &thelock->mut );
+		status = pthread_mutex_unlock(&thelock->mut);
 		CHECK_STATUS("pthread_mutex_unlock[2]");
 		success = 1;
 	}

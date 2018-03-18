@@ -734,7 +734,7 @@ static void com_addbyte(struct compiling *c, int byte)
 static void com_addint(struct compiling *c, int x)
 {
 	com_addbyte(c, x & 0xff);
-	com_addbyte(c, x >> 8); /* XXX x should be positive */
+	com_addbyte(c, x >> 8);
 }
 
 static void com_add_lnotab(struct compiling *c, int addr, int line)
@@ -1488,7 +1488,7 @@ static void com_list_for(struct compiling *c, node *n, node *e, char *t)
 	com_addoparg(c, JUMP_ABSOLUTE, c->c_begin);
 	c->c_begin = save_begin;
 	com_backpatch(c, anchor);
-	com_pop(c, 1); /* FOR_ITER has popped this */
+	com_pop(c, 1);
 }  
 
 static void com_list_if(struct compiling *c, node *n, node *e, char *t)
@@ -1547,7 +1547,7 @@ static void com_list_comprehension(struct compiling *c, node *n)
 	char tmpname[30];
 	PyOS_snprintf(tmpname, sizeof(tmpname), "_[%d]", ++c->c_tmpname);
 	com_addoparg(c, BUILD_LIST, 0);
-	com_addbyte(c, DUP_TOP); /* leave the result on the stack */
+	com_addbyte(c, DUP_TOP);
 	com_push(c, 2);
 	com_addop_name(c, LOAD_ATTR, "append");
 	com_addop_varname(c, VAR_STORE, tmpname);
@@ -1991,7 +1991,7 @@ static void com_subscriptlist(struct compiling *c, node *n, int assigning, node 
 	REQ(n, subscriptlist);
 	if (NCH(n) == 1) 
 	{
-		node *sub = CHILD(n, 0); /* subscript */
+		node *sub = CHILD(n, 0);
 		if ((TYPE(CHILD(sub, 0)) == COLON
 		     || (NCH(sub) > 1 && TYPE(CHILD(sub, 1)) == COLON))
 		    && (TYPE(CHILD(sub,NCH(sub)-1)) != sliceop))
@@ -3520,7 +3520,7 @@ static void com_for_stmt(struct compiling *c, node *n)
 	com_addoparg(c, JUMP_ABSOLUTE, c->c_begin);
 	c->c_begin = save_begin;
 	com_backpatch(c, anchor);
-	com_pop(c, 1); /* FOR_ITER has popped this */
+	com_pop(c, 1);
 	com_addbyte(c, POP_BLOCK);
 	block_pop(c, SETUP_LOOP);
 	if (NCH(n) > 8)

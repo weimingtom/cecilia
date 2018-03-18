@@ -253,7 +253,7 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 #endif
 	if (i == 0)
 	{
-		s = "Error"; /* Sometimes errno didn't get set */
+		s = "Error";
 	}
 	else
 #ifndef MS_WIN32

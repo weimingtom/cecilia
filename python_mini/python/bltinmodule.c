@@ -2093,7 +2093,6 @@ PyObject *_PyBuiltin_Init()
 	SETBUILTIN("tuple",		&PyTuple_Type);
 	SETBUILTIN("type",		&PyType_Type);
 
-	/* Note that open() is just an alias of file(). */
 	SETBUILTIN("open",		&PyFile_Type);
 	SETBUILTIN("file",		&PyFile_Type);
 #ifdef Py_USING_UNICODE

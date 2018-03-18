@@ -12,7 +12,9 @@ PyObject *PySymtableEntry_New(struct symtable *st, char *name, int type, int lin
 
 	k = PyInt_FromLong(st->st_nscopes++);
 	if (k == NULL)
+	{
 		goto fail;
+	}
 	v = PyDict_GetItem(st->st_symbols, k);
 	if (v) 
 	{
