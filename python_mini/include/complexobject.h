@@ -1,11 +1,10 @@
+//20180318
 #pragma once
 
 typedef struct {
     double real;
     double imag;
 } Py_complex;
-
-/* Operations on complex numbers from complexmodule.c */
 
 #define c_sum _Py_c_sum
 #define c_diff _Py_c_diff
@@ -20,14 +19,6 @@ extern DL_IMPORT(Py_complex) c_neg(Py_complex);
 extern DL_IMPORT(Py_complex) c_prod(Py_complex, Py_complex);
 extern DL_IMPORT(Py_complex) c_quot(Py_complex, Py_complex);
 extern DL_IMPORT(Py_complex) c_pow(Py_complex, Py_complex);
-
-
-/* Complex object interface */
-
-/*
-PyComplexObject represents a complex number with double-precision
-real and imaginary parts.
-*/
 
 typedef struct {
     PyObject_HEAD

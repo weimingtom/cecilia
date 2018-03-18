@@ -1,3 +1,4 @@
+//20180318
 #pragma once
 
 typedef struct _node {
@@ -13,13 +14,11 @@ extern DL_IMPORT(int) PyNode_AddChild(node *n, int type,
                                       char *str, int lineno);
 extern DL_IMPORT(void) PyNode_Free(node *n);
 
-/* Node access functions */
 #define NCH(n)		((n)->n_nchildren)
 #define CHILD(n, i)	(&(n)->n_child[i])
 #define TYPE(n)		((n)->n_type)
 #define STR(n)		((n)->n_str)
 
-/* Assert that the type of a node is what we expect */
 #define REQ(n, type) assert(TYPE(n) == (type))
 
 extern DL_IMPORT(void) PyNode_ListTree(node *);

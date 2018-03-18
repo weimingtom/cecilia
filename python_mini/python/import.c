@@ -2636,7 +2636,7 @@ int PyImport_ExtendInittab(struct _inittab *newtab)
 	return 0;
 }
 
-int PyImport_AppendInittab(char *name, void (*initfunc)(void))
+int PyImport_AppendInittab(char *name, void (*initfunc)())
 {
 	struct _inittab newtab[2];
 

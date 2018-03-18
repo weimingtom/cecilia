@@ -1,29 +1,29 @@
+//20180318
 #pragma once
 
 typedef struct {
     PyObject_HEAD
-    PyObject	*cl_bases;	/* A tuple of class objects */
-    PyObject	*cl_dict;	/* A dictionary */
-    PyObject	*cl_name;	/* A string */
-    /* The following three are functions or NULL */
-    PyObject	*cl_getattr;
-    PyObject	*cl_setattr;
-    PyObject	*cl_delattr;
+    PyObject *cl_bases;
+    PyObject *cl_dict;
+    PyObject *cl_name;
+    PyObject *cl_getattr;
+    PyObject *cl_setattr;
+    PyObject *cl_delattr;
 } PyClassObject;
 
 typedef struct {
     PyObject_HEAD
-    PyClassObject *in_class;	/* The class object */
-    PyObject	  *in_dict;	/* A dictionary */
-    PyObject	  *in_weakreflist; /* List of weak references */
+    PyClassObject *in_class;
+    PyObject *in_dict;
+    PyObject *in_weakreflist;
 } PyInstanceObject;
 
 typedef struct {
     PyObject_HEAD
-    PyObject *im_func;   /* The callable object implementing the method */
-    PyObject *im_self;   /* The instance it is bound to, or NULL */
-    PyObject *im_class;  /* The class that asked for the method */
-    PyObject *im_weakreflist; /* List of weak references */
+    PyObject *im_func;
+    PyObject *im_self; 
+    PyObject *im_class;
+    PyObject *im_weakreflist;
 } PyMethodObject;
 
 extern DL_IMPORT(PyTypeObject) PyClass_Type, PyInstance_Type, PyMethod_Type;
@@ -42,8 +42,6 @@ extern DL_IMPORT(PyObject *) PyMethod_Function(PyObject *);
 extern DL_IMPORT(PyObject *) PyMethod_Self(PyObject *);
 extern DL_IMPORT(PyObject *) PyMethod_Class(PyObject *);
 
-/* Macros for direct access to these values. Type checks are *not*
-   done, so use with care. */
 #define PyMethod_GET_FUNCTION(meth) \
         (((PyMethodObject *)meth) -> im_func)
 #define PyMethod_GET_SELF(meth) \

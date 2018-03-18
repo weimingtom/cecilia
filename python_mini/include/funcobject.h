@@ -1,3 +1,4 @@
+//20180318
 #pragma once
 
 typedef struct {
@@ -24,8 +25,6 @@ extern DL_IMPORT(int) PyFunction_SetDefaults(PyObject *, PyObject *);
 extern DL_IMPORT(PyObject *) PyFunction_GetClosure(PyObject *);
 extern DL_IMPORT(int) PyFunction_SetClosure(PyObject *, PyObject *);
 
-/* Macros for direct access to these values. Type checks are *not*
-   done, so use with care. */
 #define PyFunction_GET_CODE(func) \
         (((PyFunctionObject *)func) -> func_code)
 #define PyFunction_GET_GLOBALS(func) \
@@ -35,7 +34,6 @@ extern DL_IMPORT(int) PyFunction_SetClosure(PyObject *, PyObject *);
 #define PyFunction_GET_CLOSURE(func) \
 	(((PyFunctionObject *)func) -> func_closure)
 
-/* The classmethod and staticmethod types lives here, too */
 extern DL_IMPORT(PyTypeObject) PyClassMethod_Type;
 extern DL_IMPORT(PyTypeObject) PyStaticMethod_Type;
 

@@ -1,3 +1,4 @@
+//20180318
 #pragma once
 
 typedef PyObject *(*getter)(PyObject *, void *);
@@ -27,10 +28,7 @@ struct wrapperbase {
 	PyObject *name_strobj;
 };
 
-/* Flags for above struct */
-#define PyWrapperFlag_KEYWORDS 1 /* wrapper function takes keyword args */
-
-/* Various kinds of descriptor objects */
+#define PyWrapperFlag_KEYWORDS 1
 
 #define PyDescr_COMMON \
 	PyObject_HEAD \
@@ -59,7 +57,7 @@ typedef struct {
 typedef struct {
 	PyDescr_COMMON;
 	struct wrapperbase *d_base;
-	void *d_wrapped; /* This can be any function pointer */
+	void *d_wrapped;
 } PyWrapperDescrObject;
 
 extern DL_IMPORT(PyTypeObject) PyWrapperDescr_Type;

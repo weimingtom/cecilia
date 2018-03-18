@@ -1,6 +1,5 @@
+//20180318
 #pragma once
-
-/* Bitset interface */
 
 #define BYTE		char
 
@@ -9,7 +8,7 @@ typedef BYTE *bitset;
 bitset newbitset(int nbits);
 void delbitset(bitset bs);
 #define testbit(ss, ibit) (((ss)[BIT2BYTE(ibit)] & BIT2MASK(ibit)) != 0)
-int addbit(bitset bs, int ibit); /* Returns 0 if already set */
+int addbit(bitset bs, int ibit);
 int samebitset(bitset bs1, bitset bs2, int nbits);
 void mergebitset(bitset bs1, bitset bs2, int nbits);
 

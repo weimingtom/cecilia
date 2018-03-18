@@ -1,65 +1,50 @@
+//20180318
 #pragma once
 
-#include "bitset.h" /* Sigh... */
-
-/* A label of an arc */
+#include "bitset.h"
 
 typedef struct {
     int		 lb_type;
     char	*lb_str;
 } label;
 
-#define EMPTY 0		/* Label number 0 is by definition the empty label */
-
-/* A list of labels */
+#define EMPTY 0	
 
 typedef struct {
     int		 ll_nlabels;
     label	*ll_label;
 } labellist;
 
-/* An arc from one state to another */
-
 typedef struct {
-    short	a_lbl;		/* Label of this arc */
-    short	a_arrow;	/* State where this arc goes to */
+    short	a_lbl;
+    short	a_arrow;
 } arc;
-
-/* A state in a DFA */
 
 typedef struct {
     int		 s_narcs;
-    arc		*s_arc;		/* Array of arcs */
-	
-    /* Optional accelerators */
-    int		 s_lower;	/* Lowest label index */
-    int		 s_upper;	/* Highest label index */
-    int		*s_accel;	/* Accelerator */
-    int		 s_accept;	/* Nonzero for accepting state */
+    arc		*s_arc;
+    int		 s_lower;
+    int		 s_upper;
+    int		*s_accel;
+    int		 s_accept;
 } state;
 
-/* A DFA */
-
 typedef struct {
-    int		 d_type;	/* Non-terminal this represents */
-    char	*d_name;	/* For printing */
-    int		 d_initial;	/* Initial state */
+    int		 d_type;
+    char	*d_name;
+    int		 d_initial;
     int		 d_nstates;
-    state	*d_state;	/* Array of states */
+    state	*d_state;
     bitset	 d_first;
 } dfa;
 
-/* A grammar */
-
 typedef struct {
     int		 g_ndfas;
-    dfa		*g_dfa;		/* Array of DFAs */
+    dfa		*g_dfa;
     labellist	 g_ll;
-    int		 g_start;	/* Start symbol of the grammar */
-    int		 g_accel;	/* Set if accelerators present */
+    int		 g_start;
+    int		 g_accel;
 } grammar;
-
-/* FUNCTIONS */
 
 grammar *newgrammar(int start);
 dfa *adddfa(grammar *g, int type, char *name);

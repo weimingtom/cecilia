@@ -1,3 +1,4 @@
+//20180318
 #pragma once
 
 extern DL_IMPORT(PyTypeObject) PyCFunction_Type;
@@ -13,8 +14,6 @@ extern DL_IMPORT(PyCFunction) PyCFunction_GetFunction(PyObject *);
 extern DL_IMPORT(PyObject *) PyCFunction_GetSelf(PyObject *);
 extern DL_IMPORT(int) PyCFunction_GetFlags(PyObject *);
 
-/* Macros for direct access to these values. Type checks are *not*
-   done, so use with care. */
 #define PyCFunction_GET_FUNCTION(func) \
         (((PyCFunctionObject *)func) -> m_ml -> ml_meth)
 #define PyCFunction_GET_SELF(func) \
@@ -35,17 +34,15 @@ extern DL_IMPORT(PyObject *) Py_FindMethod(PyMethodDef[], PyObject *, char *);
 
 extern DL_IMPORT(PyObject *) PyCFunction_New(PyMethodDef *, PyObject *);
 
-/* Flag passed to newmethodobject */
 #define METH_OLDARGS  0x0000
 #define METH_VARARGS  0x0001
 #define METH_KEYWORDS 0x0002
-/* METH_NOARGS and METH_O must not be combined with any other flag. */
 #define METH_NOARGS   0x0004
 #define METH_O        0x0008
 
 typedef struct PyMethodChain {
-    PyMethodDef *methods;		/* Methods of this type */
-    struct PyMethodChain *link;	/* NULL or base type */
+    PyMethodDef *methods;		
+    struct PyMethodChain *link;	
 } PyMethodChain;
 
 extern DL_IMPORT(PyObject *) Py_FindMethodInChain(PyMethodChain *, PyObject *,

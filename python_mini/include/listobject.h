@@ -1,3 +1,4 @@
+//20180318
 #pragma once
 
 typedef struct {
@@ -22,7 +23,6 @@ extern DL_IMPORT(int) PyList_Sort(PyObject *);
 extern DL_IMPORT(int) PyList_Reverse(PyObject *);
 extern DL_IMPORT(PyObject *) PyList_AsTuple(PyObject *);
 
-/* Macro, trading safety for speed */
 #define PyList_GET_ITEM(op, i) (((PyListObject *)(op))->ob_item[i])
 #define PyList_SET_ITEM(op, i, v) (((PyListObject *)(op))->ob_item[i] = (v))
 #define PyList_GET_SIZE(op)    (((PyListObject *)(op))->ob_size)
