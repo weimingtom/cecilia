@@ -1,3 +1,4 @@
+//20180324
 #pragma once
 
 #include <ctype.h>
@@ -9,30 +10,17 @@
 
 #else
 
-/* FIXME: MvL's new implementation assumes that Py_UNICODE_SIZE is
-   properly set, but the default rules below doesn't set it.  I'll
-   sort this out some other day -- fredrik@pythonware.com */
-
 #ifndef Py_UNICODE_SIZE
 #error Must define Py_UNICODE_SIZE
 #endif
 
-/* Setting Py_UNICODE_WIDE enables UCS-4 storage.  Otherwise, Unicode
-   strings are stored as UCS-2 (with limited support for UTF-16) */
 
 #if Py_UNICODE_SIZE >= 4
 #define Py_UNICODE_WIDE
 #endif
 
-/* Set these flags if the platform has "wchar.h", "wctype.h" and the
-   wchar_t type is a 16-bit unsigned type */
-/* #define HAVE_WCHAR_H */
-/* #define HAVE_USABLE_WCHAR_T */
-
-/* Defaults for various platforms */
 #ifndef PY_UNICODE_TYPE
 
-/* Windows has a usable wchar_t type (unless we're using UCS-4) */
 # if defined(MS_WIN32) && Py_UNICODE_SIZE == 2
 #  define HAVE_USABLE_WCHAR_T
 #  define PY_UNICODE_TYPE wchar_t
@@ -44,9 +32,6 @@
 
 #endif
 
-/* If the compiler provides a wchar_t type we try to support it
-   through the interface functions PyUnicode_FromWideChar() and
-   PyUnicode_AsWideChar(). */
 
 #ifdef HAVE_USABLE_WCHAR_T
 # ifndef HAVE_WCHAR_H
@@ -55,17 +40,12 @@
 #endif
 
 #ifdef HAVE_WCHAR_H
-/* Work around a cosmetic bug in BSDI 4.x wchar.h; thanks to Thomas Wouters */
 # ifdef _HAVE_BSDI
 #  include <time.h>
 # endif
 #  include <wchar.h>
 #endif
 
-/*
- * Use this typedef when you need to represent a UTF-16 surrogate pair
- * as single unsigned integer.
- */
 #if SIZEOF_INT >= 4 
 typedef unsigned int Py_UCS4; 
 #elif SIZEOF_LONG >= 4
@@ -74,12 +54,6 @@ typedef unsigned long Py_UCS4;
 
 typedef PY_UNICODE_TYPE Py_UNICODE;
 
-/* --- UCS-2/UCS-4 Name Mangling ------------------------------------------ */
-
-/* Unicode API names are mangled to assure that UCS-2 and UCS-4 builds
-   produce different external names and thus cause import errors in
-   case Python interpreters and extensions with mixed compiled in
-   Unicode width assumptions are combined. */
 
 #ifndef Py_UNICODE_WIDE
 
@@ -224,13 +198,6 @@ typedef PY_UNICODE_TYPE Py_UNICODE;
 
 #endif
 
-/* --- Internal Unicode Operations ---------------------------------------- */
-
-/* If you want Python to use the compiler's wctype.h functions instead
-   of the ones supplied with Python, define WANT_WCTYPE_FUNCTIONS or
-   configure Python using --with-ctype-functions.  This reduces the
-   interpreter's code size. */
-
 #if defined(HAVE_USABLE_WCHAR_T) && defined(WANT_WCTYPE_FUNCTIONS)
 
 #include <wctype.h>
@@ -299,16 +266,12 @@ typedef PY_UNICODE_TYPE Py_UNICODE;
      !memcmp((string)->str + (offset), (substring)->str,\
              (substring)->length*sizeof(Py_UNICODE)))
 
-/* --- Unicode Type ------------------------------------------------------- */
-
 typedef struct {
     PyObject_HEAD
-    int length;			/* Length of raw Unicode data in buffer */
-    Py_UNICODE *str;		/* Raw Unicode buffer */
-    long hash;			/* Hash value; -1 if not set */
-    PyObject *defenc;		/* (Default) Encoded version as Python
-				   string, or NULL; this is used for
-				   implementing the buffer protocol */
+    int length;	
+    Py_UNICODE *str;
+    long hash;		
+    PyObject *defenc;
 } PyUnicodeObject;
 
 extern DL_IMPORT(PyTypeObject) PyUnicode_Type;
@@ -316,7 +279,6 @@ extern DL_IMPORT(PyTypeObject) PyUnicode_Type;
 #define PyUnicode_Check(op) PyObject_TypeCheck(op, &PyUnicode_Type)
 #define PyUnicode_CheckExact(op) ((op)->ob_type == &PyUnicode_Type)
 
-/* Fast access macros */
 #define PyUnicode_GET_SIZE(op) \
         (((PyUnicodeObject *)(op))->length)
 #define PyUnicode_GET_DATA_SIZE(op) \
@@ -326,747 +288,387 @@ extern DL_IMPORT(PyTypeObject) PyUnicode_Type;
 #define PyUnicode_AS_DATA(op) \
         ((const char *)((PyUnicodeObject *)(op))->str)
 
-/* --- Constants ---------------------------------------------------------- */
-
-/* This Unicode character will be used as replacement character during
-   decoding if the errors argument is set to "replace". Note: the
-   Unicode character U+FFFD is the official REPLACEMENT CHARACTER in
-   Unicode 3.0. */
 
 #define Py_UNICODE_REPLACEMENT_CHARACTER ((Py_UNICODE) 0xFFFD)
 
-/* === Public API ========================================================= */
-
-/* --- Plain Py_UNICODE --------------------------------------------------- */
-
-/* Create a Unicode Object from the Py_UNICODE buffer u of the given
-   size. 
-
-   u may be NULL which causes the contents to be undefined. It is the
-   user's responsibility to fill in the needed data afterwards. Note
-   that modifying the Unicode object contents after construction is
-   only allowed if u was set to NULL.
-
-   The buffer is copied into the new object. */
-
 extern DL_IMPORT(PyObject*) PyUnicode_FromUnicode(
-    const Py_UNICODE *u,        /* Unicode buffer */
-    int size                    /* size of buffer */
+    const Py_UNICODE *u,        
+    int size                    
     );
-
-/* Return a read-only pointer to the Unicode object's internal
-   Py_UNICODE buffer. */
 
 extern DL_IMPORT(Py_UNICODE *) PyUnicode_AsUnicode(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	 	
     );
-
-/* Get the length of the Unicode object. */
 
 extern DL_IMPORT(int) PyUnicode_GetSize(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	 	
     );
 
-/* Get the maximum ordinal for a Unicode character. */
-extern DL_IMPORT(Py_UNICODE) PyUnicode_GetMax(void);
-
-/* Resize an already allocated Unicode object to the new size length.
-
-   *unicode is modified to point to the new (resized) object and 0
-   returned on success.
-
-   This API may only be called by the function which also called the
-   Unicode constructor. The refcount on the object must be 1. Otherwise,
-   an error is returned.
-
-   Error handling is implemented as follows: an exception is set, -1
-   is returned and *unicode left untouched.
-
-*/
+extern DL_IMPORT(Py_UNICODE) PyUnicode_GetMax();
 
 extern DL_IMPORT(int) PyUnicode_Resize(
-    PyObject **unicode,		/* Pointer to the Unicode object */
-    int length			/* New length */
+    PyObject **unicode,		
+    int length			
     );
-
-/* Coerce obj to an Unicode object and return a reference with
-   *incremented* refcount.
-
-   Coercion is done in the following way:
-
-   1. String and other char buffer compatible objects are decoded
-      under the assumptions that they contain data using the current
-      default encoding. Decoding is done in "strict" mode.
-
-   2. All other objects (including Unicode objects) raise an
-      exception.
-
-   The API returns NULL in case of an error. The caller is responsible
-   for decref'ing the returned objects.
-
-*/
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromEncodedObject(
-    register PyObject *obj, 	/* Object */
-    const char *encoding,       /* encoding */
-    const char *errors          /* error handling */
+    register PyObject *obj, 	
+    const char *encoding,       
+    const char *errors          
     );
-
-/* Coerce obj to an Unicode object and return a reference with
-   *incremented* refcount.
-   
-   Unicode objects are passed back as-is (subclasses are converted to
-   true Unicode objects), all other objects are delegated to
-   PyUnicode_FromEncodedObject(obj, NULL, "strict") which results in
-   using the default encoding as basis for decoding the object.
-
-   The API returns NULL in case of an error. The caller is responsible
-   for decref'ing the returned objects.
-
-*/
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromObject(
-    register PyObject *obj 	/* Object */
+    register PyObject *obj 
     );
-
-/* --- wchar_t support for platforms which support it --------------------- */
 
 #ifdef HAVE_WCHAR_H
 
-/* Create a Unicode Object from the whcar_t buffer w of the given
-   size.
-
-   The buffer is copied into the new object. */
-
 extern DL_IMPORT(PyObject*) PyUnicode_FromWideChar(
-    register const wchar_t *w,  /* wchar_t buffer */
-    int size                    /* size of buffer */
+    register const wchar_t *w,  
+    int size                    
     );
 
-/* Copies the Unicode Object contents into the whcar_t buffer w.  At
-   most size wchar_t characters are copied.
-
-   Returns the number of wchar_t characters copied or -1 in case of an
-   error. */
-
 extern DL_IMPORT(int) PyUnicode_AsWideChar(
-    PyUnicodeObject *unicode,   /* Unicode object */
-    register wchar_t *w,        /* wchar_t buffer */
-    int size                    /* size of buffer */
+    PyUnicodeObject *unicode,  
+    register wchar_t *w,       
+    int size                   
     );
 
 #endif
 
-/* --- Unicode ordinals --------------------------------------------------- */
-
-/* Create a Unicode Object from the given Unicode code point ordinal. 
- 
-   The ordinal must be in range(0x10000) on narrow Python builds
-   (UCS2), and range(0x110000) on wide builds (UCS4). A ValueError is
-   raised in case it is not.
-
-*/
-
 extern DL_IMPORT(PyObject*) PyUnicode_FromOrdinal(int ordinal);
-
-/* === Builtin Codecs ===================================================== 
-
-   Many of these APIs take two arguments encoding and errors. These
-   parameters encoding and errors have the same semantics as the ones
-   of the builtin unicode() API. 
-
-   Setting encoding to NULL causes the default encoding to be used.
-
-   Error handling is set by errors which may also be set to NULL
-   meaning to use the default handling defined for the codec. Default
-   error handling for all builtin codecs is "strict" (ValueErrors are
-   raised).
-
-   The codecs all use a similar interface. Only deviation from the
-   generic ones are documented.
-
-*/
-
-/* --- Manage the default encoding ---------------------------------------- */
-
-/* Return a Python string holding the default encoded value of the
-   Unicode object. 
-
-   The resulting string is cached in the Unicode object for subsequent
-   usage by this function. The cached version is needed to implement
-   the character buffer interface and will live (at least) as long as
-   the Unicode object itself.
-
-   The refcount of the string is *not* incremented.
-
-   *** Exported for internal use by the interpreter only !!! ***
-
-*/
 
 extern DL_IMPORT(PyObject *) _PyUnicode_AsDefaultEncodedString(
     PyObject *, const char *);
 
-/* Returns the currently active default encoding.
-
-   The default encoding is currently implemented as run-time settable
-   process global.  This may change in future versions of the
-   interpreter to become a parameter which is managed on a per-thread
-   basis.
-   
- */
-
-extern DL_IMPORT(const char*) PyUnicode_GetDefaultEncoding(void);
-
-/* Sets the currently active default encoding.
-
-   Returns 0 on success, -1 in case of an error.
-   
- */
+extern DL_IMPORT(const char*) PyUnicode_GetDefaultEncoding();
 
 extern DL_IMPORT(int) PyUnicode_SetDefaultEncoding(
-    const char *encoding	/* Encoding name in standard form */
+    const char *encoding
     );
-
-/* --- Generic Codecs ----------------------------------------------------- */
-
-/* Create a Unicode object by decoding the encoded string s of the
-   given size. */
 
 extern DL_IMPORT(PyObject*) PyUnicode_Decode(
-    const char *s,              /* encoded string */
-    int size,                   /* size of buffer */
-    const char *encoding,       /* encoding */
-    const char *errors          /* error handling */
+    const char *s,              
+    int size,                   
+    const char *encoding,       
+    const char *errors          
     );
-
-/* Encodes a Py_UNICODE buffer of the given size and returns a 
-   Python string object. */
 
 extern DL_IMPORT(PyObject*) PyUnicode_Encode(
-    const Py_UNICODE *s,        /* Unicode char buffer */
-    int size,                   /* number of Py_UNICODE chars to encode */
-    const char *encoding,       /* encoding */
-    const char *errors          /* error handling */
+    const Py_UNICODE *s,       
+    int size,                  
+    const char *encoding,      
+    const char *errors         
     );
-
-/* Encodes a Unicode object and returns the result as Python string
-   object. */
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsEncodedString(
-    PyObject *unicode,	 	/* Unicode object */
-    const char *encoding,	/* encoding */
-    const char *errors		/* error handling */
+    PyObject *unicode,	 
+    const char *encoding,
+    const char *errors	
     );
 
-/* --- UTF-7 Codecs ------------------------------------------------------- */
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF7(
-    const char *string, 	/* UTF-7 encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 
+    const char *errors
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF7(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* number of Py_UNICODE chars to encode */
-    int encodeSetO,             /* force the encoder to encode characters in
-                                   Set O, as described in RFC2152 */
-    int encodeWhiteSpace,       /* force the encoder to encode space, tab,
-                                   carriage return and linefeed characters */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 	
+    int encodeSetO,      
+    int encodeWhiteSpace,     
+    const char *errors	
     );
 
-/* --- UTF-8 Codecs ------------------------------------------------------- */
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF8(
-    const char *string, 	/* UTF-8 encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 	
+    const char *errors	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsUTF8String(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	 
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF8(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* number of Py_UNICODE chars to encode */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 	
+    const char *errors	
     );
-
-/* --- UTF-16 Codecs ------------------------------------------------------ */
-
-/* Decodes length bytes from a UTF-16 encoded buffer string and returns
-   the corresponding Unicode object.
-
-   errors (if non-NULL) defines the error handling. It defaults
-   to "strict". 
-
-   If byteorder is non-NULL, the decoder starts decoding using the
-   given byte order:
-
-	*byteorder == -1: little endian
-	*byteorder == 0:  native order
-	*byteorder == 1:  big endian
-
-   In native mode, the first two bytes of the stream are checked for a
-   BOM mark. If found, the BOM mark is analysed, the byte order
-   adjusted and the BOM skipped.  In the other modes, no BOM mark
-   interpretation is done. After completion, *byteorder is set to the
-   current byte order at the end of input data.
-
-   If byteorder is NULL, the codec starts in native order mode.
-
-*/
 
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF16(
-    const char *string, 	/* UTF-16 encoded string */
-    int length,	 		/* size of string */
-    const char *errors,		/* error handling */
-    int *byteorder		/* pointer to byteorder to use
-				   0=native;-1=LE,1=BE; updated on
-				   exit */
+    const char *string, 
+    int length,	 		
+    const char *errors,	
+    int *byteorder
     );
-
-/* Returns a Python string using the UTF-16 encoding in native byte
-   order. The string always starts with a BOM mark.  */
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsUTF16String(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	
     );
-
-/* Returns a Python string object holding the UTF-16 encoded value of
-   the Unicode data.
-
-   If byteorder is not 0, output is written according to the following
-   byte order:
-
-   byteorder == -1: little endian
-   byteorder == 0:  native byte order (writes a BOM mark)
-   byteorder == 1:  big endian
-
-   If byteorder is 0, the output string will always start with the
-   Unicode BOM mark (U+FEFF). In the other two modes, no BOM mark is
-   prepended.
-
-   Note that Py_UNICODE data is being interpreted as UTF-16 reduced to
-   UCS-2. This trick makes it possible to add full UTF-16 capabilities
-   at a later point without compromising the APIs.
-
-*/
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF16(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* number of Py_UNICODE chars to encode */
-    const char *errors,		/* error handling */
-    int byteorder		/* byteorder to use 0=BOM+native;-1=LE,1=BE */
+    const Py_UNICODE *data, 
+    int length,	 	
+    const char *errors,	
+    int byteorder	
     );
 
-/* --- Unicode-Escape Codecs ---------------------------------------------- */
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeUnicodeEscape(
-    const char *string, 	/* Unicode-Escape encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 
+    const char *errors	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsUnicodeEscapeString(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	 
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeUnicodeEscape(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length	 		/* Number of Py_UNICODE chars to encode */
+    const Py_UNICODE *data, 
+    int length	 	
     );
 
-/* --- Raw-Unicode-Escape Codecs ------------------------------------------ */
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeRawUnicodeEscape(
-    const char *string, 	/* Raw-Unicode-Escape encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 	
+    const char *errors
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsRawUnicodeEscapeString(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeRawUnicodeEscape(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length	 		/* Number of Py_UNICODE chars to encode */
+    const Py_UNICODE *data, 
+    int length	 	
     );
 
-/* --- Latin-1 Codecs ----------------------------------------------------- 
-
-   Note: Latin-1 corresponds to the first 256 Unicode ordinals.
-
-*/
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeLatin1(
-    const char *string, 	/* Latin-1 encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 	
+    const char *errors	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsLatin1String(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeLatin1(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* Number of Py_UNICODE chars to encode */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 
+    const char *errors	
     );
 
-/* --- ASCII Codecs ------------------------------------------------------- 
-
-   Only 7-bit ASCII data is excepted. All other codes generate errors.
-
-*/
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeASCII(
-    const char *string, 	/* ASCII encoded string */
-    int length,	 		/* size of string */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 	
+    const char *errors	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsASCIIString(
-    PyObject *unicode	 	/* Unicode object */
+    PyObject *unicode	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeASCII(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* Number of Py_UNICODE chars to encode */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 
+    const char *errors	
     );
 
-/* --- Character Map Codecs ----------------------------------------------- 
-
-   This codec uses mappings to encode and decode characters. 
-
-   Decoding mappings must map single string characters to single
-   Unicode characters, integers (which are then interpreted as Unicode
-   ordinals) or None (meaning "undefined mapping" and causing an
-   error).
-
-   Encoding mappings must map single Unicode characters to single
-   string characters, integers (which are then interpreted as Latin-1
-   ordinals) or None (meaning "undefined mapping" and causing an
-   error).
-
-   If a character lookup fails with a LookupError, the character is
-   copied as-is meaning that its ordinal value will be interpreted as
-   Unicode or Latin-1 ordinal resp. Because of this mappings only need
-   to contain those mappings which map characters to different code
-   points.
-
-*/
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeCharmap(
-    const char *string, 	/* Encoded string */
-    int length,	 		/* size of string */
-    PyObject *mapping,		/* character mapping 
-				   (char ordinal -> unicode ordinal) */
-    const char *errors		/* error handling */
+    const char *string, 
+    int length,	 
+    PyObject *mapping,	
+    const char *errors	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsCharmapString(
-    PyObject *unicode,	 	/* Unicode object */
-    PyObject *mapping		/* character mapping 
-				   (unicode ordinal -> char ordinal) */
+    PyObject *unicode,	 
+    PyObject *mapping	
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeCharmap(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* Number of Py_UNICODE chars to encode */
-    PyObject *mapping,		/* character mapping 
-				   (unicode ordinal -> char ordinal) */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 	
+    PyObject *mapping,	
+    const char *errors
     );
 
-/* Translate a Py_UNICODE buffer of the given length by applying a
-   character mapping table to it and return the resulting Unicode
-   object.
-
-   The mapping table must map Unicode ordinal integers to Unicode
-   ordinal integers or None (causing deletion of the character). 
-
-   Mapping tables may be dictionaries or sequences. Unmapped character
-   ordinals (ones which cause a LookupError) are left untouched and
-   are copied as-is.
-
-*/
-
 extern DL_IMPORT(PyObject *) PyUnicode_TranslateCharmap(
-    const Py_UNICODE *data, 	/* Unicode char buffer */
-    int length,	 		/* Number of Py_UNICODE chars to encode */
-    PyObject *table,		/* Translate table */
-    const char *errors		/* error handling */
+    const Py_UNICODE *data, 
+    int length,	 
+    PyObject *table,	
+    const char *errors	
     );
 
 #ifdef MS_WIN32
 
-/* --- MBCS codecs for Windows -------------------------------------------- */
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeMBCS(
-    const char *string,         /* MBCS encoded string */
-    int length,                 /* size of string */
-    const char *errors          /* error handling */
+    const char *string,     
+    int length,           
+    const char *errors     
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_AsMBCSString(
-    PyObject *unicode           /* Unicode object */
+    PyObject *unicode     
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_EncodeMBCS(
-    const Py_UNICODE *data,     /* Unicode char buffer */
-    int length,                 /* Number of Py_UNICODE chars to encode */
-    const char *errors          /* error handling */
+    const Py_UNICODE *data,   
+    int length,               
+    const char *errors        
     );
 
-#endif /* MS_WIN32 */
-
-/* --- Decimal Encoder ---------------------------------------------------- */
-
-/* Takes a Unicode string holding a decimal value and writes it into
-   an output buffer using standard ASCII digit codes.
-
-   The output buffer has to provide at least length+1 bytes of storage
-   area. The output string is 0-terminated.
-
-   The encoder converts whitespace to ' ', decimal characters to their
-   corresponding ASCII digit and all other Latin-1 characters except
-   \0 as-is. Characters outside this range (Unicode ordinals 1-256)
-   are treated as errors. This includes embedded NULL bytes.
-
-   Error handling is defined by the errors argument:
-
-      NULL or "strict": raise a ValueError
-      "ignore": ignore the wrong characters (these are not copied to the
-		output buffer)
-      "replace": replaces illegal characters with '?'
-
-   Returns 0 on success, -1 on failure.
-
-*/
+#endif
 
 extern DL_IMPORT(int) PyUnicode_EncodeDecimal(
-    Py_UNICODE *s,		/* Unicode buffer */
-    int length,			/* Number of Py_UNICODE chars to encode */
-    char *output,		/* Output buffer; must have size >= length */
-    const char *errors		/* error handling */
+    Py_UNICODE *s,	
+    int length,		
+    char *output,	
+    const char *errors
     );
-
-/* --- Methods & Slots ----------------------------------------------------
-
-   These are capable of handling Unicode objects and strings on input
-   (we refer to them as strings in the descriptions) and return
-   Unicode objects or integers as apporpriate. */
-
-/* Concat two strings giving a new Unicode string. */
 
 extern DL_IMPORT(PyObject*) PyUnicode_Concat(
-    PyObject *left,	 	/* Left string */
-    PyObject *right	 	/* Right string */
+    PyObject *left,	 
+    PyObject *right	
     );
-
-/* Split a string giving a list of Unicode strings.
-
-   If sep is NULL, splitting will be done at all whitespace
-   substrings. Otherwise, splits occur at the given separator.
-
-   At most maxsplit splits will be done. If negative, no limit is set.
-
-   Separators are not included in the resulting list.
-
-*/
 
 extern DL_IMPORT(PyObject*) PyUnicode_Split(
-    PyObject *s,		/* String to split */
-    PyObject *sep,		/* String separator */
-    int maxsplit		/* Maxsplit count */
+    PyObject *s,	
+    PyObject *sep,	
+    int maxsplit	
     );		
 
-/* Dito, but split at line breaks.
-
-   CRLF is considered to be one line break. Line breaks are not
-   included in the resulting list. */
-    
 extern DL_IMPORT(PyObject*) PyUnicode_Splitlines(
-    PyObject *s,		/* String to split */
-    int keepends		/* If true, line end markers are included */
+    PyObject *s,		
+    int keepends		
     );		
 
-/* Translate a string by applying a character mapping table to it and
-   return the resulting Unicode object.
 
-   The mapping table must map Unicode ordinal integers to Unicode
-   ordinal integers or None (causing deletion of the character). 
-
-   Mapping tables may be dictionaries or sequences. Unmapped character
-   ordinals (ones which cause a LookupError) are left untouched and
-   are copied as-is.
-
-*/
 
 extern DL_IMPORT(PyObject *) PyUnicode_Translate(
-    PyObject *str,		/* String */ 
-    PyObject *table,		/* Translate table */
-    const char *errors		/* error handling */
+    PyObject *str,	
+    PyObject *table,	
+    const char *errors	
     );
-
-/* Join a sequence of strings using the given separator and return
-   the resulting Unicode string. */
     
 extern DL_IMPORT(PyObject*) PyUnicode_Join(
-    PyObject *separator, 	/* Separator string */
-    PyObject *seq	 	/* Sequence object */
+    PyObject *separator, 
+    PyObject *seq
     );
-
-/* Return 1 if substr matches str[start:end] at the given tail end, 0
-   otherwise. */
 
 extern DL_IMPORT(int) PyUnicode_Tailmatch(
-    PyObject *str,		/* String */ 
-    PyObject *substr,		/* Prefix or Suffix string */
-    int start,			/* Start index */
-    int end,			/* Stop index */
-    int direction		/* Tail end: -1 prefix, +1 suffix */
+    PyObject *str,	
+    PyObject *substr,	
+    int start,		
+    int end,	
+    int direction	
     );
-
-/* Return the first position of substr in str[start:end] using the
-   given search direction or -1 if not found. */
 
 extern DL_IMPORT(int) PyUnicode_Find(
-    PyObject *str,		/* String */ 
-    PyObject *substr,		/* Substring to find */
-    int start,			/* Start index */
-    int end,			/* Stop index */
-    int direction		/* Find direction: +1 forward, -1 backward */
+    PyObject *str,	 
+    PyObject *substr,
+    int start,		
+    int end,		
+    int direction
     );
-
-/* Count the number of occurrences of substr in str[start:end]. */
 
 extern DL_IMPORT(int) PyUnicode_Count(
-    PyObject *str,		/* String */ 
-    PyObject *substr,		/* Substring to count */
-    int start,			/* Start index */
-    int end			/* Stop index */
+    PyObject *str,	
+    PyObject *substr,	
+    int start,		
+    int end		
     );
-
-/* Replace at most maxcount occurrences of substr in str with replstr
-   and return the resulting Unicode object. */
 
 extern DL_IMPORT(PyObject *) PyUnicode_Replace(
-    PyObject *str,		/* String */ 
-    PyObject *substr,		/* Substring to find */
-    PyObject *replstr,		/* Substring to replace */
-    int maxcount		/* Max. number of replacements to apply;
-				   -1 = all */
+    PyObject *str,	 
+    PyObject *substr,
+    PyObject *replstr,
+    int maxcount	
     );
-
-/* Compare two strings and return -1, 0, 1 for less than, equal,
-   greater than resp. */
 
 extern DL_IMPORT(int) PyUnicode_Compare(
-    PyObject *left,		/* Left string */ 
-    PyObject *right		/* Right string */
+    PyObject *left,	
+    PyObject *right	
     );
-
-/* Apply a argument tuple or dictionary to a format string and return
-   the resulting Unicode string. */
 
 extern DL_IMPORT(PyObject *) PyUnicode_Format(
-    PyObject *format,		/* Format string */ 
-    PyObject *args		/* Argument tuple or dictionary */
+    PyObject *format,	
+    PyObject *args	
     );
-
-/* Checks whether element is contained in container and return 1/0
-   accordingly.
-
-   element has to coerce to an one element Unicode string. -1 is
-   returned in case of an error. */
 
 extern DL_IMPORT(int) PyUnicode_Contains(
-    PyObject *container,	/* Container string */ 
-    PyObject *element		/* Element string */
+    PyObject *container,
+    PyObject *element	
     );
 
-/* Externally visible for str.strip(unicode) */
 extern DL_IMPORT(PyObject *) _PyUnicode_XStrip(
     PyUnicodeObject *self,
     int striptype,
     PyObject *sepobj
     );
 
-/* === Characters Type APIs =============================================== */
-
-/* These should not be used directly. Use the Py_UNICODE_IS* and
-   Py_UNICODE_TO* macros instead. 
-
-   These APIs are implemented in Objects/unicodectype.c.
-
-*/
-
 extern DL_IMPORT(int) _PyUnicode_IsLowercase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsUppercase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsTitlecase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsWhitespace(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsLinebreak(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToLowercase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToUppercase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToTitlecase(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_ToDecimalDigit(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_ToDigit(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(double) _PyUnicode_ToNumeric(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsDecimalDigit(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsDigit(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsNumeric(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 extern DL_IMPORT(int) _PyUnicode_IsAlpha(
-    Py_UNICODE ch 	/* Unicode character */
+    Py_UNICODE ch 
     );
 
 
-#endif /* Py_USING_UNICODE */
+#endif 

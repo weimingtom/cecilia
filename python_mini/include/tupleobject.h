@@ -1,3 +1,4 @@
+//20180324
 #pragma once
 
 typedef struct {
@@ -17,9 +18,7 @@ extern DL_IMPORT(int) PyTuple_SetItem(PyObject *, int, PyObject *);
 extern DL_IMPORT(PyObject *) PyTuple_GetSlice(PyObject *, int, int);
 extern DL_IMPORT(int) _PyTuple_Resize(PyObject **, int);
 
-/* Macro, trading safety for speed */
 #define PyTuple_GET_ITEM(op, i) (((PyTupleObject *)(op))->ob_item[i])
 #define PyTuple_GET_SIZE(op)    (((PyTupleObject *)(op))->ob_size)
 
-/* Macro, *only* to be used to fill in brand new tuples */
 #define PyTuple_SET_ITEM(op, i, v) (((PyTupleObject *)(op))->ob_item[i] = v)

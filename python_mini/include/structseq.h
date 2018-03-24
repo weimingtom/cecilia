@@ -1,3 +1,4 @@
+//20180324
 #pragma once
    
 typedef struct PyStructSequence_Field {
@@ -22,7 +23,6 @@ typedef struct {
 	PyObject *ob_item[1];
 } PyStructSequence;
 
-/* Macro, *only* to be used to fill in brand new objects */
 #define PyStructSequence_SET_ITEM(op, i, v) \
 	(((PyStructSequence *)(op))->ob_item[i] = v)
 

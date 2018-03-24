@@ -1,3 +1,4 @@
+//20180324
 #pragma once
 
 #ifdef HAVE_NCURSES_H
@@ -5,14 +6,11 @@
 #else
 #include <curses.h>
 #ifdef HAVE_TERM_H
-/* for tigetstr, which is not declared in SysV curses */
 #include <term.h>
 #endif
 #endif
 
 #ifdef HAVE_NCURSES_H
-/* configure was checking <curses.h>, but we will
-   use <ncurses.h>, which has all these features. */
 #ifndef WINDOW_HAS_FLAGS
 #define WINDOW_HAS_FLAGS 1
 #endif
@@ -23,7 +21,6 @@
 
 #define PyCurses_API_pointers 4
 
-/* Type declarations */
 
 typedef struct {
 	PyObject_HEAD
@@ -33,10 +30,8 @@ typedef struct {
 #define PyCursesWindow_Check(v)	 ((v)->ob_type == &PyCursesWindow_Type)
 
 #ifdef CURSES_MODULE
-/* This section is used when compiling _cursesmodule.c */
 
 #else
-/* This section is used in modules that use the _cursesmodule API */
 
 static void **PyCurses_API;
 
@@ -58,21 +53,12 @@ static void **PyCurses_API;
 }
 #endif
 
-/* general error messages */
 static char *catchall_ERR  = "curses function returned ERR";
 static char *catchall_NULL = "curses function returned NULL";
 
-/* Utility macros */
 #define ARG_COUNT(X) \
 	(((X) == NULL) ? 0 : (PyTuple_Check(X) ? PyTuple_Size(X) : 1))
 
-/* Function Prototype Macros - They are ugly but very, very useful. ;-)
-
-   X - function name
-   TYPE - parameter Type
-   ERGSTR - format string for construction of the return value
-   PARSESTR - format string for argument parsing
-   */
 
 #define NoArgNoReturnFunction(X) \
 static PyObject *PyCurses_ ## X (PyObject *self, PyObject *args) \

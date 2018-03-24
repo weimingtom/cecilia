@@ -1,9 +1,9 @@
+//20180324
 #pragma once
 
 #include "pyconfig.h"
 
-/* pyconfig.h may or may not define DL_IMPORT */
-#ifndef DL_IMPORT	/* declarations for DLL import/export */
+#ifndef DL_IMPORT
 #define DL_IMPORT(RTYPE) RTYPE
 #endif
 

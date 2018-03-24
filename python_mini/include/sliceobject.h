@@ -1,17 +1,9 @@
+//20180324
 #pragma once
 
-extern DL_IMPORT(PyObject) _Py_EllipsisObject; /* Don't use this directly */
+extern DL_IMPORT(PyObject) _Py_EllipsisObject; 
 
 #define Py_Ellipsis (&_Py_EllipsisObject)
-
-/* Slice object interface */
-
-/*
-
-A slice object containing start, stop, and step data members (the
-names are from range).  After much talk with Guido, it was decided to
-let these be any arbitrary python type. 
-*/
 
 typedef struct {
     PyObject_HEAD

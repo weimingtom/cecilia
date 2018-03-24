@@ -1363,7 +1363,7 @@ int _PyThread_Started = 0;
 static void (*exitfuncs[NEXITFUNCS])(void);
 static int nexitfuncs = 0;
 
-int Py_AtExit(void (*func)(void))
+int Py_AtExit(void (*func)())
 {
 	if (nexitfuncs >= NEXITFUNCS)
 	{
