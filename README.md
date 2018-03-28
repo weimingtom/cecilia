@@ -1,4 +1,4 @@
-# cecilia
+﻿# cecilia
 [WIP] My mod version of Python 2.2.2, and try to port to CSharp/Java
 
 ## About  
@@ -53,7 +53,7 @@ https://www.zhihu.com/question/40787248
 
 * CoCo  
 http://knuth.luther.edu/~leekent/CoCo/  
-https://github.com/kentdlee/CoCo  
+https://github.com/kentdlee/CoCo ?
 
 * PLY  
 http://www.dabeaz.com/ply/  
@@ -69,3 +69,6 @@ https://github.com/varialus/jython-legacy
 
 * skulpt  
 https://github.com/skulpt/skulpt  
+
+* Python Tutorial in Chinese  
+https://github.com/sixu05202004/pythontutorial  
