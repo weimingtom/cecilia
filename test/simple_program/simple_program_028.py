@@ -3,6 +3,11 @@
 #see https://wiki.python.org/moin/SimplePrograms
 #28 lines: 8-Queens Problem (define your own exceptions)
 
+def reversed(x):
+    x2 = x[:]
+    x2.reverse()
+    return x2
+
 BOARD_SIZE = 8
 
 class BailOut(Exception):
@@ -30,5 +35,4 @@ def add_queen(queens):
 
 queens = add_queen([])
 print queens
-print "\n".join(". "*q + "Q " + ". "*(BOARD_SIZE-q-1) for q in queens)
-
+print "\n".join([". "*q + "Q " + ". "*(BOARD_SIZE-q-1) for q in queens])

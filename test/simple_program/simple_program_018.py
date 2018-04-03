@@ -3,6 +3,11 @@
 #see https://wiki.python.org/moin/SimplePrograms
 #18 lines: 8-Queens Problem (recursion)
 
+def reversed(x):
+    x2 = x[:]
+    x2.reverse()
+    return x2
+
 BOARD_SIZE = 8
 
 def under_attack(col, queens):
