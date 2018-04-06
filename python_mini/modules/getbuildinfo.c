@@ -1,3 +1,4 @@
+//20180406
 #include "python.h"
 
 #ifdef macintosh
@@ -29,8 +30,7 @@
 #endif
 
 
-const char *
-Py_GetBuildInfo(void)
+const char *Py_GetBuildInfo()
 {
 	static char buildinfo[50];
 	PyOS_snprintf(buildinfo, sizeof(buildinfo),

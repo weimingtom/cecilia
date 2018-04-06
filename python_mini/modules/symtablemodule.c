@@ -1,10 +1,10 @@
+//20180406
 #include "python.h"
 
 #include "compile.h"
 #include "symtable.h"
 
-static PyObject *
-symtable_symtable(PyObject *self, PyObject *args)
+static PyObject *symtable_symtable(PyObject *self, PyObject *args)
 {
 	struct symtable *st;
 	PyObject *t;
@@ -16,21 +16,32 @@ symtable_symtable(PyObject *self, PyObject *args)
 
 	if (!PyArg_ParseTuple(args, "sss:symtable", &str, &filename, 
 			      &startstr))
+	{
 		return NULL;
+	}
 	if (strcmp(startstr, "exec") == 0)
+	{
 		start = Py_file_input;
+	}
 	else if (strcmp(startstr, "eval") == 0)
+	{
 		start = Py_eval_input;
+	}
 	else if (strcmp(startstr, "single") == 0)
+	{
 		start = Py_single_input;
-	else {
+	}
+	else 
+	{
 		PyErr_SetString(PyExc_ValueError,
 		   "symtable() arg 3 must be 'exec' or 'eval' or 'single'");
 		return NULL;
 	}
 	st = Py_SymtableString(str, filename, start);
 	if (st == NULL)
+	{
 		return NULL;
+	}
 	t = Py_BuildValue("O", st->st_symbols);
 	PyMem_Free((void *)st->st_future);
 	PySymtable_Free(st);
@@ -40,11 +51,10 @@ symtable_symtable(PyObject *self, PyObject *args)
 static PyMethodDef symtable_methods[] = {
 	{"symtable",	symtable_symtable,	METH_VARARGS,
 	 "Return symbol and scope dictionaries used internally by compiler."},
-	{NULL,		NULL}		/* sentinel */
+	{NULL,		NULL}
 };
 
-DL_EXPORT(void)
-init_symtable(void)
+DL_EXPORT(void) init_symtable()
 {
 	PyObject *m;
 
