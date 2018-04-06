@@ -99,41 +99,40 @@ static PyMethodDef iter_methods[] = {
 
 PyTypeObject PySeqIter_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
-	0,					/* ob_size */
-	"iterator",				/* tp_name */
-	sizeof(seqiterobject),			/* tp_basicsize */
-	0,					/* tp_itemsize */
-	/* methods */
-	(destructor)iter_dealloc, 		/* tp_dealloc */
-	0,					/* tp_print */
-	0,					/* tp_getattr */
-	0,					/* tp_setattr */
-	0,					/* tp_compare */
-	0,					/* tp_repr */
-	0,					/* tp_as_number */
-	0,					/* tp_as_sequence */
-	0,					/* tp_as_mapping */
-	0,					/* tp_hash */
-	0,					/* tp_call */
-	0,					/* tp_str */
-	PyObject_GenericGetAttr,		/* tp_getattro */
-	0,					/* tp_setattro */
-	0,					/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,			/* tp_flags */
- 	0,					/* tp_doc */
- 	(traverseproc)iter_traverse,		/* tp_traverse */
- 	0,					/* tp_clear */
-	0,					/* tp_richcompare */
-	0,					/* tp_weaklistoffset */
-	(getiterfunc)iter_getiter,		/* tp_iter */
-	(iternextfunc)iter_iternext,		/* tp_iternext */
-	iter_methods,				/* tp_methods */
-	0,					/* tp_members */
-	0,					/* tp_getset */
-	0,					/* tp_base */
-	0,					/* tp_dict */
-	0,					/* tp_descr_get */
-	0,					/* tp_descr_set */
+	0,				
+	"iterator",			
+	sizeof(seqiterobject),	
+	0,			
+	(destructor)iter_dealloc, 
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	0,				
+	0,			
+	0,				
+	0,				
+	0,				
+	0,			
+	PyObject_GenericGetAttr,	
+	0,				
+	0,				
+	Py_TPFLAGS_DEFAULT,	
+ 	0,			
+ 	(traverseproc)iter_traverse,
+ 	0,				
+	0,			
+	0,				
+	(getiterfunc)iter_getiter,	
+	(iternextfunc)iter_iternext,	
+	iter_methods,		
+	0,				
+	0,				
+	0,				
+	0,				
+	0,		
+	0,	
 };
 
 typedef struct {

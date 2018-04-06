@@ -325,7 +325,7 @@ extern DL_IMPORT(void) _Py_Dealloc(PyObject *);
 extern DL_IMPORT(void) _Py_NewReference(PyObject *);
 extern DL_IMPORT(void) _Py_ForgetReference(PyObject *);
 extern DL_IMPORT(void) _Py_PrintReferences(FILE *);
-extern DL_IMPORT(void) _Py_ResetReferences(void);
+extern DL_IMPORT(void) _Py_ResetReferences();
 #endif
 
 #ifndef Py_TRACE_REFS
@@ -359,7 +359,7 @@ extern DL_IMPORT(long) _Py_RefTotal;
 #define Py_DECREF(op)							\
        if (--_Py_RefTotal, 0 < (--((op)->ob_refcnt))) ;			\
        else if (0 == (op)->ob_refcnt) _Py_Dealloc( (PyObject*)(op));	\
-       else (void)fprintf( stderr, "%s:%i negative ref count %i\n",	\
+       else fprintf( stderr, "%s:%i negative ref count %i\n",	\
 		           __FILE__, __LINE__, (op)->ob_refcnt)
 #else
 
@@ -420,7 +420,7 @@ extern DL_IMPORT(PyObject) _Py_NotImplementedStruct;
 	} \
 
 extern DL_IMPORT(void) _PyTrash_deposit_object(PyObject*);
-extern DL_IMPORT(void) _PyTrash_destroy_chain(void);
+extern DL_IMPORT(void) _PyTrash_destroy_chain();
 
 extern DL_IMPORT(int) _PyTrash_delete_nesting;
 extern DL_IMPORT(PyObject *) _PyTrash_delete_later;

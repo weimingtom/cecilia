@@ -6,7 +6,7 @@
 #include "windows.h"
 #endif
 
-int (*PyOS_InputHook)(void) = NULL;
+int (*PyOS_InputHook)() = NULL;
 
 #ifdef RISCOS
 int Py_RISCOSWimpFlag;
@@ -18,7 +18,7 @@ static int my_fgets(char *buf, int len, FILE *fp)
 	{
 		if (PyOS_InputHook != NULL)
 		{
-			(void)(PyOS_InputHook)();
+			(PyOS_InputHook)();
 		}
 		errno = 0;
 		p = fgets(buf, len, fp);

@@ -19,7 +19,7 @@ PyObject *PyFunction_New(PyObject *code, PyObject *globals)
 		op->func_globals = globals;
 		op->func_name = ((PyCodeObject *)code)->co_name;
 		Py_INCREF(op->func_name);
-		op->func_defaults = NULL; /* No default arguments */
+		op->func_defaults = NULL;
 		op->func_closure = NULL;
 		consts = ((PyCodeObject *)code)->co_consts;
 		if (PyTuple_Size(consts) >= 1) 
@@ -152,7 +152,7 @@ static PyMemberDef func_memberlist[] = {
         {NULL} 
 };
 
-static int restricted(void)
+static int restricted()
 {
 	if (!PyEval_GetRestricted())
 	{

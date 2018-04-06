@@ -375,7 +375,7 @@ static PyObject *complex_remainder(PyComplexObject *v, PyComplexObject *w)
 		PyErr_SetString(PyExc_ZeroDivisionError, "complex remainder");
 		return NULL;
 	}
-	div.real = floor(div.real); /* Use the floor of the real part. */
+	div.real = floor(div.real);
 	div.imag = 0.0;
 	mod = c_diff(v->cval, c_prod(w->cval, div));
 
@@ -642,7 +642,7 @@ static PyObject *complex_subtype_from_string(PyTypeObject *type, PyObject *v)
 	int digit_or_dot;
 	int sw_error=0;
 	int sign;
-	char buffer[256]; /* For errors */
+	char buffer[256];
 #ifdef Py_USING_UNICODE
 	char s_buffer[256];
 #endif

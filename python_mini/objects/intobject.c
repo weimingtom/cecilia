@@ -2,7 +2,7 @@
 #include "python.h"
 #include <ctype.h>
 
-long PyInt_GetMax(void)
+long PyInt_GetMax()
 {
 	return LONG_MAX;
 }

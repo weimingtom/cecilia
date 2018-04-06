@@ -355,7 +355,7 @@ PyObject *Py_FindMethod(PyMethodDef *methods, PyObject *self, char *name)
 	return Py_FindMethodInChain(&chain, self, name);
 }
 
-void PyCFunction_Fini(void)
+void PyCFunction_Fini()
 {
 	while (free_list) 
 	{

@@ -13,7 +13,7 @@ static PyObject *type_error(const char *msg)
 	return NULL;
 }
 
-static PyObject *null_error(void)
+static PyObject *null_error()
 {
 	if (!PyErr_Occurred())
 	{
@@ -400,7 +400,7 @@ static PyObject *binary_op1(PyObject *v, PyObject *w, const int op_slot)
 		{
 			return x;
 		}
-		Py_DECREF(x); /* can't do it */
+		Py_DECREF(x);
 	}
 	if (!NEW_STYLE_NUMBER(v) || !NEW_STYLE_NUMBER(w)) 
 	{

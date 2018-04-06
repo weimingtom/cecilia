@@ -122,7 +122,6 @@ static PyObject *open_the_file(PyFileObject *f, char *name, char *mode)
 	if (f->f_fp == NULL) 
 	{
 #ifdef NO_FOPEN_ERRNO
-		/* Metroworks only, wich does not always sets errno */
 		if (errno == 0) 
 		{
 			PyObject *v;
@@ -222,7 +221,7 @@ void PyFile_SetBufSize(PyObject *f, int bufsize)
 	}
 }
 
-static PyObject *err_closed(void)
+static PyObject *err_closed()
 {
 	PyErr_SetString(PyExc_ValueError, "I/O operation on closed file");
 	return NULL;
@@ -1489,7 +1488,7 @@ static PyMethodDef file_methods[] = {
 	{"flush",	(PyCFunction)file_flush,      METH_NOARGS,  flush_doc},
 	{"close",	(PyCFunction)file_close,      METH_NOARGS,  close_doc},
 	{"isatty",	(PyCFunction)file_isatty,     METH_NOARGS,  isatty_doc},
-	{NULL,		NULL}		/* sentinel */
+	{NULL,		NULL}
 };
 
 #define OFF(x) offsetof(PyFileObject, x)

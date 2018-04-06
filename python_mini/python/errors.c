@@ -368,7 +368,7 @@ void _PyErr_BadInternalCall(char *filename, int lineno)
 }
 
 #undef PyErr_BadInternalCall
-void PyErr_BadInternalCall(void)
+void PyErr_BadInternalCall()
 {
 	PyErr_Format(PyExc_SystemError,
 		     "bad argument to internal function");

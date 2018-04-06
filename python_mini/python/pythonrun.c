@@ -29,12 +29,12 @@
 #ifdef macintosh
 #include "macglue.h"
 #endif
-extern char *Py_GetPath(void);
+extern char *Py_GetPath();
 
 extern grammar _PyParser_Grammar;
 
-static void initmain(void);
-static void initsite(void);
+static void initmain();
+static void initsite();
 static PyObject *run_err_node(node *, char *, PyObject *, PyObject *,
 			      PyCompilerFlags *);
 static PyObject *run_node(node *, char *, PyObject *, PyObject *,
@@ -42,18 +42,18 @@ static PyObject *run_node(node *, char *, PyObject *, PyObject *,
 static PyObject *run_pyc_file(FILE *, char *, PyObject *, PyObject *,
 			      PyCompilerFlags *);
 static void err_input(perrdetail *);
-static void initsigs(void);
-static void call_sys_exitfunc(void);
-static void call_ll_exitfuncs(void);
+static void initsigs();
+static void call_sys_exitfunc();
+static void call_ll_exitfuncs();
 
 #ifdef Py_TRACE_REFS
 int _Py_AskYesNo(char *prompt);
 #endif
 
-extern void _PyUnicode_Init(void);
-extern void _PyUnicode_Fini(void);
-extern void _PyCodecRegistry_Init(void);
-extern void _PyCodecRegistry_Fini(void);
+extern void _PyUnicode_Init();
+extern void _PyUnicode_Fini();
+extern void _PyCodecRegistry_Init();
+extern void _PyCodecRegistry_Fini();
 
 int Py_DebugFlag; 
 int Py_VerboseFlag;
@@ -92,7 +92,7 @@ void Py_Initialize()
 	PyThreadState *tstate;
 	PyObject *bimod, *sysmod;
 	char *p;
-	extern void _Py_ReadyTypes(void);
+	extern void _Py_ReadyTypes();
 
 	if (initialized)
 	{
@@ -175,7 +175,7 @@ void Py_Initialize()
 }
 
 #ifdef COUNT_ALLOCS
-extern void dump_counts(void);
+extern void dump_counts();
 #endif
 
 void Py_Finalize()
@@ -1148,7 +1148,7 @@ static PyObject *run_pyc_file(FILE *fp, char *filename, PyObject *globals, PyObj
 	PyCodeObject *co;
 	PyObject *v;
 	long magic;
-	long PyImport_GetMagicNumber(void);
+	long PyImport_GetMagicNumber();
 
 	magic = PyMarshal_ReadLongFromFile(fp);
 	if (magic != PyImport_GetMagicNumber()) 
@@ -1360,7 +1360,7 @@ int _PyThread_Started = 0;
 #endif
 
 #define NEXITFUNCS 32
-static void (*exitfuncs[NEXITFUNCS])(void);
+static void (*exitfuncs[NEXITFUNCS])();
 static int nexitfuncs = 0;
 
 int Py_AtExit(void (*func)())

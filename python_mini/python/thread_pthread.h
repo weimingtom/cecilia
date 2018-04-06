@@ -67,7 +67,7 @@ typedef struct {
 #define CHECK_STATUS(name)  if (status != 0) { perror(name); error = 1; }
 
 #ifdef _HAVE_BSDI
-static void _noop(void)
+static void _noop()
 {
 
 }
@@ -232,7 +232,7 @@ void PyThread__exit_prog(int status)
 
 #endif
 
-PyThread_type_lock PyThread_allocate_lock(void)
+PyThread_type_lock PyThread_allocate_lock()
 {
 	pthread_lock *lock;
 	int status, error = 0;

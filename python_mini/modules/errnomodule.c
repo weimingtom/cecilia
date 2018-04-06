@@ -1,42 +1,27 @@
-
-/* Errno module */
+//20180406
 
 #include "python.h"
 
-/* Mac with GUSI has more errors than those in errno.h */
 #ifdef USE_GUSI
 #include <sys/errno.h>
 #endif
 
-/* Windows socket errors (WSA*): XXX is this the correct path ???  */
 #ifdef MS_WINDOWS
 #include <winsock.h>
 #endif
-
-/*
- * Pull in the system error definitions
- */ 
 
 static PyMethodDef errno_methods[] = {
 	{NULL,	      	NULL}
 };
 
-/* Helper function doing the dictionary inserting */
-
-static void
-_inscode(PyObject *d, PyObject *de, char *name, int code)
+static void _inscode(PyObject *d, PyObject *de, char *name, int code)
 {
 	PyObject *u = PyString_FromString(name);
 	PyObject *v = PyInt_FromLong((long) code);
 
-	/* Don't bother checking for errors; they'll be caught at the end
-	 * of the module initialization function by the caller of
-	 * initerrno().
-	 */
-	if (u && v) {
-		/* insert in modules dict */
+	if (u && v) 
+	{
 		PyDict_SetItem(d, u, v);
-		/* insert in errorcode dict */
 		PyDict_SetItem(de, v, u);
 	}
 	Py_XDECREF(u);
@@ -44,36 +29,31 @@ _inscode(PyObject *d, PyObject *de, char *name, int code)
 }
 
 static char errno__doc__ [] =
-"This module makes available standard errno system symbols.\n\
-\n\
-The value of each symbol is the corresponding integer value,\n\
-e.g., on most systems, errno.ENOENT equals the integer 2.\n\
-\n\
-The dictionary errno.errorcode maps numeric codes to symbol names,\n\
-e.g., errno.errorcode[2] could be the string 'ENOENT'.\n\
-\n\
-Symbols that are not relevant to the underlying system are not defined.\n\
-\n\
-To map error codes to error messages, use the function os.strerror(),\n\
-e.g. os.strerror(2) could return 'No such file or directory'.";
+	"This module makes available standard errno system symbols.\n"
+	"\n"
+	"The value of each symbol is the corresponding integer value,\n"
+	"e.g., on most systems, errno.ENOENT equals the integer 2.\n"
+	"\n"
+	"The dictionary errno.errorcode maps numeric codes to symbol names,\n"
+	"e.g., errno.errorcode[2] could be the string 'ENOENT'.\n"
+	"\n"
+	"Symbols that are not relevant to the underlying system are not defined.\n"
+	"\n"
+	"To map error codes to error messages, use the function os.strerror(),\n"
+	"e.g. os.strerror(2) could return 'No such file or directory'.";
 
-DL_EXPORT(void)
-initerrno(void)
+DL_EXPORT(void) initerrno()
 {
 	PyObject *m, *d, *de;
 	m = Py_InitModule3("errno", errno_methods, errno__doc__);
 	d = PyModule_GetDict(m);
 	de = PyDict_New();
 	if (!d || !de || PyDict_SetItemString(d, "errorcode", de) < 0)
+	{
 		return;
+	}
 
-/* Macro so I don't have to edit each and every line below... */
 #define inscode(d, ds, de, name, code, comment) _inscode(d, de, name, code)
-
-	/*
-	 * The names and comments are borrowed from linux/include/errno.h,
-	 * which should be pretty all-inclusive
-	 */ 
 
 #ifdef ENODEV
 	inscode(d, ds, de, "ENODEV", ENODEV, "No such device");

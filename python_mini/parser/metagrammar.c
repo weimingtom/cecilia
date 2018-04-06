@@ -175,7 +175,7 @@ static grammar _PyParser_Grammar = {
 	256
 };
 
-grammar *meta_grammar(void)
+grammar *meta_grammar()
 {
 	return &_PyParser_Grammar;
 }

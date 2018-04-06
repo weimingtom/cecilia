@@ -501,7 +501,7 @@ static char getrefcount_doc[] =
 #ifdef COUNT_ALLOCS
 static PyObject *sys_getcounts(PyObject *self)
 {
-	extern PyObject *get_counts(void);
+	extern PyObject *get_counts();
 	return get_counts();
 }
 #endif
@@ -626,7 +626,7 @@ static PyObject *list_builtin_module_names()
 
 static PyObject *warnoptions = NULL;
 
-void PySys_ResetWarnOptions(void)
+void PySys_ResetWarnOptions()
 {
 	if (warnoptions == NULL || !PyList_Check(warnoptions))
 	{

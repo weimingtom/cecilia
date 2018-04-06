@@ -111,9 +111,9 @@ void FreeNonRecursiveMutex(PNRMUTEX mutex)
 	}
 }
 
-long PyThread_get_thread_ident(void);
+long PyThread_get_thread_ident();
 
-static void PyThread__init_thread(void)
+static void PyThread__init_thread()
 {
 
 }

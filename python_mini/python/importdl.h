@@ -39,7 +39,7 @@ typedef FARPROC dl_funcptr;
 #include <os2def.h>
 typedef int (* APIENTRY dl_funcptr)();
 #else
-typedef void (*dl_funcptr)(void);
+typedef void (*dl_funcptr)();
 #endif
 #endif
 

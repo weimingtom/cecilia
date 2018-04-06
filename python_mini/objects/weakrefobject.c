@@ -20,7 +20,7 @@ long _PyWeakref_GetWeakrefCount(PyWeakReference *head)
     return count;
 }
 
-static PyWeakReference *new_weakref(void)
+static PyWeakReference *new_weakref()
 {
     PyWeakReference *result;
 

@@ -47,7 +47,7 @@ static void s_pop(stack *s)
 	}
 	s->s_top++;
 }
-#else /* !Py_DEBUG */
+#else
 #define s_pop(s) (s)->s_top++
 #endif
 
@@ -73,7 +73,7 @@ parser_state *PyParser_New(grammar *g, int start)
 		return NULL;
 	}
 	s_reset(&ps->p_stack);
-	(void) s_push(&ps->p_stack, PyGrammar_FindDFA(g, start), ps->p_tree);
+	s_push(&ps->p_stack, PyGrammar_FindDFA(g, start), ps->p_tree);
 	return ps;
 }
 
@@ -370,4 +370,4 @@ void printtree(parser_state *ps)
 	PyNode_ListTree(ps->p_tree);
 	printf("\n");
 }
-#endif /* Py_DEBUG */
+#endif 

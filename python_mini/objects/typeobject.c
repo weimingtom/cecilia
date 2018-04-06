@@ -255,7 +255,7 @@ PyObject *PyType_GenericAlloc(PyTypeObject *type, int nitems)
 	}
 	else
 	{
-		(void) PyObject_INIT_VAR((PyVarObject *)obj, type, nitems);
+		PyObject_INIT_VAR((PyVarObject *)obj, type, nitems);
 	}
 
 	if (PyType_IS_GC(type))

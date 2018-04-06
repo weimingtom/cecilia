@@ -208,7 +208,6 @@ static PyObject *tuplerepr(PyTupleObject *v)
 		return NULL;
 	}
 
-	/* Do repr() on each element. */
 	for (i = 0; i < n; ++i) 
 	{
 		s = PyObject_Repr(v->ob_item[i]);
@@ -219,7 +218,6 @@ static PyObject *tuplerepr(PyTupleObject *v)
 		PyTuple_SET_ITEM(pieces, i, s);
 	}
 
-	/* Add "()" decorations to the first and last items. */
 	assert(n > 0);
 	s = PyString_FromString("(");
 	if (s == NULL)
@@ -247,7 +245,6 @@ static PyObject *tuplerepr(PyTupleObject *v)
 		goto Done;
 	}
 
-	/* Paste them all together with ", " between. */
 	s = PyString_FromString(", ");
 	if (s == NULL)
 	{

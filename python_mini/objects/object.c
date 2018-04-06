@@ -216,7 +216,7 @@ void _PyObject_Dump(PyObject* op)
 	else 
 	{
 		fprintf(stderr, "object  : ");
-		(void)PyObject_Print(op, stderr, 0);
+		PyObject_Print(op, stderr, 0);
 		fprintf(stderr, "\n"
 			"type    : %s\n"
 			"refcount: %d\n"
@@ -677,7 +677,7 @@ static int do_cmp(PyObject *v, PyObject *w)
 
 static int compare_nesting = 0;
 
-static PyObject *get_inprogress_dict(void)
+static PyObject *get_inprogress_dict()
 {
 	static PyObject *key;
 	PyObject *tstate_dict, *inprogress;

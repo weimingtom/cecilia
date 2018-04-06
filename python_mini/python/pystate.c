@@ -19,7 +19,7 @@
 #ifdef WITH_THREAD
 #include "pythread.h"
 static PyThread_type_lock head_mutex = NULL;
-#define HEAD_INIT() (void)(head_mutex || (head_mutex = PyThread_allocate_lock()))
+#define HEAD_INIT() (head_mutex || (head_mutex = PyThread_allocate_lock()))
 #define HEAD_LOCK() PyThread_acquire_lock(head_mutex, WAIT_LOCK)
 #define HEAD_UNLOCK() PyThread_release_lock(head_mutex)
 #else

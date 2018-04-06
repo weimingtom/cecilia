@@ -909,7 +909,7 @@ static PyMethodDef marshal_methods[] = {
 	{NULL,		NULL}
 };
 
-void PyMarshal_Init(void)
+void PyMarshal_Init()
 {
-	(void) Py_InitModule("marshal", marshal_methods);
+	Py_InitModule("marshal", marshal_methods);
 }

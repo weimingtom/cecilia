@@ -599,7 +599,7 @@ static PyObject *float_int(PyObject *v)
 	double wholepart;
 	long aslong;
 
-	(void)modf(x, &wholepart);
+	modf(x, &wholepart);
 #ifdef RISCOS
 	if (wholepart>LONG_MAX || wholepart<LONG_MIN) 
 	{
@@ -695,10 +695,10 @@ static PyNumberMethods float_as_number = {
 	0,		
 	0,		
 	0,		
-	(coercion)float_coerce, /*nb_coerce*/
-	(unaryfunc)float_int, /*nb_int*/
-	(unaryfunc)float_long, /*nb_long*/
-	(unaryfunc)float_float, /*nb_float*/
+	(coercion)float_coerce,
+	(unaryfunc)float_int, 
+	(unaryfunc)float_long, 
+	(unaryfunc)float_float,
 	0,		
 	0,		
 	0,		

@@ -187,13 +187,13 @@ PyObject *PyString_FromFormatV(const char *format, va_list vargs)
 			switch (*f) 
 			{
 			case 'c':
-				(void)va_arg(count, int);
+				va_arg(count, int);
 			case '%':
 				n++;
 				break;
 
 			case 'd': case 'i': case 'x':
-				(void) va_arg(count, int);
+				va_arg(count, int);
 				n += 20;
 				break;
 
@@ -203,7 +203,7 @@ PyObject *PyString_FromFormatV(const char *format, va_list vargs)
 				break;
 
 			case 'p':
-				(void) va_arg(count, int);
+				va_arg(count, int);
 				n += 19;
 				break;
 

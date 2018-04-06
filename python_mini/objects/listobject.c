@@ -551,7 +551,7 @@ static int list_ass_slice(PyListObject *a, int ilow, int ihigh, PyObject *v)
 				item[k+d] = item[k];
 			}
 			a->ob_size += d;
-			NRESIZE(item, PyObject *, a->ob_size); /* Can't fail */
+			NRESIZE(item, PyObject *, a->ob_size);
 			a->ob_item = item;
 		}
 	}
@@ -1175,7 +1175,6 @@ static int samplesortslice(PyObject **lo, PyObject **hi, PyObject *compare)
 		
 		if (r - lo <= hi - l) 
 		{
-			/* second is bigger */
 			stack[top].lo = l;
 			stack[top].hi = hi;
 			stack[top].extra = -extra;
@@ -1399,7 +1398,7 @@ static int list_traverse(PyListObject *o, visitproc visit, void *arg)
 
 static int list_clear(PyListObject *lp)
 {
-	(void) PyList_SetSlice((PyObject *)lp, 0, lp->ob_size, 0);
+	PyList_SetSlice((PyObject *)lp, 0, lp->ob_size, 0);
 	return 0;
 }
 
@@ -1578,7 +1577,7 @@ static int list_fill(PyListObject *result, PyObject *v)
 		}
 		if (i < n)
 		{
-			PyList_SET_ITEM(result, i, item); /* steals ref */
+			PyList_SET_ITEM(result, i, item);
 		}
 		else 
 		{
@@ -1713,7 +1712,7 @@ PyTypeObject PyList_Type = {
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC |
 		Py_TPFLAGS_BASETYPE,
  	list_doc,				
- 	(traverseproc)list_traverse,		/* tp_traverse */
+ 	(traverseproc)list_traverse,
  	(inquiry)list_clear,	
 	list_richcompare,		
 	0,				
@@ -1753,7 +1752,7 @@ static PyMethodDef immutable_list_methods[] = {
 	{NULL,		NULL}
 };
 
-static int immutable_list_ass(void)
+static int immutable_list_ass()
 {
 	immutable_list_op();
 	return -1;

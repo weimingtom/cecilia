@@ -117,7 +117,6 @@ extern int UserDataObj_Convert(PyObject *, UserData *);
 extern PyObject *MediaObj_New(Media);
 extern int MediaObj_Convert(PyObject *, Media *);
 
-/* Res exports */
 extern PyObject *ResObj_New(Handle);
 extern int ResObj_Convert(PyObject *, Handle *);
 extern PyObject *OptResObj_New(Handle);

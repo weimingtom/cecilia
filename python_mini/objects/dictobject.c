@@ -16,7 +16,7 @@ static dictentry *lookdict_string(dictobject *mp, PyObject *key, long hash);
 static long created = 0L;
 static long converted = 0L;
 
-static void show_counts(void)
+static void show_counts()
 {
 	fprintf(stderr, "created %ld string dicts\n", created);
 	fprintf(stderr, "converted %ld to normal dicts\n", converted);
@@ -35,7 +35,7 @@ static void show_counts(void)
 	INIT_NONZERO_DICT_SLOTS(mp);					\
     } while(0)
 
-PyObject *PyDict_New(void)
+PyObject *PyDict_New()
 {
 	register dictobject *mp;
 	if (dummy == NULL) 

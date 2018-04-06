@@ -516,7 +516,7 @@ void PyFrame_LocalsToFast(PyFrameObject *f, int clear)
 	PyErr_Restore(error_type, error_value, error_traceback);
 }
 
-void PyFrame_Fini(void)
+void PyFrame_Fini()
 {
 	while (free_list != NULL) 
 	{

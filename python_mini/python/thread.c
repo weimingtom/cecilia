@@ -65,7 +65,7 @@ static int thread_debug = 0;
 
 static int initialized;
 
-static void PyThread__init_thread(void);
+static void PyThread__init_thread();
 
 void PyThread_init_thread()
 {

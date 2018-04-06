@@ -1984,7 +1984,7 @@ static PyObject *instance_ipow(PyObject *v, PyObject *w, PyObject *z)
 #define NAME_OPS 6
 static PyObject **name_op = NULL;
 
-static int init_name_op(void)
+static int init_name_op()
 {
 	int i;
 	char *_name_op[] = {
@@ -2683,7 +2683,7 @@ PyTypeObject PyMethod_Type = {
 	0,				
 };
 
-void PyMethod_Fini(void)
+void PyMethod_Fini()
 {
 	while (free_list) 
 	{

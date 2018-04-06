@@ -23,7 +23,7 @@ static PyUnicodeObject *unicode_empty;
 static PyUnicodeObject *unicode_latin1[256];
 static char unicode_default_encoding[100];
 
-Py_UNICODE PyUnicode_GetMax(void)
+Py_UNICODE PyUnicode_GetMax()
 {
 #ifdef Py_UNICODE_WIDE
 	return 0x10FFFF;
@@ -602,7 +602,7 @@ onError:
     return -1;
 }
 
-const char *PyUnicode_GetDefaultEncoding(void)
+const char *PyUnicode_GetDefaultEncoding()
 {
     return unicode_default_encoding;
 }
@@ -659,12 +659,8 @@ static char utf7_special[128] = {
         Py_UNICODE outCh = (Py_UNICODE) ((ch >> (bits-16)) & 0xffff); \
         bits -= 16; \
 		if (surrogate) { \
-			/* We have already generated an error for the high surrogate
-               so let's not bother seeing if the low surrogate is correct or not */\
 			surrogate = 0; \
 		} else if (0xDC00 <= outCh && outCh <= 0xDFFF) { \
-            /* This is a surrogate pair. Unfortunately we can't represent \
-               it in a 16-bit character */ \
 			surrogate = 1; \
             errmsg = "code pairs are not supported"; \
 	        goto utf7Error; \
@@ -2718,39 +2714,46 @@ PyObject *PyUnicode_EncodeCharmap(const Py_UNICODE *p,
 		Py_UNICODE ch = *p++;
 		PyObject *w, *x;
 
-		/* Get mapping (Unicode ordinal -> string char, integer or None) */
 		w = PyInt_FromLong((long)ch);
 		if (w == NULL)
-			goto onError;
-		x = PyObject_GetItem(mapping, w);
-		Py_DECREF(w);
-		if (x == NULL) {
-			if (PyErr_ExceptionMatches(PyExc_LookupError)) {
-			/* No mapping found means: mapping is undefined. */
-			PyErr_Clear();
-			x = Py_None;
-			Py_INCREF(x);
-			} else
+		{
 			goto onError;
 		}
+		x = PyObject_GetItem(mapping, w);
+		Py_DECREF(w);
+		if (x == NULL) 
+		{
+			if (PyErr_ExceptionMatches(PyExc_LookupError)) 
+			{
+				PyErr_Clear();
+				x = Py_None;
+				Py_INCREF(x);
+			} 
+			else
+			{
+				goto onError;
+			}
+		}
 
-		/* Apply mapping */
-		if (PyInt_Check(x)) {
+		if (PyInt_Check(x)) 
+		{
 			long value = PyInt_AS_LONG(x);
-			if (value < 0 || value > 255) {
-			PyErr_SetString(PyExc_TypeError,
-					"character mapping must be in range(256)");
-			Py_DECREF(x);
-			goto onError;
+			if (value < 0 || value > 255) 
+			{
+				PyErr_SetString(PyExc_TypeError,
+						"character mapping must be in range(256)");
+				Py_DECREF(x);
+				goto onError;
 			}
 			*s++ = (char)value;
 		}
-		else if (x == Py_None) {
-			/* undefined mapping */
+		else if (x == Py_None) 
+		{
 			if (charmap_encoding_error(&p, &s, errors, 
-						   "character maps to <undefined>")) {
-			Py_DECREF(x);
-			goto onError;
+						   "character maps to <undefined>")) 
+			{
+				Py_DECREF(x);
+				goto onError;
 			}
 		}
 		else if (PyString_Check(x)) 
@@ -5070,7 +5073,7 @@ static PyObject *unicode_lstrip(PyUnicodeObject *self, PyObject *args)
 {
 	if (PyTuple_GET_SIZE(args) == 0)
 	{
-		return do_strip(self, LEFTSTRIP); /* Common case */
+		return do_strip(self, LEFTSTRIP);
 	}
 	else
 	{

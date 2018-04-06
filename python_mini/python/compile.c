@@ -542,7 +542,7 @@ static int get_ref_type(struct compiling *, char *);
 
 static int symtable_build(struct compiling *, node *);
 static int symtable_load_symbols(struct compiling *);
-static struct symtable *symtable_init(void);
+static struct symtable *symtable_init();
 static void symtable_enter_scope(struct symtable *, char *, int, int);
 static int symtable_exit_scope(struct symtable *);
 static int symtable_add_def(struct symtable *, char *, int);

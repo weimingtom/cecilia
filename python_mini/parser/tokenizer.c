@@ -13,7 +13,7 @@ extern char *PyOS_Readline(char *);
 #define Py_CHARMASK(c)		((c) & 0xff)
 #endif
 
-static struct tok_state *tok_new(void);
+static struct tok_state *tok_new();
 static int tok_nextc(struct tok_state *tok);
 static void tok_backup(struct tok_state *tok, int c);
 
@@ -849,7 +849,6 @@ again:
 		return ERRORTOKEN;
 	}
 #endif	
-	/* Period or number starting with period? */
 	if (c == '.') 
 	{
 		c = tok_nextc(tok);

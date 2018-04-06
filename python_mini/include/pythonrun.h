@@ -105,7 +105,7 @@ extern DL_IMPORT(char) *(*PyOS_ReadlineFunctionPointer)(char *);
 #endif
 
 #ifdef USE_STACKCHECK
-DL_IMPORT(int) PyOS_CheckStack(void);
+DL_IMPORT(int) PyOS_CheckStack();
 #endif
 
 typedef void (*PyOS_sighandler_t)(int);

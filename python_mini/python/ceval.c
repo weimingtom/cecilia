@@ -355,7 +355,7 @@ int Py_AddPendingCall(int (*func)(void *), void *arg)
 	return 0;
 }
 
-int Py_MakePendingCalls(void)
+int Py_MakePendingCalls()
 {
 	static int busy = 0;
 #ifdef WITH_THREAD
@@ -474,10 +474,10 @@ static PyObject *eval_frame(PyFrameObject *f)
 #define BASIC_POP()	(*--stack_pointer)
 
 #ifdef LLTRACE
-#define PUSH(v)		{ (void)(BASIC_PUSH(v), \
+#define PUSH(v)		{ (BASIC_PUSH(v), \
                                lltrace && prtrace(TOP(), "push")); \
                                assert(STACK_LEVEL() <= f->f_stacksize); }
-#define POP()		((void)(lltrace && prtrace(TOP(), "pop")), BASIC_POP())
+#define POP()		((lltrace && prtrace(TOP(), "pop")), BASIC_POP())
 #else
 #define PUSH(v)		BASIC_PUSH(v)
 #define POP()		BASIC_POP()
