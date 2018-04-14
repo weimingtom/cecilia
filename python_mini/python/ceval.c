@@ -7,10 +7,6 @@
 #include "opcode.h"
 #include "structmember.h"
 
-#ifdef macintosh
-#include "macglue.h"
-#endif
-
 #include <ctype.h>
 
 #ifdef Py_DEBUG
@@ -577,7 +573,7 @@ static PyObject *eval_frame(PyFrameObject *f)
 					goto on_error;
 				}
 			}
-#if !defined(HAVE_SIGNAL_H) || defined(macintosh)
+#if !defined(HAVE_SIGNAL_H)
 			if (PyErr_CheckSignals()) 
 			{
 				why = WHY_EXCEPTION;

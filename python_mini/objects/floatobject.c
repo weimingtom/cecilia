@@ -2,7 +2,7 @@
 #include "python.h"
 #include <ctype.h>
 
-#if !defined(__STDC__) && !defined(macintosh)
+#if !defined(__STDC__)
 extern double fmod(double, double);
 extern double pow(double, double);
 #endif
@@ -600,13 +600,6 @@ static PyObject *float_int(PyObject *v)
 	long aslong;
 
 	modf(x, &wholepart);
-#ifdef RISCOS
-	if (wholepart>LONG_MAX || wholepart<LONG_MIN) 
-	{
-		PyErr_SetString(PyExc_OverflowError, "float too large to convert");
-		return NULL;
-	}
-#endif
 	aslong = (long)wholepart;
 	if ((double)aslong == wholepart)
 	{

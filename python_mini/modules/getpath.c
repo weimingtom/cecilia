@@ -9,12 +9,6 @@
 #include <direct.h>
 #endif
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
 #ifdef WITH_NEXT_FRAMEWORK
 #include <mach-o/dyld.h>
 #endif
@@ -419,11 +413,6 @@ static void calculate_path()
 		{
             fprintf(stderr,
                 "Could not find platform independent libraries <prefix>\n");
-#ifdef ANDROID
-			__android_log_print(ANDROID_LOG_ERROR, "getpath.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				"Could not find platform independent libraries <prefix>");
-#endif
 		}
 		strncpy(prefix, PREFIX, MAXPATHLEN);
         joinpath(prefix, lib_python);
@@ -439,11 +428,6 @@ static void calculate_path()
 		{
             fprintf(stderr,
                 "Could not find platform dependent libraries <exec_prefix>\n");
-#ifdef ANDROID
-			__android_log_print(ANDROID_LOG_ERROR, "getpath.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				"Could not find platform dependent libraries <exec_prefix>");
-#endif
         }
 		strncpy(exec_prefix, EXEC_PREFIX, MAXPATHLEN);
         joinpath(exec_prefix, "lib/lib-dynload");
@@ -453,11 +437,6 @@ static void calculate_path()
 	{
 		fprintf(stderr,
                 "Consider setting $PYTHONHOME to <prefix>[:<exec_prefix>]\n");
-#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "getpath.c", 
-			"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-			"Consider setting $PYTHONHOME to <prefix>[:<exec_prefix>]");
-#endif
 	}
 
     bufsz = 0;

@@ -1158,16 +1158,12 @@ static PyObject *parsenumber(struct compiling *co, char *s)
 	char *end;
 	long x;
 	double dx;
-#ifndef WITHOUT_COMPLEX
 	Py_complex c;
 	int imflag;
-#endif
 
 	errno = 0;
 	end = s + strlen(s) - 1;
-#ifndef WITHOUT_COMPLEX
 	imflag = *end == 'j' || *end == 'J';
-#endif
 	if (*end == 'l' || *end == 'L')
 	{
 		return PyLong_FromString(s, (char **)0, 0);
@@ -1188,7 +1184,6 @@ static PyObject *parsenumber(struct compiling *co, char *s)
 		}
 		return PyInt_FromLong(x);
 	}
-#ifndef WITHOUT_COMPLEX
 	if (imflag) 
 	{
 		c.real = 0.;
@@ -1198,7 +1193,6 @@ static PyObject *parsenumber(struct compiling *co, char *s)
 		return PyComplex_FromCComplex(c);
 	}
 	else
-#endif
 	{
 		PyFPE_START_PROTECT("atof", return 0)
 		dx = atof(s);

@@ -2,10 +2,6 @@
 
 #include "python.h"
 
-#ifdef USE_GUSI
-#include <sys/errno.h>
-#endif
-
 #ifdef MS_WINDOWS
 #include <winsock.h>
 #endif

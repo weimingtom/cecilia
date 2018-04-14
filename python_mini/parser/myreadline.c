@@ -8,9 +8,6 @@
 
 int (*PyOS_InputHook)() = NULL;
 
-#ifdef RISCOS
-int Py_RISCOSWimpFlag;
-#endif
 static int my_fgets(char *buf, int len, FILE *fp)
 {
 	char *p;
@@ -68,24 +65,10 @@ char *PyOS_StdioReadline(char *prompt)
 		return NULL;
 	}
 	fflush(stdout);
-#ifndef RISCOS
 	if (prompt)
 	{
 		fprintf(stderr, "%s", prompt);
 	}
-#else
-	if (prompt) 
-	{
-		if (Py_RISCOSWimpFlag)
-		{
-			fprintf(stderr, "\x0cr%s\x0c", prompt);
-		}
-		else
-		{
-			fprintf(stderr, "%s", prompt);
-		}
-	}
-#endif
 	fflush(stderr);
 	switch (my_fgets(p, (int)n, stdin)) 
 	{
@@ -102,13 +85,6 @@ char *PyOS_StdioReadline(char *prompt)
 		*p = '\0';
 		break;
 	}
-#ifdef MPW
-	n = strlen(prompt);
-	if (strncmp(p, prompt, n) == 0)
-	{
-		memmove(p, p + n, strlen(p) - n + 1);
-	}
-#endif
 	n = strlen(p);
 	while (n > 0 && p[n-1] != '\n') 
 	{

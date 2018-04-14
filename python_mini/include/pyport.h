@@ -62,9 +62,6 @@ typedef LONG_LONG		Py_intptr_t;
 
 #else 
 
-#ifdef USE_GUSI1
-#include <GUSI.h>
-#endif
 
 #endif 
 
@@ -74,10 +71,6 @@ typedef LONG_LONG		Py_intptr_t;
 
 #ifndef DONT_HAVE_FSTAT
 #define HAVE_FSTAT
-#endif
-
-#ifdef RISCOS
-#include <sys/types.h>
 #endif
 
 #ifndef DONT_HAVE_SYS_STAT_H
@@ -273,7 +266,6 @@ typedef	struct fd_set {
 
 #if (!defined(__GNUC__) || __GNUC__ < 2 || \
      (__GNUC__ == 2 && __GNUC_MINOR__ < 7) || \
-     defined(NEXT) ) && \
-    !defined(RISCOS)
+     defined(NEXT) )
 #define __attribute__(__x)
 #endif

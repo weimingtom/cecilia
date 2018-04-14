@@ -1,10 +1,6 @@
 //20170420
 #include "python.h"
 
-#ifdef macintosh
-#include "macglue.h"
-#endif
-
 #include "compile.h"
 #include "frameobject.h"
 #include "traceback.h"

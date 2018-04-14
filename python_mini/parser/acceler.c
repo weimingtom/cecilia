@@ -5,12 +5,6 @@
 #include "token.h"
 #include "parser.h"
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
 static void fixdfa(grammar *, dfa *);
 static void fixstate(grammar *, state *);
 
@@ -21,11 +15,6 @@ void PyGrammar_AddAccelerators(grammar *g)
 
 #ifdef Py_DEBUG
 	fprintf(stderr, "Adding parser accelerators ...\n");
-#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "acceler.c", 
-			"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-			"Adding parser accelerators ...");
-#endif
 #endif
 	d = g->g_dfa;
 	for (i = g->g_ndfas; --i >= 0; d++) 
@@ -35,11 +24,6 @@ void PyGrammar_AddAccelerators(grammar *g)
 	g->g_accel = 1;
 #ifdef Py_DEBUG
 	fprintf(stderr, "Done.\n");
-#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "acceler.c", 
-			"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-			"Done.");
-#endif
 #endif
 }
 
@@ -115,25 +99,12 @@ static void fixstate(grammar *g, state *s)
 			{
 				if (testbit(d1->d_first, ibit)) 
 				{
-#ifdef applec
-#define MPW_881_BUG
-#endif
-#ifdef MPW_881_BUG
-					int temp;
-#endif
 					if (accel[ibit] != -1)
 					{
 						printf("XXX ambiguity!\n");
 					}
-#ifdef MPW_881_BUG
-					temp = 0xFFFF &
-						(a->a_arrow | (1 << 7) |
-						 ((type - NT_OFFSET) << 8));
-					accel[ibit] = temp;
-#else
 					accel[ibit] = a->a_arrow | (1 << 7) |
 						((type - NT_OFFSET) << 8);
-#endif
 				}
 			}
 		}

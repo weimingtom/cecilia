@@ -11,18 +11,6 @@
 #define HAVE_FTRUNCATE
 #endif
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
-#ifdef macintosh
-#ifdef USE_GUSI
-#define HAVE_FTRUNCATE
-#endif
-#endif
-
 #ifdef __MWERKS__
 #define NO_FOPEN_ERRNO
 #endif
@@ -575,12 +563,7 @@ static size_t new_buffersize(PyFileObject *f, size_t currentsize)
 	if (fstat(fileno(f->f_fp), &st) == 0) 
 	{
 		end = st.st_size;
-#ifdef USE_GUSI2
-		pos = lseek(fileno(f->f_fp), 1L, SEEK_CUR);
-		pos = lseek(fileno(f->f_fp), -1L, SEEK_CUR);
-#else
 		pos = lseek(fileno(f->f_fp), 0L, SEEK_CUR);
-#endif
 		if (pos >= 0) 
 		{
 			pos = ftell(f->f_fp);
@@ -1770,20 +1753,6 @@ int PyFile_WriteString(const char *s, PyObject *f)
 			return -1;
 		}
 		fputs(s, fp);
-#ifdef ANDROID
-		if (fp == stderr) 
-		{
-			__android_log_print(ANDROID_LOG_ERROR, "fileobject.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				s);
-		} 
-		else if (fp == stdout) 
-		{
-			__android_log_print(ANDROID_LOG_INFO, "fileobject.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				s);
-		}
-#endif
 		return 0;
 	}
 	else if (!PyErr_Occurred()) 

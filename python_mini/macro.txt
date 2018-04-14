@@ -1,0 +1,28 @@
+myreadline
+-----------------------------
+keep:
+
+#ifdef Py_DEBUG
+#ifdef MS_WINDOWS
+#ifdef EINTR
+
+-----------------------------
+removed:
+
+#if defined ANDROID
+#ifdef ANDROID
+#ifdef applec
+#ifdef MPW_881_BUG
+#ifdef RISCOS   
+--->?Py_RISCOSWimpFlag
+--->#ifndef RISCOS
+--->#elif defined(RISCOS)
+--->!defined(RISCOS)
+#ifdef MPW
+#ifdef __CHAR_UNSIGNED__
+#ifdef macintosh
+--->#ifndef macintosh
+--->#ifdef USE_GUSI
+--->#elif defined(macintosh)
+#ifdef USE_GUSI
+#ifndef WITHOUT_COMPLEX

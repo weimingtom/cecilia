@@ -56,15 +56,19 @@ node *PyParser_ParseFileFlags(FILE *fp, char *filename, grammar *g, int start,
 
 	initerr(err_ret, filename);
 
-	if ((tok = PyTokenizer_FromFile(fp, ps1, ps2)) == NULL) {
+	if ((tok = PyTokenizer_FromFile(fp, ps1, ps2)) == NULL) 
+	{
 		err_ret->error = E_NOMEM;
 		return NULL;
 	}
-	if (Py_TabcheckFlag || Py_VerboseFlag) {
+	if (Py_TabcheckFlag || Py_VerboseFlag) 
+	{
 		tok->filename = filename;
 		tok->altwarning = (filename != NULL);
 		if (Py_TabcheckFlag >= 2)
+		{
 			tok->alterror++;
+		}
 	}
 
 	return parsetok(tok, g, start, err_ret, flags);

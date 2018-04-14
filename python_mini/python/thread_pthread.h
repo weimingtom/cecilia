@@ -38,10 +38,6 @@
 
 #endif
 
-#ifdef USE_GUSI
-#define THREAD_STACK_SIZE 0x10000
-#endif
-
 #if defined(PY_PTHREAD_D4) || defined(PY_PTHREAD_D7)
 #  define pthread_attr_default pthread_attr_default
 #  define pthread_mutexattr_default pthread_mutexattr_default

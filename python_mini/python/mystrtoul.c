@@ -5,11 +5,7 @@
 #define _SGI_MP_SOURCE
 #endif
 
-#ifdef __CHAR_UNSIGNED__
-#define Py_CHARMASK(c)		(c)
-#else
 #define Py_CHARMASK(c)		((c) & 0xff)
-#endif
 
 #include <ctype.h>
 #ifndef DONT_HAVE_ERRNO_H

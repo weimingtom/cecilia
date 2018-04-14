@@ -20,15 +20,6 @@
 #include "windows.h"
 #endif
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
-#ifdef macintosh
-#include "macglue.h"
-#endif
 extern char *Py_GetPath();
 
 extern grammar _PyParser_Grammar;
@@ -208,11 +199,6 @@ void Py_Finalize()
 
 #ifdef Py_REF_DEBUG
 	fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
-#ifdef ANDROID
-	__android_log_print(ANDROID_LOG_ERROR, "pythonrun.c", 
-		"[%s:%d %s][%ld refs]", __FILE__, __LINE__, __FUNCTION__, 
-		_Py_RefTotal);
-#endif
 #endif
 
 #ifdef Py_TRACE_REFS
@@ -484,11 +470,6 @@ int PyRun_InteractiveLoopFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 		ret = PyRun_InteractiveOneFlags(fp, filename, flags);
 #ifdef Py_REF_DEBUG
 		fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
-#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "pythonrun.c", 
-			"[%s:%d %s][%ld refs]", __FILE__, __LINE__, __FUNCTION__, 
-			_Py_RefTotal);
-#endif
 #endif
 		if (ret == E_EOF)
 		{
@@ -587,14 +568,6 @@ static int maybe_pyc_file(FILE *fp, char* filename, char* ext, int closeit)
 	{
 		return 1;
 	}
-
-#ifdef macintosh
-	if (PyMac_getfiletype(filename) == 'PYC '
-	    || PyMac_getfiletype(filename) == 'APPL')
-	{
-		return 1;
-	}
-#endif
 
 	if (closeit) 
 	{
@@ -1323,11 +1296,6 @@ static void err_input(perrdetail *err)
 	
 	default:
 		fprintf(stderr, "error=%d\n", err->error);
-#ifdef ANDROID
-		__android_log_print(ANDROID_LOG_ERROR, "pythonrun.c", 
-			"[%s:%d %s]error=%d", __FILE__, __LINE__, __FUNCTION__, 
-			err->error);
-#endif
 		msg = "unknown parsing error";
 		break;
 	}
@@ -1340,9 +1308,6 @@ static void err_input(perrdetail *err)
 void Py_FatalError(char *msg)
 {
 	fprintf(stderr, "Fatal Python error: %s\n", msg);
-#ifdef macintosh
-	for (;;);
-#endif
 #ifdef MS_WIN32
 	OutputDebugString("Fatal Python error: ");
 	OutputDebugString(msg);
@@ -1415,11 +1380,7 @@ void Py_Exit(int sts)
 {
 	Py_Finalize();
 
-#ifdef macintosh
-	PyMac_Exit(sts);
-#else
 	exit(sts);
-#endif
 }
 
 static void initsigs()

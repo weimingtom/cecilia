@@ -1,6 +1,5 @@
 //20170413
 
-#ifndef WITHOUT_COMPLEX
 #include "python.h"
 #include "structmember.h"
 
@@ -1039,5 +1038,3 @@ PyTypeObject PyComplex_Type = {
 	complex_new,				
 	_PyObject_Del,				
 };
-
-#endif

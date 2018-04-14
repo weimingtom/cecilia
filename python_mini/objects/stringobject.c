@@ -2,12 +2,6 @@
 #include "python.h"
 #include <ctype.h>
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
 #ifdef COUNT_ALLOCS
 int null_strings, one_strings;
 #endif
@@ -637,24 +631,6 @@ static int string_print(PyStringObject *op, FILE *fp, int flags)
 	if (flags & Py_PRINT_RAW) 
 	{
 		fwrite(op->ob_sval, 1, (int) op->ob_size, fp);
-#ifdef ANDROID
-		if (fp == stderr) 
-		{
-			char *str = (char *)calloc(((int) op->ob_size) + 1, 1);
-			strncpy(str, op->ob_sval, (int) op->ob_size);
-			__android_log_print(ANDROID_LOG_ERROR, "stringobject.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				str);
-		} 
-		else if (fp == stdout) 
-		{
-			char *str = (char *)calloc(((int) op->ob_size) + 1, 1);
-			strncpy(str, op->ob_sval, (int) op->ob_size);
-			__android_log_print(ANDROID_LOG_INFO, "stringobject.c", 
-				"[%s:%d %s]%s", __FILE__, __LINE__, __FUNCTION__, 
-				str);		
-		}
-#endif
 		return 0;
 	}
 

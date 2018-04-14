@@ -39,10 +39,6 @@ typedef struct PyMemberDef {
 #define T_ULONG		12
 
 #define T_STRING_INPLACE	13
-#ifdef macintosh
-#define T_PSTRING	14
-#define T_PSTRING_INPLACE	15
-#endif
 
 #define T_OBJECT_EX	16	
 #define READONLY	1

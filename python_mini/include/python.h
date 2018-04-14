@@ -93,9 +93,7 @@
 #include "intobject.h"
 #include "longobject.h"
 #include "floatobject.h"
-#ifndef WITHOUT_COMPLEX
 #include "complexobject.h"
-#endif
 #include "rangeobject.h"
 #include "stringobject.h"
 #include "bufferobject.h"
@@ -132,11 +130,7 @@
 #define PyArg_GetInt(v, a)	PyArg_Parse((v), "i", (a))
 #define PyArg_NoArgs(v)		PyArg_Parse(v, "")
 
-#ifdef __CHAR_UNSIGNED__
-#define Py_CHARMASK(c)		(c)
-#else
 #define Py_CHARMASK(c)		((c) & 0xff)
-#endif
 
 #include "pyfpe.h"
 

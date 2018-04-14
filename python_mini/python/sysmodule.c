@@ -1021,11 +1021,7 @@ void PySys_SetArgv(int argc, char **argv)
 		}
 		if (p != NULL) 
 		{
-#ifndef RISCOS
 			n = p + 1 - argv0;
-#else
-			n = p - argv0;
-#endif
 #if SEP == '/'
 			if (n > 1)
 			{

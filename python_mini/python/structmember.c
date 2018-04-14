@@ -125,27 +125,6 @@ PyObject *PyMember_GetOne(char *addr, PyMemberDef *l)
 		v = PyString_FromString((char*)addr);
 		break;
 
-#ifdef macintosh
-	case T_PSTRING:
-		if (*(char**)addr == NULL) 
-		{
-			Py_INCREF(Py_None);
-			v = Py_None;
-		}
-		else
-		{
-			v = PyString_FromStringAndSize(
-				(*(char**)addr)+1,
-				**(unsigned char**)addr);
-		}
-		break;
-	case T_PSTRING_INPLACE:
-		v = PyString_FromStringAndSize(
-			((char*)addr)+1,
-			*(unsigned char*)addr);
-		break;
-#endif
-
 	case T_CHAR:
 		v = PyString_FromStringAndSize((char*)addr, 1);
 		break;
@@ -201,11 +180,7 @@ int PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
 {
 	PyObject *oldv;
 
-	if ((l->flags & READONLY) || l->type == T_STRING
-#ifdef macintosh
-	    || l->type == T_PSTRING
-#endif
-		)
+	if ((l->flags & READONLY) || l->type == T_STRING)
 	{
 		PyErr_SetString(PyExc_TypeError, "readonly attribute");
 		return -1;

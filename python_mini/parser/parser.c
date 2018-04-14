@@ -111,8 +111,7 @@ static int push(stack *s, int type, dfa *d, int newstate, int lineno)
 	return s_push(s, d, CHILD(n, NCH(n)-1));
 }
 
-static int
-classify(parser_state *ps, int type, char *str)
+static int classify(parser_state *ps, int type, char *str)
 {
 	grammar *g = ps->p_grammar;
 	int n = g->g_ll.ll_nlabels;

@@ -1,10 +1,6 @@
 //20180406
 #include "python.h"
 
-#ifdef macintosh
-#include "macbuildno.h"
-#endif
-
 #ifndef DONT_HAVE_STDIO_H
 #include <stdio.h>
 #endif

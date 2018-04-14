@@ -163,7 +163,6 @@ static void w_object(PyObject *v, WFILE *p)
 		w_byte(n, p);
 		w_string(buf, n, p);
 	}
-#ifndef WITHOUT_COMPLEX
 	else if (PyComplex_Check(v)) 
 	{
 		char buf[256];
@@ -182,7 +181,6 @@ static void w_object(PyObject *v, WFILE *p)
 		w_byte(n, p);
 		w_string(buf, n, p);
 	}
-#endif
 	else if (PyString_Check(v)) 
 	{
 		w_byte(TYPE_STRING, p);
@@ -445,7 +443,6 @@ static PyObject *r_object(RFILE *p)
 			return PyFloat_FromDouble(dx);
 		}
 
-#ifndef WITHOUT_COMPLEX
 	case TYPE_COMPLEX:
 		{
 			char buf[256];
@@ -472,7 +469,6 @@ static PyObject *r_object(RFILE *p)
 			PyFPE_END_PROTECT(c)
 			return PyComplex_FromCComplex(c);
 		}
-#endif
 
 	case TYPE_STRING:
 		n = r_long(p);

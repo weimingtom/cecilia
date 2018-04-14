@@ -12,12 +12,6 @@
 
 #endif
 
-#if defined ANDROID
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-#endif
-
 extern DL_EXPORT(int) Py_Main(int, char **);
 
 int main(int argc, char **argv)

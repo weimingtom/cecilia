@@ -24,12 +24,7 @@ static int  orig_argc;
 
 #define BASE_OPTS "c:dEhiOQ:StuUvVW:xX"
 
-#ifndef RISCOS
 #define PROGRAM_OPTS BASE_OPTS
-#else
-#define PROGRAM_OPTS BASE_OPTS "w"
-extern int Py_RISCOSWimpFlag;
-#endif
 
 static char *usage_line =
 	"usage: %s [option] ... [-c cmd | file | -] [arg] ...\n";
@@ -115,10 +110,6 @@ DL_EXPORT(int) Py_Main(int argc, char **argv)
 	orig_argc = argc;
 	orig_argv = argv;
 
-#ifdef RISCOS
-	Py_RISCOSWimpFlag = 0;
-#endif
-
 	PySys_ResetWarnOptions();
 
 	while ((c = _PyOS_GetOpt(argc, argv, PROGRAM_OPTS)) != EOF) 
@@ -200,12 +191,6 @@ DL_EXPORT(int) Py_Main(int argc, char **argv)
 		case 'v':
 			Py_VerboseFlag++;
 			break;
-
-#ifdef RISCOS
-		case 'w':
-			Py_RISCOSWimpFlag = 1;
-			break;
-#endif
 
 		case 'x':
 			skipfirstline = 1;
@@ -383,12 +368,6 @@ DL_EXPORT(int) Py_Main(int argc, char **argv)
 	}
 
 	Py_Finalize();
-#ifdef RISCOS
-	if(Py_RISCOSWimpFlag)
-	{
-		fprintf(stderr, "\x0cq\x0c");
-	}
-#endif
 
 #ifdef __INSURE__
 	_Py_ReleaseInternedStrings();

@@ -624,7 +624,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			break;
 		}
 	
-#ifndef WITHOUT_COMPLEX
 	case 'D': 
 		{
 			Py_complex *p = va_arg(*p_va, Py_complex *);
@@ -640,7 +639,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			}
 			break;
 		}
-#endif 
 
 	case 'c': 
 		{
@@ -1480,14 +1478,12 @@ static char *skipitem(char **p_format, va_list *p_va)
 			break;
 		}
 	
-#ifndef WITHOUT_COMPLEX
 	case 'D':
 		{
 			va_arg(*p_va, Py_complex *);
 			break;
 		}
-#endif
-	
+
 	case 'c':
 		{
 			va_arg(*p_va, char *);
