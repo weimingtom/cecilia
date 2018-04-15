@@ -32,7 +32,7 @@ Py_UNICODE PyUnicode_GetMax()
 #endif
 }
 
-static int unicode_resize(register PyUnicodeObject *unicode,
+static int unicode_resize(PyUnicodeObject *unicode,
                       int length)
 {
     void *oldstr;
@@ -76,7 +76,7 @@ reset:
 
 static PyUnicodeObject *_PyUnicode_New(int length)
 {
-    register PyUnicodeObject *unicode;
+    PyUnicodeObject *unicode;
 
     if (length == 0 && unicode_empty != NULL) 
 	{
@@ -131,7 +131,7 @@ onError:
     return NULL;
 }
 
-static void unicode_dealloc(register PyUnicodeObject *unicode)
+static void unicode_dealloc(PyUnicodeObject *unicode)
 {
     if (PyUnicode_CheckExact(unicode) &&
 		unicode_freelist_size < MAX_UNICODE_FREELIST_SIZE) 
@@ -162,7 +162,7 @@ static void unicode_dealloc(register PyUnicodeObject *unicode)
 int PyUnicode_Resize(PyObject **unicode,
 		     int length)
 {
-    register PyUnicodeObject *v;
+    PyUnicodeObject *v;
 
     if (unicode == NULL) 
 	{
@@ -243,7 +243,7 @@ PyObject *PyUnicode_FromUnicode(const Py_UNICODE *u,
 
 #ifdef HAVE_WCHAR_H
 
-PyObject *PyUnicode_FromWideChar(register const wchar_t *w,
+PyObject *PyUnicode_FromWideChar(const wchar_t *w,
 				 int size)
 {
     PyUnicodeObject *unicode;
@@ -264,8 +264,8 @@ PyObject *PyUnicode_FromWideChar(register const wchar_t *w,
     memcpy(unicode->str, w, size * sizeof(wchar_t));
 #else    
     {
-		register Py_UNICODE *u;
-		register int i;
+		Py_UNICODE *u;
+		int i;
 		u = PyUnicode_AS_UNICODE(unicode);
 		for (i = size; i >= 0; i--)
 		{
@@ -278,7 +278,7 @@ PyObject *PyUnicode_FromWideChar(register const wchar_t *w,
 }
 
 int PyUnicode_AsWideChar(PyUnicodeObject *unicode,
-			 register wchar_t *w,
+			 wchar_t *w,
 			 int size)
 {
     if (unicode == NULL) 
@@ -294,8 +294,8 @@ int PyUnicode_AsWideChar(PyUnicodeObject *unicode,
 	memcpy(w, unicode->str, size * sizeof(wchar_t));
 #else
     {
-		register Py_UNICODE *u;
-		register int i;
+		Py_UNICODE *u;
+		int i;
 		u = PyUnicode_AS_UNICODE(unicode);
 		for (i = size; i >= 0; i--)
 		{
@@ -350,7 +350,7 @@ PyObject *PyUnicode_FromOrdinal(int ordinal)
     }
 }
 
-PyObject *PyUnicode_FromObject(register PyObject *obj)
+PyObject *PyUnicode_FromObject(PyObject *obj)
 {
     if (PyUnicode_CheckExact(obj)) 
 	{
@@ -365,7 +365,7 @@ PyObject *PyUnicode_FromObject(register PyObject *obj)
     return PyUnicode_FromEncodedObject(obj, NULL, "strict");
 }
 
-PyObject *PyUnicode_FromEncodedObject(register PyObject *obj,
+PyObject *PyUnicode_FromEncodedObject(PyObject *obj,
 				      const char *encoding,
 				      const char *errors)
 {
@@ -2302,7 +2302,7 @@ PyObject *PyUnicode_DecodeASCII(const char *s,
 	p = PyUnicode_AS_UNICODE(v);
     while (size-- > 0) 
 	{
-		register unsigned char c;
+		unsigned char c;
 
 		c = (unsigned char)*s++;
 		if (c < 128)
@@ -2986,7 +2986,7 @@ int PyUnicode_EncodeDecimal(Py_UNICODE *s,
     end = s + length;
     while (p < end) 
 	{
-		register Py_UNICODE ch = *p++;
+		Py_UNICODE ch = *p++;
 		int decimal;
 		
 		if (Py_UNICODE_ISSPACE(ch)) 
@@ -3326,7 +3326,7 @@ static int fixupper(PyUnicodeObject *self)
     
     while (len-- > 0) 
 	{
-		register Py_UNICODE ch;
+		Py_UNICODE ch;
 		
 		ch = Py_UNICODE_TOUPPER(*s);
 		if (ch != *s) 
@@ -3348,7 +3348,7 @@ static int fixlower(PyUnicodeObject *self)
     
     while (len-- > 0) 
 	{
-		register Py_UNICODE ch;
+		Py_UNICODE ch;
 		
 		ch = Py_UNICODE_TOLOWER(*s);
 		if (ch != *s) 
@@ -3416,8 +3416,8 @@ static int fixcapitalize(PyUnicodeObject *self)
 
 static int fixtitle(PyUnicodeObject *self)
 {
-    register Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register Py_UNICODE *e;
+    Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    Py_UNICODE *e;
     int previous_is_cased;
 
     if (PyUnicode_GET_SIZE(self) == 1) 
@@ -3438,7 +3438,7 @@ static int fixtitle(PyUnicodeObject *self)
 	previous_is_cased = 0;
 	for (; p < e; p++) 
 	{
-		register const Py_UNICODE ch = *p;
+		const Py_UNICODE ch = *p;
 		
 		if (previous_is_cased)
 		{
@@ -3631,8 +3631,8 @@ static PyObject *split_whitespace(PyUnicodeObject *self,
 			   PyObject *list,
 			   int maxcount)
 {
-    register int i;
-    register int j;
+    int i;
+    int j;
     int len = self->length;
     PyObject *str;
 
@@ -3675,8 +3675,8 @@ onError:
 PyObject *PyUnicode_Splitlines(PyObject *string,
 			       int keepends)
 {
-    register int i;
-    register int j;
+    int i;
+    int j;
     int len;
     PyObject *list;
     PyObject *str;
@@ -3744,8 +3744,8 @@ static PyObject *split_char(PyUnicodeObject *self,
 		     Py_UNICODE ch,
 		     int maxcount)
 {
-    register int i;
-    register int j;
+    int i;
+    int j;
     int len = self->length;
     PyObject *str;
 
@@ -3781,8 +3781,8 @@ static PyObject *split_substring(PyUnicodeObject *self,
 			  PyUnicodeObject *substring,
 			  int maxcount)
 {
-    register int i;
-    register int j;
+    int i;
+    int j;
     int len = self->length;
     int sublen = substring->length;
     PyObject *str;
@@ -4101,7 +4101,7 @@ static int unicode_compare(PyUnicodeObject *str1, PyUnicodeObject *str2)
 
 static int unicode_compare(PyUnicodeObject *str1, PyUnicodeObject *str2)
 {
-    register int len1, len2;
+    int len1, len2;
 
     Py_UNICODE *s1 = str1->str;
     Py_UNICODE *s2 = str2->str;
@@ -4171,8 +4171,8 @@ int PyUnicode_Contains(PyObject *container,
 {
     PyUnicodeObject *u = NULL, *v = NULL;
     int result;
-    register const Py_UNICODE *p, *e;
-    register Py_UNICODE ch;
+    const Py_UNICODE *p, *e;
+    Py_UNICODE ch;
 
     v = (PyUnicodeObject *)PyUnicode_FromObject(element);
     if (v == NULL) 
@@ -4461,9 +4461,9 @@ static PyObject *unicode_getitem(PyUnicodeObject *self, int index)
 
 static long unicode_hash(PyUnicodeObject *self)
 {
-    register int len;
-    register Py_UNICODE *p;
-    register long x;
+    int len;
+    Py_UNICODE *p;
+    long x;
 
     if (self->hash != -1)
 	{
@@ -4529,8 +4529,8 @@ static char islower__doc__[] =
 
 static PyObject *unicode_islower(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
     int cased;
 
     if (PyUnicode_GET_SIZE(self) == 1)
@@ -4547,7 +4547,7 @@ static PyObject *unicode_islower(PyUnicodeObject *self)
     cased = 0;
     for (; p < e; p++) 
 	{
-		register const Py_UNICODE ch = *p;
+		const Py_UNICODE ch = *p;
 		
 		if (Py_UNICODE_ISUPPER(ch) || Py_UNICODE_ISTITLE(ch))
 		{
@@ -4569,8 +4569,8 @@ static char isupper__doc__[] =
 
 static PyObject *unicode_isupper(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
     int cased;
 
     if (PyUnicode_GET_SIZE(self) == 1)
@@ -4587,7 +4587,7 @@ static PyObject *unicode_isupper(PyUnicodeObject *self)
     cased = 0;
     for (; p < e; p++) 
 	{
-		register const Py_UNICODE ch = *p;
+		const Py_UNICODE ch = *p;
 		
 		if (Py_UNICODE_ISLOWER(ch) || Py_UNICODE_ISTITLE(ch))
 		{
@@ -4610,8 +4610,8 @@ static char istitle__doc__[] =
 
 static PyObject *unicode_istitle(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
     int cased, previous_is_cased;
 
     if (PyUnicode_GET_SIZE(self) == 1)
@@ -4630,7 +4630,7 @@ static PyObject *unicode_istitle(PyUnicodeObject *self)
     previous_is_cased = 0;
     for (; p < e; p++) 
 	{
-		register const Py_UNICODE ch = *p;
+		const Py_UNICODE ch = *p;
 		
 		if (Py_UNICODE_ISUPPER(ch) || Py_UNICODE_ISTITLE(ch)) 
 		{
@@ -4666,8 +4666,8 @@ static char isspace__doc__[] =
 
 static PyObject *unicode_isspace(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISSPACE(*p))
@@ -4699,8 +4699,8 @@ static char isalpha__doc__[] =
 
 static PyObject *unicode_isalpha(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISALPHA(*p))
@@ -4732,8 +4732,8 @@ static char isalnum__doc__[] =
 
 static PyObject *unicode_isalnum(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISALNUM(*p))
@@ -4765,8 +4765,8 @@ static char isdecimal__doc__[] =
 
 static PyObject *unicode_isdecimal(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISDECIMAL(*p))
@@ -4798,8 +4798,8 @@ static char isdigit__doc__[] =
 
 static PyObject *unicode_isdigit(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISDIGIT(*p))
@@ -4831,8 +4831,8 @@ static char isnumeric__doc__[] =
 
 static PyObject *unicode_isnumeric(PyUnicodeObject *self)
 {
-    register const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
-    register const Py_UNICODE *e;
+    const Py_UNICODE *p = PyUnicode_AS_UNICODE(self);
+    const Py_UNICODE *e;
 
     if (PyUnicode_GET_SIZE(self) == 1 &&
 		Py_UNICODE_ISNUMERIC(*p))
@@ -5733,9 +5733,9 @@ static PyObject *getnextarg(PyObject *args, int arglen, int *p_argidx)
 #define F_ALT	(1<<3)
 #define F_ZERO	(1<<4)
 
-static int usprintf(register Py_UNICODE *buffer, char *format, ...)
+static int usprintf(Py_UNICODE *buffer, char *format, ...)
 {
-    register int i;
+    int i;
     int len;
     va_list va;
     char *charbuffer;

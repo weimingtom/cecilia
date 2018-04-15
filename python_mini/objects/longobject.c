@@ -20,10 +20,10 @@ static int ticker;
 		if (PyErr_CheckSignals()) { PyTryBlock; } \
 	}
 
-static PyLongObject *long_normalize(register PyLongObject *v)
+static PyLongObject *long_normalize(PyLongObject *v)
 {
 	int j = ABS(v->ob_size);
-	register int i = j;
+	int i = j;
 	
 	while (i > 0 && v->ob_digit[i-1] == 0)
 	{
@@ -169,7 +169,7 @@ PyObject *PyLong_FromDouble(double dval)
 
 long PyLong_AsLong(PyObject *vv)
 {
-	register PyLongObject *v;
+	PyLongObject *v;
 	unsigned long x, prev;
 	int i, sign;
 
@@ -214,7 +214,7 @@ overflow:
 
 unsigned long PyLong_AsUnsignedLong(PyObject *vv)
 {
-	register PyLongObject *v;
+	PyLongObject *v;
 	unsigned long x, prev;
 	int i;
 	
@@ -797,7 +797,7 @@ static PyLongObject *divrem1(PyLongObject *a, digit n, digit *prem)
 
 static PyObject *long_format(PyObject *aa, int base, int addL)
 {
-	register PyLongObject *a = (PyLongObject *)aa;
+	PyLongObject *a = (PyLongObject *)aa;
 	PyStringObject *str;
 	int i;
 	const int size_a = ABS(a->ob_size);
@@ -1076,7 +1076,6 @@ onError:
 	return NULL;
 }
 
-#ifdef Py_USING_UNICODE
 PyObject *PyLong_FromUnicode(Py_UNICODE *u, int length, int base)
 {
 	char buffer[256];
@@ -1094,7 +1093,6 @@ PyObject *PyLong_FromUnicode(Py_UNICODE *u, int length, int base)
 
 	return PyLong_FromString(buffer, NULL, base);
 }
-#endif
 
 static PyLongObject *x_divrem(PyLongObject *, PyLongObject *, PyLongObject **);
 static PyObject *long_pos(PyLongObject *);
@@ -2385,14 +2383,12 @@ static PyObject *long_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
 		return PyLong_FromString(PyString_AS_STRING(x), NULL, base);
 	}
-#ifdef Py_USING_UNICODE
 	else if (PyUnicode_Check(x))
 	{
 		return PyLong_FromUnicode(PyUnicode_AS_UNICODE(x),
 					  PyUnicode_GET_SIZE(x),
 					  base);
 	}
-#endif
 	else 
 	{
 		PyErr_SetString(PyExc_TypeError,

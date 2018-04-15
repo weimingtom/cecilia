@@ -220,10 +220,10 @@ static PyObject *class_lookup(PyClassObject *cp, PyObject *name, PyClassObject *
 	return NULL;
 }
 
-static PyObject *class_getattr(register PyClassObject *op, PyObject *name)
+static PyObject *class_getattr(PyClassObject *op, PyObject *name)
 {
-	register PyObject *v;
-	register char *sname = PyString_AsString(name);
+	PyObject *v;
+	char *sname = PyString_AsString(name);
 	PyClassObject *class;
 	descrgetfunc f;
 
@@ -631,7 +631,7 @@ PyObject *PyInstance_NewRaw(PyObject *klass, PyObject *dict)
 
 PyObject *PyInstance_New(PyObject *klass, PyObject *arg, PyObject *kw)
 {
-	register PyInstanceObject *inst;
+	PyInstanceObject *inst;
 	PyObject *init;
 	static PyObject *initstr;
 
@@ -682,7 +682,7 @@ PyObject *PyInstance_New(PyObject *klass, PyObject *arg, PyObject *kw)
 	return (PyObject *)inst;
 }
 
-static void instance_dealloc(register PyInstanceObject *inst)
+static void instance_dealloc(PyInstanceObject *inst)
 {
 	PyObject *error_type, *error_value, *error_traceback;
 	PyObject *del;
@@ -753,10 +753,10 @@ static void instance_dealloc(register PyInstanceObject *inst)
 	PyObject_GC_Del(inst);
 }
 
-static PyObject *instance_getattr1(register PyInstanceObject *inst, PyObject *name)
+static PyObject *instance_getattr1(PyInstanceObject *inst, PyObject *name)
 {
-	register PyObject *v;
-	register char *sname = PyString_AsString(name);
+	PyObject *v;
+	char *sname = PyString_AsString(name);
 	if (sname[0] == '_' && sname[1] == '_') 
 	{
 		if (strcmp(sname, "__dict__") == 0) 
@@ -786,9 +786,9 @@ static PyObject *instance_getattr1(register PyInstanceObject *inst, PyObject *na
 	return v;
 }
 
-static PyObject *instance_getattr2(register PyInstanceObject *inst, PyObject *name)
+static PyObject *instance_getattr2(PyInstanceObject *inst, PyObject *name)
 {
-	register PyObject *v;
+	PyObject *v;
 	PyClassObject *class;
 	descrgetfunc f;
 
@@ -814,9 +814,9 @@ static PyObject *instance_getattr2(register PyInstanceObject *inst, PyObject *na
 	return v;
 }
 
-static PyObject *instance_getattr(register PyInstanceObject *inst, PyObject *name)
+static PyObject *instance_getattr(PyInstanceObject *inst, PyObject *name)
 {
-	register PyObject *func, *res;
+	PyObject *func, *res;
 	res = instance_getattr1(inst, name);
 	if (res == NULL && (func = inst->in_class->cl_getattr) != NULL) 
 	{
@@ -2272,7 +2272,7 @@ static PyMethodObject *free_list;
 
 PyObject *PyMethod_New(PyObject *func, PyObject *self, PyObject *class)
 {
-	register PyMethodObject *im;
+	PyMethodObject *im;
 	if (!PyCallable_Check(func)) 
 	{
 		PyErr_BadInternalCall();
@@ -2367,7 +2367,7 @@ static PyObject *instancemethod_getattro(PyObject *obj, PyObject *name)
 	return NULL;
 }
 
-static void instancemethod_dealloc(register PyMethodObject *im)
+static void instancemethod_dealloc(PyMethodObject *im)
 {
 	_PyObject_GC_UNTRACK(im);
 	if (im->im_weakreflist != NULL)

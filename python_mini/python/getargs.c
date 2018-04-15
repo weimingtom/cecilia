@@ -48,17 +48,7 @@ int PyArg_ParseTuple(PyObject *args, char *format, ...)
 int PyArg_VaParse(PyObject *args, char *format, va_list va)
 {
 	va_list lva;
-
-#ifdef VA_LIST_IS_ARRAY
-	memcpy(lva, va, sizeof(va_list));
-#else
-#ifdef __va_copy
-	__va_copy(lva, va);
-#else
 	lva = va;
-#endif
-#endif
-
 	return vgetargs1(args, format, &lva, 0);
 }
 
@@ -666,7 +656,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					*p = PyString_AS_STRING(arg);
 					*q = PyString_GET_SIZE(arg);
 				}
-#ifdef Py_USING_UNICODE
 				else if (PyUnicode_Check(arg)) 
 				{
 					uarg = UNICODE_DEFAULT_ENCODING(arg);
@@ -678,7 +667,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					*p = PyString_AS_STRING(uarg);
 					*q = PyString_GET_SIZE(uarg);
 				}
-#endif
 				else 
 				{
 					char *buf;
@@ -699,7 +687,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 				{
 					*p = PyString_AS_STRING(arg);
 				}
-#ifdef Py_USING_UNICODE
 				else if (PyUnicode_Check(arg)) 
 				{
 					uarg = UNICODE_DEFAULT_ENCODING(arg);
@@ -710,7 +697,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					}
 					*p = PyString_AS_STRING(uarg);
 				}
-#endif
 				else
 				{
 					return converterr("string", arg, msgbuf, bufsize);
@@ -741,7 +727,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					*p = PyString_AS_STRING(arg);
 					*q = PyString_GET_SIZE(arg);
 				}
-#ifdef Py_USING_UNICODE
 				else if (PyUnicode_Check(arg)) 
 				{
 					uarg = UNICODE_DEFAULT_ENCODING(arg);
@@ -753,7 +738,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					*p = PyString_AS_STRING(uarg);
 					*q = PyString_GET_SIZE(uarg);
 				}
-#endif
 				else 
 				{ 
 					char *buf;
@@ -778,7 +762,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 				{
 					*p = PyString_AS_STRING(arg);
 				}
-#ifdef Py_USING_UNICODE
 				else if (PyUnicode_Check(arg)) 
 				{
 					uarg = UNICODE_DEFAULT_ENCODING(arg);
@@ -789,7 +772,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 					}
 					*p = PyString_AS_STRING(uarg);
 				}
-#endif
 				else
 				{
 					return converterr("string or None", 
@@ -827,12 +809,10 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			int size, recode_strings;
 
 			encoding = (const char *)va_arg(*p_va, const char *);
-#ifdef Py_USING_UNICODE
 			if (encoding == NULL)
 			{
 				encoding = PyUnicode_GetDefaultEncoding();
 			}
-#endif
 			if (*format == 's')
 			{
 				recode_strings = 1;
@@ -862,7 +842,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			}
 			else 
 			{
-#ifdef Py_USING_UNICODE
 		    	PyObject *u;
 
 				u = PyUnicode_FromObject(arg);
@@ -889,9 +868,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 						"(encoder failed to return a string)",
 						arg, msgbuf, bufsize);
 				}
-#else
-				return converterr("string<e>", arg, msgbuf, bufsize);
-#endif
 			}
 			size = PyString_GET_SIZE(s);
 
@@ -955,7 +931,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			break;
 		}
 
-#ifdef Py_USING_UNICODE
 	case 'u': 
 		{
 			if (*format == '#') 
@@ -987,7 +962,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			}
 			break;
 		}
-#endif
 
 	case 'S': 
 		{ 
@@ -1003,7 +977,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			break;
 		}
 	
-#ifdef Py_USING_UNICODE
 	case 'U': 
 		{ 
 			PyObject **p = va_arg(*p_va, PyObject **);
@@ -1017,7 +990,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			}
 			break;
 		}
-#endif
 	
 	case 'O': 
 		{

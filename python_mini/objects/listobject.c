@@ -105,11 +105,11 @@ PyObject *PyList_GetItem(PyObject *op, int i)
 	return ((PyListObject *)op) -> ob_item[i];
 }
 
-int PyList_SetItem(register PyObject *op, register int i,
-               register PyObject *newitem)
+int PyList_SetItem(PyObject *op, int i,
+               PyObject *newitem)
 {
-	register PyObject *olditem;
-	register PyObject **p;
+	PyObject *olditem;
+	PyObject **p;
 	if (!PyList_Check(op)) 
 	{
 		Py_XDECREF(newitem);
@@ -709,7 +709,7 @@ static int listextend_internal(PyListObject *self, PyObject *b)
 	PyObject **items;
 	int selflen = PyList_GET_SIZE(self);
 	int blen;
-	register int i;
+	int i;
 
 	if (PyObject_Size(b) == 0) 
 	{
@@ -887,9 +887,9 @@ static int docompare(PyObject *x, PyObject *y, PyObject *compare)
 
 static int binarysort(PyObject **lo, PyObject **hi, PyObject **start, PyObject *compare)
 {
-	register int k;
-	register PyObject **l, **p, **r;
-	register PyObject *pivot;
+	int k;
+	PyObject **l, **p, **r;
+	PyObject *pivot;
 
 	if (lo == start)
 	{
@@ -960,9 +960,9 @@ static long cutoff[] = {
 
 static int samplesortslice(PyObject **lo, PyObject **hi, PyObject *compare)
 {
-	register PyObject **l, **r;
-	register PyObject *tmp, *pivot;
-	register int k;
+	PyObject **l, **r;
+	PyObject *tmp, *pivot;
+	int k;
 	int n, extra, top, extraOnRight;
 	struct SamplesortStackNode stack[STACKSIZE];
 
@@ -1133,7 +1133,7 @@ static int samplesortslice(PyObject **lo, PyObject **hi, PyObject *compare)
 
 			while (l < r) 
 			{
-				register PyObject *rval = *r--;
+				PyObject *rval = *r--;
 				SETK(rval, pivot);
 				if (k < 0) 
 				{
@@ -1248,8 +1248,8 @@ int PyList_Sort(PyObject *v)
 
 static void _listreverse(PyListObject *self)
 {
-	register PyObject **p, **q;
-	register PyObject *tmp;
+	PyObject **p, **q;
+	PyObject *tmp;
 	
 	if (self->ob_size > 1) 
 	{

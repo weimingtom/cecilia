@@ -146,13 +146,11 @@ int PyObject_Print(PyObject *op, FILE *fp, int flags)
 	{
 		return -1;
 	}
-#ifdef USE_STACKCHECK
 	if (PyOS_CheckStack()) 
 	{
 		PyErr_SetString(PyExc_MemoryError, "stack overflow");
 		return -1;
 	}
-#endif
 	clearerr(fp); 
 	if (op == NULL) 
 	{
@@ -229,13 +227,11 @@ PyObject *PyObject_Repr(PyObject *v)
 	{
 		return NULL;
 	}
-#ifdef USE_STACKCHECK
 	if (PyOS_CheckStack()) 
 	{
 		PyErr_SetString(PyExc_MemoryError, "stack overflow");
 		return NULL;
 	}
-#endif
 	if (v == NULL)
 	{
 		return PyString_FromString("<NULL>");
@@ -253,7 +249,6 @@ PyObject *PyObject_Repr(PyObject *v)
 		{
 			return NULL;
 		}
-#ifdef Py_USING_UNICODE
 		if (PyUnicode_Check(res)) 
 		{
 			PyObject* str;
@@ -268,7 +263,6 @@ PyObject *PyObject_Repr(PyObject *v)
 				return NULL;
 			}
 		}
-#endif
 		if (!PyString_Check(res)) 
 		{
 			PyErr_Format(PyExc_TypeError,
@@ -304,7 +298,6 @@ PyObject *PyObject_Str(PyObject *v)
 	{
 		return NULL;
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(res)) 
 	{
 		PyObject* str;
@@ -319,7 +312,6 @@ PyObject *PyObject_Str(PyObject *v)
 			return NULL;
 		}
 	}
-#endif
 	if (!PyString_Check(res)) 
 	{
 		PyErr_Format(PyExc_TypeError,
@@ -330,8 +322,6 @@ PyObject *PyObject_Str(PyObject *v)
 	}
 	return res;
 }
-
-#ifdef Py_USING_UNICODE
 
 PyObject *PyObject_Unicode(PyObject *v)
 {
@@ -408,8 +398,6 @@ PyObject *PyObject_Unicode(PyObject *v)
 	}
 	return res;
 }
-
-#endif
 
 
 #define RICHCOMPARE(t) (PyType_HasFeature((t), Py_TPFLAGS_HAVE_RICHCOMPARE) \
@@ -586,7 +574,6 @@ static int default_3way_compare(PyObject *v, PyObject *w)
 		return (vv < ww) ? -1 : (vv > ww) ? 1 : 0;
 	}
 
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(v) || PyUnicode_Check(w)) 
 	{
 		c = PyUnicode_Compare(v, w);
@@ -600,7 +587,6 @@ static int default_3way_compare(PyObject *v, PyObject *w)
 		}
 		PyErr_Clear();
 	}
-#endif
 
 	if (v == Py_None)
 	{
@@ -794,13 +780,11 @@ int PyObject_Compare(PyObject *v, PyObject *w)
 	PyTypeObject *vtp;
 	int result;
 
-#if defined(USE_STACKCHECK)
 	if (PyOS_CheckStack()) 
 	{
 		PyErr_SetString(PyExc_MemoryError, "Stack overflow");
 		return -1;
 	}
-#endif
 	if (v == NULL || w == NULL) 
 	{
 		PyErr_BadInternalCall();
@@ -1142,7 +1126,6 @@ PyObject *PyObject_GetAttr(PyObject *v, PyObject *name)
 {
 	PyTypeObject *tp = v->ob_type;
 
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = _PyUnicode_AsDefaultEncodedString(name, NULL);
@@ -1152,7 +1135,6 @@ PyObject *PyObject_GetAttr(PyObject *v, PyObject *name)
 		}
 	}
 	else
-#endif
 	if (!PyString_Check(name)) 
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -1190,7 +1172,6 @@ int PyObject_SetAttr(PyObject *v, PyObject *name, PyObject *value)
 	PyTypeObject *tp = v->ob_type;
 	int err;
 
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = PyUnicode_AsEncodedString(name, NULL, NULL);
@@ -1200,7 +1181,6 @@ int PyObject_SetAttr(PyObject *v, PyObject *name, PyObject *value)
 		}
 	}
 	else 
-#endif
 	if (!PyString_Check(name))
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -1288,7 +1268,6 @@ PyObject *PyObject_GenericGetAttr(PyObject *obj, PyObject *name)
 	descrgetfunc f;
 	PyObject **dictptr;
 
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = PyUnicode_AsEncodedString(name, NULL, NULL);
@@ -1298,7 +1277,6 @@ PyObject *PyObject_GenericGetAttr(PyObject *obj, PyObject *name)
 		}
 	}
 	else 
-#endif
 	if (!PyString_Check(name))
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -1374,7 +1352,6 @@ int PyObject_GenericSetAttr(PyObject *obj, PyObject *name, PyObject *value)
 	PyObject **dictptr;
 	int res = -1;
 
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = PyUnicode_AsEncodedString(name, NULL, NULL);
@@ -1384,7 +1361,6 @@ int PyObject_GenericSetAttr(PyObject *obj, PyObject *name, PyObject *value)
 		}
 	}
 	else 
-#endif
 	if (!PyString_Check(name))
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -1515,8 +1491,8 @@ int PyObject_Not(PyObject *v)
 
 int PyNumber_CoerceEx(PyObject **pv, PyObject **pw)
 {
-	register PyObject *v = *pv;
-	register PyObject *w = *pw;
+	PyObject *v = *pv;
+	PyObject *w = *pw;
 	int res;
 
 	if (v->ob_type == w->ob_type && !PyInstance_Check(v)) 
@@ -1903,10 +1879,10 @@ void _Py_NewReference(PyObject *op)
 #endif
 }
 
-void _Py_ForgetReference(register PyObject *op)
+void _Py_ForgetReference(PyObject *op)
 {
 #ifdef SLOW_UNREF_CHECK
-    register PyObject *p;
+    PyObject *p;
 #endif
 	if (op->ob_refcnt < 0)
 	{

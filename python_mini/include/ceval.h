@@ -40,8 +40,6 @@ DL_IMPORT(char *) PyEval_GetFuncDesc(PyObject *);
 extern DL_IMPORT(PyThreadState *) PyEval_SaveThread();
 extern DL_IMPORT(void) PyEval_RestoreThread(PyThreadState *);
 
-#ifdef WITH_THREAD
-
 extern DL_IMPORT(void) PyEval_InitThreads();
 extern DL_IMPORT(void) PyEval_AcquireLock();
 extern DL_IMPORT(void) PyEval_ReleaseLock();
@@ -56,14 +54,5 @@ extern DL_IMPORT(void) PyEval_ReInitThreads();
 #define Py_UNBLOCK_THREADS	_save = PyEval_SaveThread();
 #define Py_END_ALLOW_THREADS	PyEval_RestoreThread(_save); \
 		 }
-
-#else
-
-#define Py_BEGIN_ALLOW_THREADS {
-#define Py_BLOCK_THREADS
-#define Py_UNBLOCK_THREADS
-#define Py_END_ALLOW_THREADS }
-
-#endif
 
 extern DL_IMPORT(int) _PyEval_SliceIndex(PyObject *, int *);

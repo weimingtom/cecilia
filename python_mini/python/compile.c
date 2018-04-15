@@ -1212,21 +1212,13 @@ static PyObject *parsestr(struct compiling *com, char *s)
 	int first = *s;
 	int quote = first;
 	int rawmode = 0;
-#ifdef Py_USING_UNICODE
 	int unicode = 0;
-#endif
 	if (isalpha(quote) || quote == '_') 
 	{
 		if (quote == 'u' || quote == 'U') 
 		{
-#ifdef Py_USING_UNICODE
 			quote = *++s;
 			unicode = 1;
-#else
-			com_error(com, PyExc_SyntaxError,
-				  "Unicode literals not supported in this Python");
-			return NULL;
-#endif
 		}
 		if (quote == 'r' || quote == 'R') 
 		{
@@ -1262,7 +1254,6 @@ static PyObject *parsestr(struct compiling *com, char *s)
 			return NULL;
 		}
 	}
-#ifdef Py_USING_UNICODE
 	if (unicode || Py_UnicodeFlag) 
 	{
 		if (rawmode)
@@ -1281,7 +1272,6 @@ static PyObject *parsestr(struct compiling *com, char *s)
 		}
 		return v;
 	}
-#endif
 	if (rawmode || strchr(s, '\\') == NULL)
 	{
 		return PyString_FromStringAndSize(s, len);
@@ -1441,7 +1431,6 @@ static PyObject *parsestrplus(struct compiling* c, node *n)
 					goto onError;
 				}
 		    }
-#ifdef Py_USING_UNICODE
 		    else 
 			{
 				PyObject *temp;
@@ -1454,7 +1443,6 @@ static PyObject *parsestrplus(struct compiling* c, node *n)
 				Py_DECREF(v);
 				v = temp;
 		    }
-#endif
 		}
 	}
 	return v;

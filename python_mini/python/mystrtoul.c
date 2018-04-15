@@ -1,18 +1,16 @@
 //20180123
 #include "python.h"
 
-#if defined(__sgi) && defined(WITH_THREAD) && !defined(_SGI_MP_SOURCE)
+#if defined(__sgi) && !defined(_SGI_MP_SOURCE)
 #define _SGI_MP_SOURCE
 #endif
 
 #define Py_CHARMASK(c)		((c) & 0xff)
 
 #include <ctype.h>
-#ifndef DONT_HAVE_ERRNO_H
 #include <errno.h>
-#endif
 
-unsigned long PyOS_strtoul(register char *str, char **ptr, int base)
+unsigned long PyOS_strtoul(char *str, char **ptr, int base)
 {
     unsigned long result;
     int	c;

@@ -68,9 +68,7 @@ DL_IMPORT(void) PyInterpreterState_Delete(PyInterpreterState *);
 DL_IMPORT(PyThreadState *) PyThreadState_New(PyInterpreterState *);
 DL_IMPORT(void) PyThreadState_Clear(PyThreadState *);
 DL_IMPORT(void) PyThreadState_Delete(PyThreadState *);
-#ifdef WITH_THREAD
 DL_IMPORT(void) PyThreadState_DeleteCurrent();
-#endif
 
 DL_IMPORT(PyThreadState *) PyThreadState_Get();
 DL_IMPORT(PyThreadState *) PyThreadState_Swap(PyThreadState *);

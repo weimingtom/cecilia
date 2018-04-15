@@ -19,10 +19,10 @@ int fast_tuple_allocs;
 int tuple_zero_allocs;
 #endif
 
-PyObject *PyTuple_New(register int size)
+PyObject *PyTuple_New(int size)
 {
-	register int i;
-	register PyTupleObject *op;
+	int i;
+	PyTupleObject *op;
 	if (size < 0) 
 	{
 		PyErr_BadInternalCall();
@@ -85,7 +85,7 @@ PyObject *PyTuple_New(register int size)
 	return (PyObject *) op;
 }
 
-int PyTuple_Size(register PyObject *op)
+int PyTuple_Size(PyObject *op)
 {
 	if (!PyTuple_Check(op)) 
 	{
@@ -98,7 +98,7 @@ int PyTuple_Size(register PyObject *op)
 	}
 }
 
-PyObject *PyTuple_GetItem(register PyObject *op, register int i)
+PyObject *PyTuple_GetItem(PyObject *op, int i)
 {
 	if (!PyTuple_Check(op)) 
 	{
@@ -113,10 +113,10 @@ PyObject *PyTuple_GetItem(register PyObject *op, register int i)
 	return ((PyTupleObject *)op) -> ob_item[i];
 }
 
-int PyTuple_SetItem(register PyObject *op, register int i, PyObject *newitem)
+int PyTuple_SetItem(PyObject *op, int i, PyObject *newitem)
 {
-	register PyObject *olditem;
-	register PyObject **p;
+	PyObject *olditem;
+	PyObject **p;
 	if (!PyTuple_Check(op) || op->ob_refcnt != 1) 
 	{
 		Py_XDECREF(newitem);
@@ -137,10 +137,10 @@ int PyTuple_SetItem(register PyObject *op, register int i, PyObject *newitem)
 	return 0;
 }
 
-static void tupledealloc(register PyTupleObject *op)
+static void tupledealloc(PyTupleObject *op)
 {
-	register int i;
-	register int len =  op->ob_size;
+	int i;
+	int len =  op->ob_size;
 	PyObject_GC_UnTrack(op);
 	Py_TRASHCAN_SAFE_BEGIN(op)
 	if (len > 0) 
@@ -260,9 +260,9 @@ Done:
 
 static long tuplehash(PyTupleObject *v)
 {
-	register long x, y;
-	register int len = v->ob_size;
-	register PyObject **p;
+	long x, y;
+	int len = v->ob_size;
+	PyObject **p;
 	x = 0x345678L;
 	p = v->ob_item;
 	while (--len >= 0) 
@@ -307,7 +307,7 @@ static int tuplecontains(PyTupleObject *a, PyObject *el)
 	return 0;
 }
 
-static PyObject *tupleitem(register PyTupleObject *a, register int i)
+static PyObject *tupleitem(PyTupleObject *a, int i)
 {
 	if (i < 0 || i >= a->ob_size) 
 	{
@@ -318,10 +318,10 @@ static PyObject *tupleitem(register PyTupleObject *a, register int i)
 	return a->ob_item[i];
 }
 
-static PyObject *tupleslice(register PyTupleObject *a, register int ilow, register int ihigh)
+static PyObject *tupleslice(PyTupleObject *a, int ilow, int ihigh)
 {
-	register PyTupleObject *np;
-	register int i;
+	PyTupleObject *np;
+	int i;
 	if (ilow < 0)
 	{
 		ilow = 0;
@@ -363,10 +363,10 @@ PyObject *PyTuple_GetSlice(PyObject *op, int i, int j)
 	return tupleslice((PyTupleObject *)op, i, j);
 }
 
-static PyObject *tupleconcat(register PyTupleObject *a, register PyObject *bb)
+static PyObject *tupleconcat(PyTupleObject *a, PyObject *bb)
 {
-	register int size;
-	register int i;
+	int size;
+	int i;
 	PyTupleObject *np;
 	if (!PyTuple_Check(bb)) 
 	{
@@ -674,8 +674,8 @@ PyTypeObject PyTuple_Type = {
 
 int _PyTuple_Resize(PyObject **pv, int newsize)
 {
-	register PyTupleObject *v;
-	register PyTupleObject *sv;
+	PyTupleObject *v;
+	PyTupleObject *sv;
 	int i;
 	int oldsize;
 

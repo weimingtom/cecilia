@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "Include" /I "." /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
@@ -348,8 +348,6 @@ SOURCE=.\python\compile.c
 SOURCE=.\python\dynload_win.c
 
 !IF  "$(CFG)" == "python - Win32 Release"
-
-# PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "python - Win32 Debug"
 
@@ -748,6 +746,10 @@ SOURCE=.\breakpoint.txt
 # Begin Source File
 
 SOURCE=.\DebugPythonStacks.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\macro.txt
 # End Source File
 # Begin Source File
 

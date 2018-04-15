@@ -17,9 +17,7 @@
 
 #define BUF(v) PyString_AS_STRING((PyStringObject *)v)
 
-#ifndef DONT_HAVE_ERRNO_H
 #include <errno.h>
-#endif
 
 typedef struct {
 	PyObject_HEAD

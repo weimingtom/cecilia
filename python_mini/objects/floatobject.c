@@ -50,7 +50,7 @@ static PyFloatObject *fill_free_list()
 
 PyObject *PyFloat_FromDouble(double fval)
 {
-	register PyFloatObject *op;
+	PyFloatObject *op;
 	if (free_list == NULL) 
 	{
 		if ((free_list = fill_free_list()) == NULL)
@@ -70,9 +70,7 @@ PyObject *PyFloat_FromString(PyObject *v, char **pend)
 	const char *s, *last, *end;
 	double x;
 	char buffer[256]; 
-#ifdef Py_USING_UNICODE
 	char s_buffer[256]; 
-#endif
 	int len;
 
 	if (pend)
@@ -84,7 +82,6 @@ PyObject *PyFloat_FromString(PyObject *v, char **pend)
 		s = PyString_AS_STRING(v);
 		len = PyString_GET_SIZE(v);
 	}
-#ifdef Py_USING_UNICODE
 	else if (PyUnicode_Check(v)) 
 	{
 		if (PyUnicode_GET_SIZE(v) >= sizeof(s_buffer)) 
@@ -103,7 +100,6 @@ PyObject *PyFloat_FromString(PyObject *v, char **pend)
 		s = s_buffer;
 		len = (int)strlen(s);
 	}
-#endif
 	else if (PyObject_AsCharBuffer(v, &s, &len)) 
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -214,7 +210,7 @@ double PyFloat_AsDouble(PyObject *op)
 
 static void format_float(char *buf, size_t buflen, PyFloatObject *v, int precision)
 {
-	register char *cp;
+	char *cp;
 
 	assert(PyFloat_Check(v));
 	PyOS_snprintf(buf, buflen, "%.*g", precision, v->ob_fval);
@@ -251,7 +247,7 @@ void PyFloat_AsStringEx(char *buf, PyFloatObject *v, int precision)
 
 static int convert_to_double(PyObject **v, double *dbl)
 {
-	register PyObject *obj = *v;
+	PyObject *obj = *v;
 
 	if (PyInt_Check(obj)) 
 	{

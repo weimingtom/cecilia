@@ -60,15 +60,6 @@ static void format_exc_check_arg(PyObject *, char *, PyObject *);
 	"free variable '%.200s' referenced before assignment" \
         " in enclosing scope"
 
-#ifdef DYNAMIC_EXECUTION_PROFILE
-#ifdef DXPAIRS
-static long dxpairs[257][256];
-#define dxp dxpairs[256]
-#else
-static long dxp[256];
-#endif
-#endif
-
 staticforward PyTypeObject gentype;
 
 typedef struct {
@@ -208,11 +199,7 @@ statichere PyTypeObject gentype = {
 };
 
 
-#ifdef WITH_THREAD
-
-#ifndef DONT_HAVE_ERRNO_H
 #include <errno.h>
-#endif
 
 #include "pythread.h"
 
@@ -281,8 +268,6 @@ void PyEval_ReInitThreads()
 	main_thread = PyThread_get_thread_ident();
 }
 
-#endif
-
 PyThreadState *PyEval_SaveThread()
 {
 	PyThreadState *tstate = PyThreadState_Swap(NULL);
@@ -290,12 +275,10 @@ PyThreadState *PyEval_SaveThread()
 	{
 		Py_FatalError("PyEval_SaveThread: NULL tstate");
 	}
-#ifdef WITH_THREAD
 	if (interpreter_lock)
 	{
 		PyThread_release_lock(interpreter_lock);
 	}
-#endif
 	return tstate;
 }
 
@@ -305,14 +288,12 @@ void PyEval_RestoreThread(PyThreadState *tstate)
 	{
 		Py_FatalError("PyEval_RestoreThread: NULL tstate");
 	}
-#ifdef WITH_THREAD
 	if (interpreter_lock) 
 	{
 		int err = errno;
 		PyThread_acquire_lock(interpreter_lock, 1);
 		errno = err;
 	}
-#endif
 	PyThreadState_Swap(tstate);
 }
 
@@ -354,12 +335,10 @@ int Py_AddPendingCall(int (*func)(void *), void *arg)
 int Py_MakePendingCalls()
 {
 	static int busy = 0;
-#ifdef WITH_THREAD
 	if (main_thread && PyThread_get_thread_ident() != main_thread)
 	{
 		return 0;
 	}
-#endif
 	if (busy)
 	{
 		return 0;
@@ -427,22 +406,19 @@ PyObject *PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
 
 static PyObject *eval_frame(PyFrameObject *f)
 {
-#ifdef DXPAIRS
-	int lastopcode = 0;
-#endif
 	PyObject **stack_pointer;
-	register unsigned char *next_instr;
-	register int opcode=0;
-	register int oparg=0;
-	register enum why_code why;
-	register int err;
-	register PyObject *x;
-	register PyObject *v;
-	register PyObject *w;
-	register PyObject *u;
-	register PyObject *t;
-	register PyObject *stream = NULL;
-	register PyObject **fastlocals, **freevars;
+	unsigned char *next_instr;
+	int opcode=0;
+	int oparg=0;
+	enum why_code why;
+	int err;
+	PyObject *x;
+	PyObject *v;
+	PyObject *w;
+	PyObject *u;
+	PyObject *t;
+	PyObject *stream = NULL;
+	PyObject **fastlocals, **freevars;
 	PyObject *retval = NULL;
 	PyThreadState *tstate = PyThreadState_GET();
 	PyCodeObject *co;
@@ -491,13 +467,11 @@ static PyObject *eval_frame(PyFrameObject *f)
 		return NULL;
 	}
 
-#ifdef USE_STACKCHECK
 	if (tstate->recursion_depth%10 == 0 && PyOS_CheckStack()) 
 	{
 		PyErr_SetString(PyExc_MemoryError, "Stack overflow");
 		return NULL;
 	}
-#endif
 
 	if (++tstate->recursion_depth > recursion_limit) 
 	{
@@ -573,15 +547,7 @@ static PyObject *eval_frame(PyFrameObject *f)
 					goto on_error;
 				}
 			}
-#if !defined(HAVE_SIGNAL_H)
-			if (PyErr_CheckSignals()) 
-			{
-				why = WHY_EXCEPTION;
-				goto on_error;
-			}
-#endif
 
-#ifdef WITH_THREAD
 			if (interpreter_lock) 
 			{
 				if (PyThreadState_Swap(NULL) != tstate)
@@ -596,7 +562,6 @@ static PyObject *eval_frame(PyFrameObject *f)
 					Py_FatalError("ceval: orphan tstate");
 				}
 			}
-#endif
 		}
 
 
@@ -611,14 +576,6 @@ static PyObject *eval_frame(PyFrameObject *f)
 		}
 
 dispatch_opcode:
-
-#ifdef DYNAMIC_EXECUTION_PROFILE
-#ifdef DXPAIRS
-		dxpairs[lastopcode][opcode]++;
-		lastopcode = opcode;
-#endif
-		dxp[opcode]++;
-#endif
 
 #ifdef LLTRACE
 		if (lltrace) 
@@ -906,7 +863,7 @@ dispatch_opcode:
 			v = POP();
 			if (PyInt_CheckExact(v) && PyInt_CheckExact(w)) 
 			{
-				register long a, b, i;
+				long a, b, i;
 				a = PyInt_AS_LONG(v);
 				b = PyInt_AS_LONG(w);
 				i = a + b;
@@ -935,7 +892,7 @@ slow_add:
 			v = POP();
 			if (PyInt_CheckExact(v) && PyInt_CheckExact(w)) 
 			{
-				register long a, b, i;
+				long a, b, i;
 				a = PyInt_AS_LONG(v);
 				b = PyInt_AS_LONG(w);
 				i = a - b;
@@ -1147,7 +1104,7 @@ slow_sub:
 			v = POP();
 			if (PyInt_CheckExact(v) && PyInt_CheckExact(w)) 
 			{
-				register long a, b, i;
+				long a, b, i;
 				a = PyInt_AS_LONG(v);
 				b = PyInt_AS_LONG(w);
 				i = a + b;
@@ -1176,7 +1133,7 @@ slow_iadd:
 			v = POP();
 			if (PyInt_CheckExact(v) && PyInt_CheckExact(w)) 
 			{
-				register long a, b, i;
+				long a, b, i;
 				a = PyInt_AS_LONG(v);
 				b = PyInt_AS_LONG(w);
 				i = a - b;
@@ -1455,7 +1412,6 @@ slow_isub:
 						PyFile_SoftSpace(w, 0);
 					}
 			    } 
-#ifdef Py_USING_UNICODE
 			    else if (PyUnicode_Check(v)) 
 				{
 					Py_UNICODE *s = PyUnicode_AS_UNICODE(v);
@@ -1467,7 +1423,6 @@ slow_isub:
 						PyFile_SoftSpace(w, 0);
 					}
 			    }
-#endif
 			}
 			Py_DECREF(v);
 			Py_XDECREF(stream);
@@ -1504,11 +1459,6 @@ slow_isub:
 			stream = NULL;
 			break;
 
-#ifdef CASE_TOO_BIG
-		default: 
-			switch (opcode) 
-			{
-#endif
 		case BREAK_LOOP:
 			why = WHY_BREAK;
 			break;
@@ -1932,8 +1882,8 @@ slow_isub:
 			v = POP();
 			if (PyInt_CheckExact(v) && PyInt_CheckExact(w)) 
 			{
-				register long a, b;
-				register int res;
+				long a, b;
+				int res;
 				a = PyInt_AS_LONG(v);
 				b = PyInt_AS_LONG(w);
 				switch (oparg) 
@@ -2414,10 +2364,6 @@ slow_compare:
 			PyErr_SetString(PyExc_SystemError, "unknown opcode");
 			why = WHY_EXCEPTION;
 			break;
-
-#ifdef CASE_TOO_BIG
-			}
-#endif
 		}
 
 on_error:
@@ -2433,7 +2379,9 @@ on_error:
 				}
 				else
 #endif
+				{
 					continue;
+				}
 			}
 			why = WHY_EXCEPTION;
 			x = Py_None;
@@ -2617,9 +2565,9 @@ PyObject *PyEval_EvalCodeEx(PyCodeObject *co, PyObject *globals, PyObject *local
 	   PyObject **args, int argcount, PyObject **kws, int kwcount,
 	   PyObject **defs, int defcount, PyObject *closure)
 {
-	register PyFrameObject *f;
-	register PyObject *retval = NULL;
-	register PyObject **fastlocals, **freevars;
+	PyFrameObject *f;
+	PyObject *retval = NULL;
+	PyObject **fastlocals, **freevars;
 	PyThreadState *tstate = PyThreadState_GET();
 	PyObject *x, *u;
 
@@ -3178,7 +3126,7 @@ static void call_trace_protected(Py_tracefunc func, PyObject *obj, PyFrameObject
 static int call_trace(Py_tracefunc func, PyObject *obj, PyFrameObject *frame,
 	   int what, PyObject *arg)
 {
-	register PyThreadState *tstate = frame->f_tstate;
+	PyThreadState *tstate = frame->f_tstate;
 	int result;
 	if (tstate->tracing)
 	{
@@ -3845,7 +3793,7 @@ static int assign_slice(PyObject *u, PyObject *v, PyObject *w, PyObject *x)
 	}
 }
 
-static PyObject *cmp_outcome(int op, register PyObject *v, register PyObject *w)
+static PyObject *cmp_outcome(int op, PyObject *v, PyObject *w)
 {
 	int res = 0;
 	switch (op) 
@@ -4146,53 +4094,3 @@ static void format_exc_check_arg(PyObject *exc, char *format_str, PyObject *obj)
 	PyErr_Format(exc, format_str, obj_str);
 }
 
-#ifdef DYNAMIC_EXECUTION_PROFILE
-
-static PyObject *getarray(long a[256])
-{
-	int i;
-	PyObject *l = PyList_New(256);
-	if (l == NULL) return NULL;
-	for (i = 0; i < 256; i++) 
-	{
-		PyObject *x = PyInt_FromLong(a[i]);
-		if (x == NULL) 
-		{
-			Py_DECREF(l);
-			return NULL;
-		}
-		PyList_SetItem(l, i, x);
-	}
-	for (i = 0; i < 256; i++)
-	{
-		a[i] = 0;
-	}
-	return l;
-}
-
-PyObject *_Py_GetDXProfile(PyObject *self, PyObject *args)
-{
-#ifndef DXPAIRS
-	return getarray(dxp);
-#else
-	int i;
-	PyObject *l = PyList_New(257);
-	if (l == NULL) 
-	{
-		return NULL;
-	}
-	for (i = 0; i < 257; i++) 
-	{
-		PyObject *x = getarray(dxpairs[i]);
-		if (x == NULL) 
-		{
-			Py_DECREF(l);
-			return NULL;
-		}
-		PyList_SetItem(l, i, x);
-	}
-	return l;
-#endif
-}
-
-#endif

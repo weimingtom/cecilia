@@ -682,12 +682,10 @@ PyObject *PyNumber_Remainder(PyObject *v, PyObject *w)
 	{
 		return PyString_Format(v, w);
 	}
-#ifdef Py_USING_UNICODE
 	else if (PyUnicode_Check(v))
 	{
 		return PyUnicode_Format(v, w);
 	}
-#endif
 	return binary_op(v, w, NB_SLOT(nb_remainder), "%");
 }
 
@@ -804,12 +802,10 @@ PyObject *PyNumber_InPlaceRemainder(PyObject *v, PyObject *w)
 	{
 		return PyString_Format(v, w);
 	}
-#ifdef Py_USING_UNICODE
 	else if (PyUnicode_Check(v))
 	{
 		return PyUnicode_Format(v, w);
 	}
-#endif
 	else
 	{
 		return binary_iop(v, w, NB_SLOT(nb_inplace_remainder),
@@ -942,14 +938,12 @@ PyObject *PyNumber_Int(PyObject *o)
 		return int_from_string(PyString_AS_STRING(o), 
 				       PyString_GET_SIZE(o));
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(o))
 	{
 		return PyInt_FromUnicode(PyUnicode_AS_UNICODE(o),
 					 PyUnicode_GET_SIZE(o),
 					 10);
 	}
-#endif
 	m = o->ob_type->tp_as_number;
 	if (m && m->nb_int)
 	{
@@ -1007,14 +1001,12 @@ PyObject *PyNumber_Long(PyObject *o)
 		return long_from_string(PyString_AS_STRING(o),
 					PyString_GET_SIZE(o));
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(o))
 	{
 		return PyLong_FromUnicode(PyUnicode_AS_UNICODE(o),
 					  PyUnicode_GET_SIZE(o),
 					  10);
 	}
-#endif
 	m = o->ob_type->tp_as_number;
 	if (m && m->nb_long)
 	{
@@ -1988,16 +1980,7 @@ static PyObject *objargs_mktuple(va_list va)
 	va_list countva;
 	PyObject *result, *tmp;
 
-#ifdef VA_LIST_IS_ARRAY
-	memcpy(countva, va, sizeof(va_list));
-#else
-#ifdef __va_copy
-	__va_copy(countva, va);
-#else
 	countva = va;
-#endif
-#endif
-
 	while (((PyObject *)va_arg(countva, PyObject *)) != NULL)
 	{
 		++n;

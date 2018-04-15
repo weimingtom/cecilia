@@ -208,9 +208,9 @@ static PyObject *buffer_repr(PyBufferObject *self)
 
 static long buffer_hash(PyBufferObject *self)
 {
-	register int len;
-	register unsigned char *p;
-	register long x;
+	int len;
+	unsigned char *p;
+	long x;
 
 #ifdef CACHE_HASH
 	if ( self->b_hash != -1 )
@@ -303,7 +303,7 @@ static PyObject *buffer_concat(PyBufferObject *self, PyObject *other)
 static PyObject *buffer_repeat(PyBufferObject *self, int count)
 {
 	PyObject *ob;
-	register char *p;
+	char *p;
 	void *ptr = self->b_ptr;
 	int size = self->b_size;
 

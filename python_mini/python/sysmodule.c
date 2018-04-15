@@ -161,8 +161,6 @@ static char exit_doc[] =
 	"If it is another kind of object, it will be printed and the system\n"
 	"exit status will be one (i.e., failure).";
 
-#ifdef Py_USING_UNICODE
-
 static PyObject *sys_getdefaultencoding(PyObject *self)
 {
 	return PyString_FromString(PyUnicode_GetDefaultEncoding());
@@ -193,8 +191,6 @@ static char setdefaultencoding_doc[] =
 	"setdefaultencoding(encoding)\n"
 	"\n"
 	"Set the current default string encoding used by the Unicode implementation.";
-
-#endif
 
 static PyObject *whatstrings[4] = {NULL, NULL, NULL, NULL};
 
@@ -546,26 +542,17 @@ static PyObject *sys_getframe(PyObject *self, PyObject *args)
 extern PyObject *_Py_GetObjects(PyObject *, PyObject *);
 #endif
 
-#ifdef DYNAMIC_EXECUTION_PROFILE
-extern PyObject *_Py_GetDXProfile(PyObject *,  PyObject *);
-#endif
-
 static PyMethodDef sys_methods[] = {
 	{"displayhook",	sys_displayhook, METH_O, displayhook_doc},
 	{"exc_info",	(PyCFunction)sys_exc_info, METH_NOARGS, exc_info_doc},
 	{"excepthook",	sys_excepthook, METH_VARARGS, excepthook_doc},
 	{"exit",	sys_exit, METH_OLDARGS, exit_doc},
-#ifdef Py_USING_UNICODE
 	{"getdefaultencoding", (PyCFunction)sys_getdefaultencoding, METH_NOARGS, getdefaultencoding_doc}, 
-#endif
 #ifdef HAVE_DLOPEN
 	{"getdlopenflags", (PyCFunction)sys_getdlopenflags, METH_NOARGS, getdlopenflags_doc},
 #endif
 #ifdef COUNT_ALLOCS
 	{"getcounts",	(PyCFunction)sys_getcounts, METH_NOARGS},
-#endif
-#ifdef DYNAMIC_EXECUTION_PROFILE
-	{"getdxp",	_Py_GetDXProfile, METH_VARARGS},
 #endif
 #ifdef Py_TRACE_REFS
 	{"getobjects",	_Py_GetObjects, METH_VARARGS},
@@ -577,9 +564,7 @@ static PyMethodDef sys_methods[] = {
 #ifdef USE_MALLOPT
 	{"mdebug",	sys_mdebug, METH_VARARGS},
 #endif
-#ifdef Py_USING_UNICODE
 	{"setdefaultencoding", sys_setdefaultencoding, METH_VARARGS, setdefaultencoding_doc}, 
-#endif
 	{"setcheckinterval",	sys_setcheckinterval, METH_VARARGS, setcheckinterval_doc}, 
 #ifdef HAVE_DLOPEN
 	{"setdlopenflags", sys_setdlopenflags, METH_VARARGS, 
@@ -805,11 +790,9 @@ PyObject *_PySys_Init()
 	PyDict_SetItemString(sysdict, "maxint",
 			     v = PyInt_FromLong(PyInt_GetMax()));
 	Py_XDECREF(v);
-#ifdef Py_USING_UNICODE
 	PyDict_SetItemString(sysdict, "maxunicode",
 			     v = PyInt_FromLong(PyUnicode_GetMax()));
 	Py_XDECREF(v);
-#endif
 	PyDict_SetItemString(sysdict, "builtin_module_names",
 		   v = list_builtin_module_names());
 	Py_XDECREF(v);

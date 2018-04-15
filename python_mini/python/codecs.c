@@ -54,7 +54,7 @@ onError:
 
 static PyObject *normalizestring(const char *string)
 {
-    register size_t i;
+    size_t i;
     size_t len = strlen(string);
     char *p;
     PyObject *v;
@@ -73,7 +73,7 @@ static PyObject *normalizestring(const char *string)
 	p = PyString_AS_STRING(v);
     for (i = 0; i < len; i++) 
 	{
-        register char ch = string[i];
+        char ch = string[i];
         if (ch == ' ')
         {
 			ch = '-';

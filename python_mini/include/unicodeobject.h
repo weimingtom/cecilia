@@ -3,13 +3,6 @@
 
 #include <ctype.h>
 
-#ifndef Py_USING_UNICODE
-
-#define PyUnicode_Check(op)                 0
-#define PyUnicode_CheckExact(op)            0
-
-#else
-
 #ifndef Py_UNICODE_SIZE
 #error Must define Py_UNICODE_SIZE
 #endif
@@ -312,25 +305,25 @@ extern DL_IMPORT(int) PyUnicode_Resize(
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromEncodedObject(
-    register PyObject *obj, 	
+    PyObject *obj, 	
     const char *encoding,       
     const char *errors          
     );
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromObject(
-    register PyObject *obj 
+    PyObject *obj 
     );
 
 #ifdef HAVE_WCHAR_H
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromWideChar(
-    register const wchar_t *w,  
+    const wchar_t *w,  
     int size                    
     );
 
 extern DL_IMPORT(int) PyUnicode_AsWideChar(
     PyUnicodeObject *unicode,  
-    register wchar_t *w,       
+    wchar_t *w,       
     int size                   
     );
 
@@ -670,5 +663,3 @@ extern DL_IMPORT(int) _PyUnicode_IsAlpha(
     Py_UNICODE ch 
     );
 
-
-#endif 

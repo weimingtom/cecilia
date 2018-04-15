@@ -216,7 +216,6 @@ static PyObject *do_mklist(char **p_format, va_list *p_va, int endchar, int n)
 	return v;
 }
 
-#ifdef Py_USING_UNICODE
 static int _ustrlen(Py_UNICODE *u)
 {
 	int i = 0;
@@ -228,7 +227,6 @@ static int _ustrlen(Py_UNICODE *u)
 	} 
 	return i;
 }
-#endif
 
 static PyObject *do_mktuple(char **p_format, va_list *p_va, int endchar, int n)
 {
@@ -300,7 +298,7 @@ static PyObject *do_mkvalue(char **p_format, va_list *p_va)
 		case 'L':
 			return PyLong_FromLongLong((LONG_LONG)va_arg(*p_va, LONG_LONG));
 #endif
-#ifdef Py_USING_UNICODE
+
 		case 'u':
 			{
 				PyObject *v;
@@ -330,7 +328,7 @@ static PyObject *do_mkvalue(char **p_format, va_list *p_va)
 				}
 				return v;
 			}
-#endif
+
 		case 'f':
 		case 'd':
 			return PyFloat_FromDouble(
@@ -446,16 +444,7 @@ PyObject *Py_VaBuildValue(char *format, va_list va)
 	int n = countformat(f, '\0');
 	va_list lva;
 
-#ifdef VA_LIST_IS_ARRAY
-	memcpy(lva, va, sizeof(va_list));
-#else
-#ifdef __va_copy
-	__va_copy(lva, va);
-#else
 	lva = va;
-#endif
-#endif
-
 	if (n < 0)
 	{
 		return NULL;

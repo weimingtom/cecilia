@@ -160,7 +160,7 @@ static PyObject *builtin_filter(PyObject *self, PyObject *args)
 {
 	PyObject *func, *seq, *result, *it;
 	int len;
-	register int j;
+	int j;
 
 	if (!PyArg_ParseTuple(args, "OO:filter", &func, &seq))
 	{
@@ -320,8 +320,6 @@ static char chr_doc[] =
 	"\n"
 	"Return a string of one character with ordinal i; 0 <= i < 256.";
 
-#ifdef Py_USING_UNICODE
-
 static PyObject *builtin_unichr(PyObject *self, PyObject *args)
 {
 	long x;
@@ -338,8 +336,6 @@ static char unichr_doc[] =
 	"unichr(i) -> Unicode character\n"
 	"\n"
 	"Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.";
-
-#endif
 
 
 static PyObject *builtin_cmp(PyObject *self, PyObject *args)
@@ -672,7 +668,6 @@ static PyObject *builtin_getattr(PyObject *self, PyObject *args)
 	{
 		return NULL;
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = _PyUnicode_AsDefaultEncodedString(name, NULL);
@@ -681,7 +676,6 @@ static PyObject *builtin_getattr(PyObject *self, PyObject *args)
 			return NULL;
 		}
 	}
-#endif
 
 	if (!PyString_Check(name)) 
 	{
@@ -730,7 +724,6 @@ static PyObject *builtin_hasattr(PyObject *self, PyObject *args)
 	{
 		return NULL;
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(name)) 
 	{
 		name = _PyUnicode_AsDefaultEncodedString(name, NULL);
@@ -739,8 +732,6 @@ static PyObject *builtin_hasattr(PyObject *self, PyObject *args)
 			return NULL;
 		}
 	}
-#endif
-
 	if (!PyString_Check(name)) 
 	{
 		PyErr_SetString(PyExc_TypeError,
@@ -787,7 +778,7 @@ static PyObject *builtin_map(PyObject *self, PyObject *args)
 	PyObject *func, *result;
 	sequence *seqs = NULL, *sqp;
 	int n, len;
-	register int i, j;
+	int i, j;
 
 	n = PyTuple_Size(args);
 	if (n < 2) 
@@ -1338,7 +1329,6 @@ static PyObject *builtin_ord(PyObject *self, PyObject* obj)
 			ord = (long)((unsigned char)*PyString_AS_STRING(obj));
 			return PyInt_FromLong(ord);
 		}
-#ifdef Py_USING_UNICODE
 	} 
 	else if (PyUnicode_Check(obj)) 
 	{
@@ -1348,7 +1338,6 @@ static PyObject *builtin_ord(PyObject *self, PyObject* obj)
 			ord = (long)*PyUnicode_AS_UNICODE(obj);
 			return PyInt_FromLong(ord);
 		}
-#endif
 	} 
 	else 
 	{
@@ -2021,9 +2010,7 @@ static PyMethodDef builtin_methods[] = {
  	{"round",	builtin_round,      METH_VARARGS, round_doc},
  	{"setattr",	builtin_setattr,    METH_VARARGS, setattr_doc},
  	{"slice",       builtin_slice,      METH_VARARGS, slice_doc},
-#ifdef Py_USING_UNICODE
  	{"unichr",	builtin_unichr,     METH_VARARGS, unichr_doc},
-#endif
  	{"vars",	builtin_vars,       METH_VARARGS, vars_doc},
  	{"xrange",	builtin_xrange,     METH_VARARGS, xrange_doc},
   	{"zip",         builtin_zip,        METH_VARARGS, zip_doc},
@@ -2073,9 +2060,7 @@ PyObject *_PyBuiltin_Init()
 
 	SETBUILTIN("open",		&PyFile_Type);
 	SETBUILTIN("file",		&PyFile_Type);
-#ifdef Py_USING_UNICODE
 	SETBUILTIN("unicode",		&PyUnicode_Type);
-#endif
 	
 	debug = PyInt_FromLong(Py_OptimizeFlag == 0);
 	if (PyDict_SetItemString(dict, "__debug__", debug) < 0) 
@@ -2092,7 +2077,7 @@ PyObject *_PyBuiltin_Init()
 static PyObject *filtertuple(PyObject *func, PyObject *tuple)
 {
 	PyObject *result;
-	register int i, j;
+	int i, j;
 	int len = PyTuple_Size(tuple);
 
 	if (len == 0) 
@@ -2162,7 +2147,7 @@ Fail_1:
 static PyObject *filterstring(PyObject *func, PyObject *strobj)
 {
 	PyObject *result;
-	register int i, j;
+	int i, j;
 	int len = PyString_Size(strobj);
 
 	if (func == Py_None) 

@@ -127,9 +127,7 @@ void Py_Initialize()
 
 	_PyCodecRegistry_Init();
 
-#ifdef Py_USING_UNICODE
 	_PyUnicode_Init();
-#endif
 
 	bimod = _PyBuiltin_Init();
 	if (bimod == NULL)
@@ -222,9 +220,7 @@ void Py_Finalize()
 	PyInt_Fini();
 	PyFloat_Fini();
 
-#ifdef Py_USING_UNICODE
 	_PyUnicode_Fini();
-#endif
 
 	PyGrammar_RemoveAccelerators(&_PyParser_Grammar);
 
@@ -1319,10 +1315,8 @@ void Py_FatalError(char *msg)
 	abort();
 }
 
-#ifdef WITH_THREAD
 #include "pythread.h"
 int _PyThread_Started = 0;
-#endif
 
 #define NEXITFUNCS 32
 static void (*exitfuncs[NEXITFUNCS])();
@@ -1435,7 +1429,6 @@ int Py_FdIsInteractive(FILE *fp, char *filename)
 	       (strcmp(filename, "???") == 0);
 }
 
-#if defined(USE_STACKCHECK) 
 #if defined(WIN32) && defined(_MSC_VER)
 
 #include <malloc.h>
@@ -1453,8 +1446,6 @@ int PyOS_CheckStack()
 }
 
 #endif
-
-#endif 
 
 PyOS_sighandler_t PyOS_getsig(int sig)
 {

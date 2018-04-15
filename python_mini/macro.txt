@@ -1,10 +1,16 @@
-myreadline
+abstract.c
+myreadline.c
+-----------------------------
+todo:
+remove register 
 -----------------------------
 keep:
 
 #ifdef Py_DEBUG
 #ifdef MS_WINDOWS
 #ifdef EINTR
+#ifdef LLTRACE
+#ifdef CHECKEXC
 
 -----------------------------
 removed:
@@ -26,3 +32,19 @@ removed:
 --->#elif defined(macintosh)
 #ifdef USE_GUSI
 #ifndef WITHOUT_COMPLEX
+
+#ifdef Py_USING_UNICODE
+--->#ifndef Py_USING_UNICODE
+--->#if PY_VERSION_HEX >= 0x01060000
+#ifdef VA_LIST_IS_ARRAY
+#ifdef __va_copy
+register
+#ifdef DYNAMIC_EXECUTION_PROFILE
+#ifdef WITH_THREAD
+--->#ifndef WITH_THREAD
+#ifndef DONT_HAVE_ERRNO_H
+#ifdef DXPAIRS
+#ifdef USE_STACKCHECK
+--->#if !defined(USE_STACKCHECK)
+#if !defined(HAVE_SIGNAL_H)
+#ifdef CASE_TOO_BIG

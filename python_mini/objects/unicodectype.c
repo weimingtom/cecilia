@@ -46,7 +46,7 @@ int _PyUnicode_IsLinebreak(Py_UNICODE ch)
     return (ctype->flags & LINEBREAK_MASK) != 0;
 }
 
-Py_UNICODE _PyUnicode_ToTitlecase(register Py_UNICODE ch)
+Py_UNICODE _PyUnicode_ToTitlecase(Py_UNICODE ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 

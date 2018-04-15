@@ -39,9 +39,7 @@ extern DL_IMPORT(unsigned LONG_LONG) PyLong_AsUnsignedLongLong(PyObject *);
 #endif
 
 DL_IMPORT(PyObject *) PyLong_FromString(char *, char **, int);
-#ifdef Py_USING_UNICODE
 DL_IMPORT(PyObject *) PyLong_FromUnicode(Py_UNICODE*, int, int);
-#endif
 
 extern DL_IMPORT(PyObject *) _PyLong_FromByteArray(
 	const unsigned char* bytes, size_t n,

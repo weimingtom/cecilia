@@ -85,8 +85,6 @@ void _PyImport_Fini()
 	_PyImport_Filetab = NULL;
 }
 
-#ifdef WITH_THREAD
-
 #include "pythread.h"
 
 static PyThread_type_lock import_lock = 0;
@@ -138,24 +136,13 @@ static void unlock_import()
 	}
 }
 
-#else
-
-#define lock_import()
-#define unlock_import()
-
-#endif
-
 static PyObject *imp_lock_held(PyObject *self, PyObject *args)
 {
 	if (!PyArg_ParseTuple(args, ":lock_held"))
 	{
 		return NULL;
 	}
-#ifdef WITH_THREAD
 	return PyInt_FromLong(import_lock_thread != -1);
-#else
-	return PyInt_FromLong(0);
-#endif
 }
 
 PyObject *PyImport_GetModuleDict()

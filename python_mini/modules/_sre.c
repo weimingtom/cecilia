@@ -17,19 +17,7 @@ static char copyright[] =
 
 #undef VERBOSE
 
-#if PY_VERSION_HEX >= 0x01060000
-#if PY_VERSION_HEX  < 0x02020000 || defined(Py_USING_UNICODE)
 #define HAVE_UNICODE
-#endif
-#endif
-
-#if !defined(USE_STACKCHECK)
-#if defined(MS_WIN64) || defined(__LP64__) || defined(_LP64)
-#define USE_RECURSION_LIMIT 7500
-#else
-#define USE_RECURSION_LIMIT 10000
-#endif
-#endif
 
 #define USE_FAST_SEARCH
 
@@ -614,12 +602,10 @@ LOCAL(int) SRE_MATCH(SRE_STATE* state, SRE_CODE* pattern, int level)
 
     TRACE(("|%p|%p|ENTER %d\n", pattern, ptr, level));
 
-#if defined(USE_STACKCHECK)
     if (level % 10 == 0 && PyOS_CheckStack())
     {
 		return SRE_ERROR_RECURSION_LIMIT;
 	}
-#endif
 
 #if defined(USE_RECURSION_LIMIT)
     if (level > USE_RECURSION_LIMIT)

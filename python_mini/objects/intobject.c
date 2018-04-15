@@ -85,7 +85,7 @@ int quick_int_allocs, quick_neg_int_allocs;
 
 PyObject *PyInt_FromLong(long ival)
 {
-	register PyIntObject *v;
+	PyIntObject *v;
 #if NSMALLNEGINTS + NSMALLPOSINTS > 0
 	if (-NSMALLNEGINTS <= ival && ival < NSMALLPOSINTS &&
 	    (v = small_ints[ival + NSMALLNEGINTS]) != NULL) 
@@ -144,7 +144,7 @@ static void int_free(PyIntObject *v)
 	free_list = v;
 }
 
-long PyInt_AsLong(register PyObject *op)
+long PyInt_AsLong(PyObject *op)
 {
 	PyNumberMethods *nb;
 	PyIntObject *io;
@@ -235,8 +235,6 @@ bad:
 	return PyInt_FromLong(x);
 }
 
-#ifdef Py_USING_UNICODE
-
 PyObject *PyInt_FromUnicode(Py_UNICODE *s, int length, int base)
 {
 	char buffer[256];
@@ -253,8 +251,6 @@ PyObject *PyInt_FromUnicode(Py_UNICODE *s, int length, int base)
 	}
 	return PyInt_FromString(buffer, NULL, base);
 }
-
-#endif
 
 #define CONVERT_TO_LONG(obj, lng)		\
 	if (PyInt_Check(obj)) {			\
@@ -280,8 +276,8 @@ static PyObject *int_repr(PyIntObject *v)
 
 static int int_compare(PyIntObject *v, PyIntObject *w)
 {
-	register long i = v->ob_ival;
-	register long j = w->ob_ival;
+	long i = v->ob_ival;
+	long j = w->ob_ival;
 	return (i < j) ? -1 : (i > j) ? 1 : 0;
 }
 
@@ -297,7 +293,7 @@ static long int_hash(PyIntObject *v)
 
 static PyObject *int_add(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b, x;
+	long a, b, x;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	x = a + b;
@@ -314,7 +310,7 @@ static PyObject *int_add(PyIntObject *v, PyIntObject *w)
 
 static PyObject *int_sub(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b, x;
+	long a, b, x;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	x = a - b;
@@ -407,7 +403,7 @@ enum divmod_result {
 	DIVMOD_ERROR
 };
 
-static enum divmod_result i_divmod(register long x, register long y,
+static enum divmod_result i_divmod(long x, long y,
          long *p_xdivy, long *p_xmody)
 {
 	long xdivy, xmody;
@@ -536,7 +532,7 @@ static PyObject *int_divmod(PyIntObject *x, PyIntObject *y)
 
 static PyObject *int_pow(PyIntObject *v, PyIntObject *w, PyIntObject *z)
 {
-	register long iv, iw, iz=0, ix, temp, prev;
+	long iv, iw, iz=0, ix, temp, prev;
 	CONVERT_TO_LONG(v, iv);
 	CONVERT_TO_LONG(w, iw);
 	if (iw < 0) 
@@ -628,7 +624,7 @@ static PyObject *int_pow(PyIntObject *v, PyIntObject *w, PyIntObject *z)
 
 static PyObject *int_neg(PyIntObject *v)
 {
-	register long a, x;
+	long a, x;
 	a = v->ob_ival;
 	x = -a;
 	if (a < 0 && x < 0) 
@@ -679,7 +675,7 @@ static PyObject *int_invert(PyIntObject *v)
 
 static PyObject *int_lshift(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b;
+	long a, b;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	if (b < 0) 
@@ -701,7 +697,7 @@ static PyObject *int_lshift(PyIntObject *v, PyIntObject *w)
 
 static PyObject *int_rshift(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b;
+	long a, b;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	if (b < 0) 
@@ -733,7 +729,7 @@ static PyObject *int_rshift(PyIntObject *v, PyIntObject *w)
 
 static PyObject *int_and(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b;
+	long a, b;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	return PyInt_FromLong(a & b);
@@ -741,7 +737,7 @@ static PyObject *int_and(PyIntObject *v, PyIntObject *w)
 
 static PyObject *int_xor(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b;
+	long a, b;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	return PyInt_FromLong(a ^ b);
@@ -749,7 +745,7 @@ static PyObject *int_xor(PyIntObject *v, PyIntObject *w)
 
 static PyObject *int_or(PyIntObject *v, PyIntObject *w)
 {
-	register long a, b;
+	long a, b;
 	CONVERT_TO_LONG(v, a);
 	CONVERT_TO_LONG(w, b);
 	return PyInt_FromLong(a | b);
@@ -834,14 +830,12 @@ static PyObject *int_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
 		return PyInt_FromString(PyString_AS_STRING(x), NULL, base);
 	}
-#ifdef Py_USING_UNICODE
 	if (PyUnicode_Check(x))
 	{
 		return PyInt_FromUnicode(PyUnicode_AS_UNICODE(x),
 					 PyUnicode_GET_SIZE(x),
 					 base);
 	}
-#endif
 	PyErr_SetString(PyExc_TypeError,
 			"int() can't convert non-string with explicit base");
 	return NULL;

@@ -29,12 +29,10 @@
 # endif
 #endif
 
-#ifdef WITH_THREAD
 #include <sys/types.h>
 #include "pythread.h"
 static long main_thread;
 static pid_t main_pid;
-#endif
 
 static struct {
     int tripped;
@@ -70,7 +68,6 @@ static int checksignals_witharg(void * unused)
 
 static void signal_handler(int sig_num)
 {
-#ifdef WITH_THREAD
 #ifdef WITH_PTH
 	if (PyThread_get_thread_ident() != main_thread) 
 	{
@@ -80,13 +77,10 @@ static void signal_handler(int sig_num)
 #endif
 	if (getpid() == main_pid) 
 	{
-#endif
 		is_tripped++;
 		Handlers[sig_num].tripped = 1;
 		Py_AddPendingCall(checksignals_witharg, NULL);
-#ifdef WITH_THREAD
 	}
-#endif
 #ifdef SIGCHLD
 	if (sig_num == SIGCHLD) 
 	{
@@ -154,14 +148,12 @@ static PyObject *signal_signal(PyObject *self, PyObject *args)
 	{
 		return NULL;
 	}
-#ifdef WITH_THREAD
 	if (PyThread_get_thread_ident() != main_thread) 
 	{
 		PyErr_SetString(PyExc_ValueError,
 				"signal only works in main thread");
 		return NULL;
 	}
-#endif
 	if (sig_num < 1 || sig_num >= NSIG) 
 	{
 		PyErr_SetString(PyExc_ValueError,
@@ -286,10 +278,8 @@ DL_EXPORT(void) initsignal()
 	PyObject *m, *d, *x;
 	int i;
 
-#ifdef WITH_THREAD
 	main_thread = PyThread_get_thread_ident();
 	main_pid = getpid();
-#endif
 
 	m = Py_InitModule3("signal", signal_methods, module_doc);
 
@@ -572,12 +562,10 @@ int PyErr_CheckSignals()
 	{
 		return 0;
 	}
-#ifdef WITH_THREAD
 	if (PyThread_get_thread_ident() != main_thread)
 	{
 		return 0;
 	}
-#endif
 	if (!(f = PyEval_GetFrame()))
 	{
 		f = Py_None;
@@ -632,12 +620,10 @@ int PyOS_InterruptOccurred()
 {
 	if (Handlers[SIGINT].tripped) 
 	{
-#ifdef WITH_THREAD
 		if (PyThread_get_thread_ident() != main_thread)
 		{
 			return 0;
 		}
-#endif
 		Handlers[SIGINT].tripped = 0;
 		return 1;
 	}
@@ -646,9 +632,7 @@ int PyOS_InterruptOccurred()
 
 void PyOS_AfterFork()
 {
-#ifdef WITH_THREAD
 	PyEval_ReInitThreads();
 	main_thread = PyThread_get_thread_ident();
 	main_pid = getpid();
-#endif
 }

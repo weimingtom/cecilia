@@ -16,17 +16,11 @@
 	Py_XDECREF(tmp); \
 }
 
-#ifdef WITH_THREAD
 #include "pythread.h"
 static PyThread_type_lock head_mutex = NULL;
 #define HEAD_INIT() (head_mutex || (head_mutex = PyThread_allocate_lock()))
 #define HEAD_LOCK() PyThread_acquire_lock(head_mutex, WAIT_LOCK)
 #define HEAD_UNLOCK() PyThread_release_lock(head_mutex)
-#else
-#define HEAD_INIT()
-#define HEAD_LOCK()
-#define HEAD_UNLOCK()
-#endif
 
 static PyInterpreterState *interp_head = NULL;
 
@@ -224,7 +218,6 @@ void PyThreadState_Delete(PyThreadState *tstate)
 	tstate_delete_common(tstate);
 }
 
-#ifdef WITH_THREAD
 void PyThreadState_DeleteCurrent()
 {
 	PyThreadState *tstate = _PyThreadState_Current;
@@ -237,7 +230,6 @@ void PyThreadState_DeleteCurrent()
 	tstate_delete_common(tstate);
 	PyEval_ReleaseLock();
 }
-#endif
 
 PyThreadState *PyThreadState_Get()
 {

@@ -94,8 +94,8 @@ extern DL_IMPORT(PyObject*) PyString_AsDecodedString(
     );
 
 extern DL_IMPORT(int) PyString_AsStringAndSize(
-    register PyObject *obj,
-    register char **s,
-    register int *len
+    PyObject *obj,
+    char **s,
+    int *len
     );
     

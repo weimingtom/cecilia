@@ -160,7 +160,7 @@ static PyObject *complex_subtype_from_c_complex(PyTypeObject *type, Py_complex c
 
 PyObject *PyComplex_FromCComplex(Py_complex cval)
 {
-	register PyComplexObject *op;
+	PyComplexObject *op;
 
 	op = (PyComplexObject *) PyObject_MALLOC(sizeof(PyComplexObject));
 	if (op == NULL)
@@ -642,9 +642,7 @@ static PyObject *complex_subtype_from_string(PyTypeObject *type, PyObject *v)
 	int sw_error=0;
 	int sign;
 	char buffer[256];
-#ifdef Py_USING_UNICODE
 	char s_buffer[256];
-#endif
 	int len;
 
 	if (PyString_Check(v)) 
@@ -652,7 +650,6 @@ static PyObject *complex_subtype_from_string(PyTypeObject *type, PyObject *v)
 		s = PyString_AS_STRING(v);
 		len = PyString_GET_SIZE(v);
 	}
-#ifdef Py_USING_UNICODE
 	else if (PyUnicode_Check(v)) 
 	{
 		if (PyUnicode_GET_SIZE(v) >= sizeof(s_buffer)) 
@@ -671,7 +668,6 @@ static PyObject *complex_subtype_from_string(PyTypeObject *type, PyObject *v)
 		s = s_buffer;
 		len = (int)strlen(s);
 	}
-#endif
 	else if (PyObject_AsCharBuffer(v, &s, &len)) 
 	{
 		PyErr_SetString(PyExc_TypeError,
