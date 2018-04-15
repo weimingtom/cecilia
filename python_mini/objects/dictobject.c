@@ -12,18 +12,6 @@ static PyObject *dummy;
 
 static dictentry *lookdict_string(dictobject *mp, PyObject *key, long hash);
 
-#ifdef SHOW_CONVERSION_COUNTS
-static long created = 0L;
-static long converted = 0L;
-
-static void show_counts()
-{
-	fprintf(stderr, "created %ld string dicts\n", created);
-	fprintf(stderr, "converted %ld to normal dicts\n", converted);
-	fprintf(stderr, "%.2f%% conversion rate\n", (100.0*converted)/created);
-}
-#endif
-
 #define INIT_NONZERO_DICT_SLOTS(mp) do {				\
 	(mp)->ma_table = (mp)->ma_smalltable;				\
 	(mp)->ma_mask = PyDict_MINSIZE - 1;				\
@@ -45,18 +33,12 @@ PyObject *PyDict_New()
 		{
 			return NULL;
 		}
-#ifdef SHOW_CONVERSION_COUNTS
-		Py_AtExit(show_counts);
-#endif
 	}
 	mp = PyObject_GC_New(dictobject, &PyDict_Type);
 	if (mp == NULL)
 		return NULL;
 	EMPTY_TO_MINSIZE(mp);
 	mp->ma_lookup = lookdict_string;
-#ifdef SHOW_CONVERSION_COUNTS
-	++created;
-#endif
 	_PyObject_GC_TRACK(mp);
 	return (PyObject *)mp;
 }
@@ -191,9 +173,6 @@ static dictentry *lookdict_string(dictobject *mp, PyObject *key, long hash)
 
 	if (!PyString_CheckExact(key)) 
 	{
-#ifdef SHOW_CONVERSION_COUNTS
-		++converted;
-#endif
 		mp->ma_lookup = lookdict;
 		return lookdict(mp, key, hash);
 	}
@@ -359,10 +338,8 @@ PyObject *PyDict_GetItem(PyObject *op, PyObject *key)
 	{
 		return NULL;
 	}
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1) 
@@ -386,17 +363,14 @@ int PyDict_SetItem(PyObject *op, PyObject *key, PyObject *value)
 		return -1;
 	}
 	mp = (dictobject *)op;
-#ifdef CACHE_HASH
 	if (PyString_CheckExact(key)) 
 	{
-#ifdef INTERN_STRINGS
 		if (((PyStringObject *)key)->ob_sinterned != NULL) 
 		{
 			key = ((PyStringObject *)key)->ob_sinterned;
 			hash = ((PyStringObject *)key)->ob_shash;
 		}
 		else
-#endif
 		{
 			hash = ((PyStringObject *)key)->ob_shash;
 			if (hash == -1)
@@ -406,7 +380,6 @@ int PyDict_SetItem(PyObject *op, PyObject *key, PyObject *value)
 		}
 	}
 	else
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -441,10 +414,8 @@ int PyDict_DelItem(PyObject *op, PyObject *key)
 		PyErr_BadInternalCall();
 		return -1;
 	}
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -745,10 +716,8 @@ static PyObject *dict_subscript(dictobject *mp, PyObject *key)
 	PyObject *v;
 	long hash;
 	assert(mp->ma_table != NULL);
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -1348,10 +1317,8 @@ static PyObject *dict_has_key(dictobject *mp, PyObject *key)
 {
 	long hash;
 	long ok;
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -1373,10 +1340,8 @@ static PyObject *dict_get(dictobject *mp, PyObject *args)
 		return NULL;
 	}
 
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -1407,10 +1372,8 @@ static PyObject *dict_setdefault(dictobject *mp, PyObject *args)
 		return NULL;
 	}
 
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -1632,10 +1595,8 @@ static int dict_contains(dictobject *mp, PyObject *key)
 {
 	long hash;
 
-#ifdef CACHE_HASH
 	if (!PyString_CheckExact(key) ||
 	    (hash = ((PyStringObject *) key)->ob_shash) == -1)
-#endif
 	{
 		hash = PyObject_Hash(key);
 		if (hash == -1)
@@ -1669,9 +1630,6 @@ static PyObject *dict_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		assert(d->ma_table == NULL && d->ma_fill == 0 && d->ma_used == 0);
 		INIT_NONZERO_DICT_SLOTS(d);
 		d->ma_lookup = lookdict_string;
-#ifdef SHOW_CONVERSION_COUNTS
-		++created;
-#endif
 	}
 	return self;
 }

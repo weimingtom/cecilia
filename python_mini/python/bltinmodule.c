@@ -5,7 +5,7 @@
 #include "eval.h"
 #include <ctype.h>
 
-#if defined(MS_WIN32) && defined(HAVE_USABLE_WCHAR_T)
+#if defined(HAVE_USABLE_WCHAR_T)
 const char *Py_FileSystemDefaultEncoding = "mbcs";
 #else
 const char *Py_FileSystemDefaultEncoding = NULL;

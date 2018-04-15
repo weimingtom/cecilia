@@ -36,24 +36,12 @@
 #define MS_WINDOWS
 
 
-#ifdef MS_WIN64
-#ifdef _M_IX86
-#define COMPILER "[MSC 64 bit (Intel)]"
-#elif defined(_M_ALPHA)
-#define COMPILER "[MSC 64 bit (Alpha)]"
-#else
-#define COMPILER "[MSC 64 bit (Unknown)]"
-#endif
-#endif
-
-#if defined(MS_WIN32) && !defined(MS_WIN64)
 #ifdef _M_IX86
 #define COMPILER "[MSC 32 bit (Intel)]"
 #elif defined(_M_ALPHA)
 #define COMPILER "[MSC 32 bit (Alpha)]"
 #else
 #define COMPILER "[MSC (Unknown)]"
-#endif
 #endif
 
 #endif
@@ -227,15 +215,7 @@ typedef int pid_t;
 #include <basetsd.h>
 #endif
 
-#if defined(MS_WIN64)
-#	define PLATFORM "win32"
-#	define SIZEOF_VOID_P 8
-#	define SIZEOF_TIME_T 8
-#	define SIZEOF_OFF_T 4
-#	define SIZEOF_FPOS_T 8
-#	define SIZEOF_HKEY 8
-#	define HAVE_LARGEFILE_SUPPORT
-#elif defined(MS_WIN32)
+
 #	define PLATFORM "win32"
 #	define HAVE_LARGEFILE_SUPPORT
 #	ifdef _M_ALPHA
@@ -248,10 +228,8 @@ typedef int pid_t;
 #		define SIZEOF_FPOS_T 8
 #		define SIZEOF_HKEY 4
 #	endif
-#endif
 
 
-#ifdef MS_WIN32
 
 #if !defined(USE_DL_EXPORT) && defined(_MSC_VER)
 #ifdef _DEBUG
@@ -269,8 +247,6 @@ typedef int pid_t;
 #define SIZEOF_INT 4
 #define SIZEOF_LONG 4
 #define SIZEOF_LONG_LONG 8
-
-#endif
 
 #ifndef _ALL_SOURCE
 #endif
@@ -302,9 +278,7 @@ typedef int pid_t;
 #define BAD_STATIC_FORWARD 1
 // #undef GETPGRP_HAVE_ARGS 
 // #define HAVE_ALTZONE 
-#ifdef MS_WIN32
 #define HAVE_PUTENV
-#endif
 #define HAVE_PROTOTYPES
 // #undef SYS_SELECT_WITH_SYS_TIME 
 // #undef WITH_SGI_DL 

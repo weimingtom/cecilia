@@ -15,10 +15,8 @@
 #include <signal.h>
 #endif
 
-#ifdef MS_WIN32
 #undef BYTE
 #include "windows.h"
-#endif
 
 extern char *Py_GetPath();
 
@@ -163,10 +161,6 @@ void Py_Initialize()
 		initsite();
 }
 
-#ifdef COUNT_ALLOCS
-extern void dump_counts();
-#endif
-
 void Py_Finalize()
 {
 	PyInterpreterState *interp;
@@ -190,10 +184,6 @@ void Py_Finalize()
 	PyImport_Cleanup();
 
 	_PyImport_Fini();
-
-#ifdef COUNT_ALLOCS
-	dump_counts();
-#endif
 
 #ifdef Py_REF_DEBUG
 	fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
@@ -1304,13 +1294,11 @@ static void err_input(perrdetail *err)
 void Py_FatalError(char *msg)
 {
 	fprintf(stderr, "Fatal Python error: %s\n", msg);
-#ifdef MS_WIN32
 	OutputDebugString("Fatal Python error: ");
 	OutputDebugString(msg);
 	OutputDebugString("\n");
 #ifdef _DEBUG
 	DebugBreak();
-#endif
 #endif
 	abort();
 }

@@ -7,9 +7,7 @@ typedef struct {
 	void *b_ptr;
 	int b_size;
 	int b_readonly;
-#ifdef CACHE_HASH
 	long b_hash;
-#endif
 } PyBufferObject;
 
 static PyObject *_PyBuffer_FromMemory(PyObject *base, void *ptr, int size, int readonly)
@@ -34,9 +32,7 @@ static PyObject *_PyBuffer_FromMemory(PyObject *base, void *ptr, int size, int r
 	b->b_ptr = ptr;
 	b->b_size = size;
 	b->b_readonly = readonly;
-#ifdef CACHE_HASH
 	b->b_hash = -1;
-#endif
 	return (PyObject *) b;
 }
 
@@ -152,9 +148,7 @@ PyObject *PyBuffer_New(int size)
 	b->b_ptr = (void *)(b + 1);
 	b->b_size = size;
 	b->b_readonly = 0;
-#ifdef CACHE_HASH
 	b->b_hash = -1;
-#endif
 
 	return o;
 }
@@ -212,12 +206,10 @@ static long buffer_hash(PyBufferObject *self)
 	unsigned char *p;
 	long x;
 
-#ifdef CACHE_HASH
 	if ( self->b_hash != -1 )
 	{
 		return self->b_hash;
 	}
-#endif
 
 	if ( !self->b_readonly )
 	{
@@ -235,9 +227,7 @@ static long buffer_hash(PyBufferObject *self)
 	{
 		x = -2;
 	}
-#ifdef CACHE_HASH
 	self->b_hash = x;
-#endif
 	return x;
 }
 

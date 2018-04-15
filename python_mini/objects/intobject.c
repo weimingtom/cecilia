@@ -79,10 +79,6 @@ static PyIntObject *fill_free_list()
 static PyIntObject *small_ints[NSMALLNEGINTS + NSMALLPOSINTS];
 #endif
 
-#ifdef COUNT_ALLOCS
-int quick_int_allocs, quick_neg_int_allocs;
-#endif
-
 PyObject *PyInt_FromLong(long ival)
 {
 	PyIntObject *v;
@@ -91,16 +87,6 @@ PyObject *PyInt_FromLong(long ival)
 	    (v = small_ints[ival + NSMALLNEGINTS]) != NULL) 
 	{
 		Py_INCREF(v);
-#ifdef COUNT_ALLOCS
-		if (ival >= 0)
-		{
-			quick_int_allocs++;
-		}
-		else
-		{
-			quick_neg_int_allocs++;
-		}
-#endif
 		return (PyObject *) v;
 	}
 #endif

@@ -697,14 +697,8 @@ static void instance_dealloc(PyInstanceObject *inst)
 	}
 
 #ifdef Py_TRACE_REFS
-#ifndef Py_REF_DEBUG
-#   error "Py_TRACE_REFS defined but Py_REF_DEBUG not."
-#endif
 	inst->ob_type = &PyInstance_Type;
 	_Py_NewReference((PyObject *)inst);
-#ifdef COUNT_ALLOCS
-	inst->ob_type->tp_allocs--;
-#endif
 #else
 	Py_INCREF(inst);
 #endif
@@ -733,20 +727,11 @@ static void instance_dealloc(PyInstanceObject *inst)
 #endif
 	if (--inst->ob_refcnt > 0) 
 	{
-#ifdef COUNT_ALLOCS
-		inst->ob_type->tp_frees--;
-#endif
 		_PyObject_GC_TRACK(inst);
 		return;
 	}
 #ifdef Py_TRACE_REFS
 	_Py_ForgetReference((PyObject *)inst);
-#ifdef COUNT_ALLOCS
-	inst->ob_type->tp_frees--;
-#endif
-#ifndef WITH_CYCLE_GC
-	inst->ob_type = NULL;
-#endif
 #endif
 	Py_DECREF(inst->in_class);
 	Py_XDECREF(inst->in_dict);

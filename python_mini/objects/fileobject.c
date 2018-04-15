@@ -2,18 +2,10 @@
 #include "python.h"
 #include "structmember.h"
 
-#ifndef DONT_HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 
-#ifdef MS_WIN32
 #define fileno _fileno
 #define HAVE_FTRUNCATE
-#endif
-
-#ifdef __MWERKS__
-#define NO_FOPEN_ERRNO
-#endif
 
 #define BUF(v) PyString_AS_STRING((PyStringObject *)v)
 
@@ -92,14 +84,6 @@ static PyObject *open_the_file(PyFileObject *f, char *name, char *mode)
 		return NULL;
 	}
 	errno = 0;
-#ifdef HAVE_FOPENRF
-	if (*mode == '*') 
-	{
-		FILE *fopenRF();
-		f->f_fp = fopenRF(name, mode+1);
-	}
-	else
-#endif
 	{
 		Py_BEGIN_ALLOW_THREADS
 		f->f_fp = fopen(name, mode);
@@ -107,20 +91,6 @@ static PyObject *open_the_file(PyFileObject *f, char *name, char *mode)
 	}
 	if (f->f_fp == NULL) 
 	{
-#ifdef NO_FOPEN_ERRNO
-		if (errno == 0) 
-		{
-			PyObject *v;
-			v = Py_BuildValue("(is)", 0, "Cannot open file");
-			if (v != NULL) 
-			{
-				PyErr_SetObject(PyExc_IOError, v);
-				Py_DECREF(v);
-			}
-			return NULL;
-		}
-#endif
-#ifdef _MSC_VER
 		if (errno == 0)	
 		{
 			errno = EINVAL;
@@ -129,7 +99,6 @@ static PyObject *open_the_file(PyFileObject *f, char *name, char *mode)
 		{	
 			errno = ENOENT;
 		}
-#endif
 		if (errno == EINVAL)
 		{
 			PyErr_Format(PyExc_IOError, "invalid mode: %s",
@@ -180,7 +149,6 @@ void PyFile_SetBufSize(PyObject *f, int bufsize)
 {
 	if (bufsize >= 0) 
 	{
-#ifdef HAVE_SETVBUF
 		int type;
 		switch (bufsize) 
 		{
@@ -198,12 +166,6 @@ void PyFile_SetBufSize(PyObject *f, int bufsize)
 		}
 		setvbuf(((PyFileObject *)f)->f_fp, (char *)NULL,
 			type, bufsize);
-#else
-		if (bufsize <= 1)
-		{
-			setbuf(((PyFileObject *)f)->f_fp, (char *)NULL);
-		}
-#endif
 	}
 }
 
@@ -262,16 +224,7 @@ static PyObject *file_close(PyFileObject *f)
 }
 
 
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-typedef off_t Py_off_t;
-#elif SIZEOF_OFF_T >= 8
-typedef off_t Py_off_t;
-#elif SIZEOF_FPOS_T >= 8
 typedef fpos_t Py_off_t;
-#else
-#error "Large file support, but neither off_t nor fpos_t is large enough."
-#endif
-
 
 static int _portable_fseek(FILE *fp, Py_off_t offset, int whence)
 {
@@ -434,7 +387,6 @@ static PyObject *file_truncate(PyFileObject *f, PyObject *args)
 		goto onioerror;
 	}
 
-#ifdef MS_WIN32
 	if (newsize > LONG_MAX) 
 	{
 		PyErr_SetString(PyExc_OverflowError,
@@ -449,16 +401,6 @@ static PyObject *file_truncate(PyFileObject *f, PyObject *args)
 		Py_END_ALLOW_THREADS
 		if (ret != 0) goto onioerror;
 	}
-#else
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	ret = ftruncate(fileno(f->f_fp), newsize);
-	Py_END_ALLOW_THREADS
-	if (ret != 0) 
-	{
-		goto onioerror;
-	}
-#endif 
 
 	Py_INCREF(Py_None);
 	return Py_None;

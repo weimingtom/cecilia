@@ -108,8 +108,6 @@ extern DL_IMPORT(void) _PyObject_GC_Del(PyObject *);
 extern DL_IMPORT(void) _PyObject_GC_Track(PyObject *);
 extern DL_IMPORT(void) _PyObject_GC_UnTrack(PyObject *);
 
-#ifdef WITH_CYCLE_GC
-
 typedef union _gc_head {
 	struct {
 		union _gc_head *gc_next;
@@ -147,18 +145,6 @@ extern PyGC_Head _PyGC_generation0;
 #define PyObject_GC_NewVar(type, typeobj, n) \
 		( (type *) _PyObject_GC_NewVar((typeobj), (n)) )
 #define PyObject_GC_Del(op) _PyObject_GC_Del((PyObject *)(op))
-
-#else
-
-#define PyObject_GC_New PyObject_New
-#define PyObject_GC_NewVar PyObject_NewVar
-#define PyObject_GC_Del	 PyObject_Del
-#define _PyObject_GC_TRACK(op)
-#define _PyObject_GC_UNTRACK(op)
-#define PyObject_GC_Track(op)
-#define PyObject_GC_UnTrack(op)
-
-#endif
 
 #define PyGC_HEAD_SIZE 0
 #define PyObject_GC_Init(op)

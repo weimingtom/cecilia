@@ -4,18 +4,12 @@
 #include <stdarg.h>
 
 #define CACHE_HASH
-#ifdef CACHE_HASH
 #define INTERN_STRINGS
-#endif
 
 typedef struct {
     PyObject_VAR_HEAD
-#ifdef CACHE_HASH
     long ob_shash;
-#endif
-#ifdef INTERN_STRINGS
     PyObject *ob_sinterned;
-#endif
     char ob_sval[1];
 } PyStringObject;
 
@@ -40,15 +34,9 @@ extern DL_IMPORT(PyObject *) PyString_Format(PyObject *, PyObject *);
 extern DL_IMPORT(PyObject *) _PyString_FormatLong(PyObject*, int, int,
 						  int, char**, int*);
 
-#ifdef INTERN_STRINGS
 extern DL_IMPORT(void) PyString_InternInPlace(PyObject **);
 extern DL_IMPORT(PyObject *) PyString_InternFromString(const char *);
 extern DL_IMPORT(void) _Py_ReleaseInternedStrings();
-#else
-#define PyString_InternInPlace(p)
-#define PyString_InternFromString(cp) PyString_FromString(cp)
-#define _Py_ReleaseInternedStrings()
-#endif
 
 #define PyString_AS_STRING(op) (((PyStringObject *)(op))->ob_sval)
 #define PyString_GET_SIZE(op)  (((PyStringObject *)(op))->ob_size)

@@ -14,11 +14,6 @@ static PyTupleObject *free_tuples[MAXSAVESIZE];
 static int num_free_tuples[MAXSAVESIZE];
 #endif
 
-#ifdef COUNT_ALLOCS
-int fast_tuple_allocs;
-int tuple_zero_allocs;
-#endif
-
 PyObject *PyTuple_New(int size)
 {
 	int i;
@@ -33,9 +28,6 @@ PyObject *PyTuple_New(int size)
 	{
 		op = free_tuples[0];
 		Py_INCREF(op);
-#ifdef COUNT_ALLOCS
-		tuple_zero_allocs++;
-#endif
 		return (PyObject *) op;
 	}
 	
@@ -44,9 +36,6 @@ PyObject *PyTuple_New(int size)
 	{
 		free_tuples[size] = (PyTupleObject *) op->ob_item[0];
 		num_free_tuples[size]--;
-#ifdef COUNT_ALLOCS
-		fast_tuple_allocs++;
-#endif
 #ifdef Py_TRACE_REFS
 		op->ob_size = size;
 		op->ob_type = &PyTuple_Type;

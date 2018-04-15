@@ -90,7 +90,7 @@ extern DL_IMPORT(void) PyErr_SetInterrupt();
 extern DL_IMPORT(void) PyErr_SyntaxLocation(char *, int);
 extern DL_IMPORT(PyObject *) PyErr_ProgramText(char *, int);
 
-#if defined(MS_WIN32) && !defined(HAVE_SNPRINTF)
+#if !defined(HAVE_SNPRINTF)
 # define HAVE_SNPRINTF
 # define snprintf _snprintf
 # define vsnprintf _vsnprintf

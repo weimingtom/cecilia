@@ -405,9 +405,6 @@ static int call_finalizer(PyObject *self)
 #   error "Py_TRACE_REFS defined but Py_REF_DEBUG not."
 #endif
 	_Py_NewReference((PyObject *)self);
-#ifdef COUNT_ALLOCS
-	self->ob_type->tp_allocs--;
-#endif
 #else 
 	Py_INCREF(self);
 #endif 
@@ -436,17 +433,11 @@ static int call_finalizer(PyObject *self)
 #endif
 	if (--self->ob_refcnt > 0) 
 	{
-#ifdef COUNT_ALLOCS
-		self->ob_type->tp_frees--;
-#endif
 		assert(((PyGC_Head *)(self)-1)->gc.gc_next != NULL);
 		return -1;
 	}
 #ifdef Py_TRACE_REFS
 	_Py_ForgetReference((PyObject *)self);
-#ifdef COUNT_ALLOCS
-	self->ob_type->tp_frees--;
-#endif
 #endif
 
 	return 0;

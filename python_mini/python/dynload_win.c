@@ -18,7 +18,6 @@ const struct filedescr _PyImport_DynLoadFiletab[] = {
 	{0, 0}
 };
 
-#ifdef MS_WIN32
 
 static int strcasecmp(char *string1, char *string2)
 { 
@@ -110,8 +109,6 @@ static char *GetPythonImport (HINSTANCE hModule)
 	return NULL;
 }
 
-#endif
-
 
 dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
 				    const char *pathname, FILE *fp)
@@ -121,7 +118,6 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
 
 	PyOS_snprintf(funcname, sizeof(funcname), "init%.200s", shortname);
 
-#ifdef MS_WIN32
 	{
 		HINSTANCE hDLL = NULL;
 		char pathbuf[260];
@@ -199,7 +195,6 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
 		}
 		p = GetProcAddress(hDLL, funcname);
 	}
-#endif
 #ifdef MS_WIN16
 	{
 		HINSTANCE hDLL;

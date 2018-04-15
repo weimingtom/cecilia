@@ -494,14 +494,6 @@ static char getrefcount_doc[] =
 	"one higher than you might expect, because it includes the (temporary)\n"
 	"reference as an argument to getrefcount().";
 
-#ifdef COUNT_ALLOCS
-static PyObject *sys_getcounts(PyObject *self)
-{
-	extern PyObject *get_counts();
-	return get_counts();
-}
-#endif
-
 static char getframe_doc[] =
 	"_getframe([depth]) -> frameobject\n"
 	"\n"
@@ -550,9 +542,6 @@ static PyMethodDef sys_methods[] = {
 	{"getdefaultencoding", (PyCFunction)sys_getdefaultencoding, METH_NOARGS, getdefaultencoding_doc}, 
 #ifdef HAVE_DLOPEN
 	{"getdlopenflags", (PyCFunction)sys_getdlopenflags, METH_NOARGS, getdlopenflags_doc},
-#endif
-#ifdef COUNT_ALLOCS
-	{"getcounts",	(PyCFunction)sys_getcounts, METH_NOARGS},
 #endif
 #ifdef Py_TRACE_REFS
 	{"getobjects",	_Py_GetObjects, METH_VARARGS},

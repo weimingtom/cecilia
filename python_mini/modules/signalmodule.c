@@ -2,9 +2,7 @@
 #include "python.h"
 #include "intrcheck.h"
 
-#ifdef MS_WIN32
 #include <process.h>
-#endif
 
 #include <signal.h>
 

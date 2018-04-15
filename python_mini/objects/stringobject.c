@@ -2,10 +2,6 @@
 #include "python.h"
 #include <ctype.h>
 
-#ifdef COUNT_ALLOCS
-int null_strings, one_strings;
-#endif
-
 #if !defined(HAVE_LIMITS_H) && !defined(UCHAR_MAX)
 #define UCHAR_MAX 255
 #endif
@@ -22,18 +18,12 @@ PyObject *PyString_FromStringAndSize(const char *str, int size)
 #ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0 && (op = nullstring) != NULL) 
 	{
-#ifdef COUNT_ALLOCS
-		null_strings++;
-#endif
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
 	if (size == 1 && str != NULL &&
 	    (op = characters[*str & UCHAR_MAX]) != NULL)
 	{
-#ifdef COUNT_ALLOCS
-		one_strings++;
-#endif
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
@@ -46,12 +36,8 @@ PyObject *PyString_FromStringAndSize(const char *str, int size)
 		return PyErr_NoMemory();
 	}
 	PyObject_INIT_VAR(op, &PyString_Type, size);
-#ifdef CACHE_HASH
 	op->ob_shash = -1;
-#endif
-#ifdef INTERN_STRINGS
 	op->ob_sinterned = NULL;
-#endif
 	if (str != NULL)
 	{
 		memcpy(op->ob_sval, str, size);
@@ -94,17 +80,11 @@ PyObject *PyString_FromString(const char *str)
 #ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0 && (op = nullstring) != NULL) 
 	{
-#ifdef COUNT_ALLOCS
-		null_strings++;
-#endif
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
 	if (size == 1 && (op = characters[*str & UCHAR_MAX]) != NULL) 
 	{
-#ifdef COUNT_ALLOCS
-		one_strings++;
-#endif
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
@@ -117,12 +97,8 @@ PyObject *PyString_FromString(const char *str)
 		return PyErr_NoMemory();
 	}
 	PyObject_INIT_VAR(op, &PyString_Type, size);
-#ifdef CACHE_HASH
 	op->ob_shash = -1;
-#endif
-#ifdef INTERN_STRINGS
 	op->ob_sinterned = NULL;
-#endif
 	memcpy(op->ob_sval, str, size+1);
 #ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0) 
@@ -777,12 +753,8 @@ static PyObject *string_concat(PyStringObject *a, PyObject *bb)
 		return PyErr_NoMemory();
 	}
 	PyObject_INIT_VAR(op, &PyString_Type, size);
-#ifdef CACHE_HASH
 	op->ob_shash = -1;
-#endif
-#ifdef INTERN_STRINGS
 	op->ob_sinterned = NULL;
-#endif
 	memcpy(op->ob_sval, a->ob_sval, (int) a->ob_size);
 	memcpy(op->ob_sval + a->ob_size, b->ob_sval, (int) b->ob_size);
 	op->ob_sval[size] = '\0';
@@ -827,12 +799,8 @@ static PyObject *string_repeat(PyStringObject *a, int n)
 		return PyErr_NoMemory();
 	}
 	PyObject_INIT_VAR(op, &PyString_Type, size);
-#ifdef CACHE_HASH
 	op->ob_shash = -1;
-#endif
-#ifdef INTERN_STRINGS
 	op->ob_sinterned = NULL;
-#endif
 	for (i = 0; i < size; i += a->ob_size)
 	{
 		memcpy(op->ob_sval+i, a->ob_sval, (int) a->ob_size);
@@ -911,9 +879,6 @@ static PyObject *string_item(PyStringObject *a, int i)
 	}
 	else 
 	{
-#ifdef COUNT_ALLOCS
-		one_strings++;
-#endif
 		Py_INCREF(v);
 	}
 	return v;
@@ -1034,19 +999,15 @@ static long string_hash(PyStringObject *a)
 	unsigned char *p;
 	long x;
 
-#ifdef CACHE_HASH
 	if (a->ob_shash != -1)
 	{
 		return a->ob_shash;
 	}
-#ifdef INTERN_STRINGS
 	if (a->ob_sinterned != NULL)
 	{
 		return (a->ob_shash =
 			((PyStringObject *)(a->ob_sinterned))->ob_shash);
 	}
-#endif
-#endif
 
 	len = a->ob_size;
 	p = (unsigned char *) a->ob_sval;
@@ -1061,9 +1022,7 @@ static long string_hash(PyStringObject *a)
 		x = -2;
 	}
 
-#ifdef CACHE_HASH
 	a->ob_shash = x;
-#endif
 
 	return x;
 }
@@ -3257,14 +3216,10 @@ static PyObject *str_subtype_new(PyTypeObject *type, PyObject *args, PyObject *k
 	if (pnew != NULL) 
 	{
 		memcpy(PyString_AS_STRING(pnew), PyString_AS_STRING(tmp), n+1);
-#ifdef CACHE_HASH
 		((PyStringObject *)pnew)->ob_shash =
 			((PyStringObject *)tmp)->ob_shash;
-#endif
-#ifdef INTERN_STRINGS
 		((PyStringObject *)pnew)->ob_sinterned =
 			((PyStringObject *)tmp)->ob_sinterned;
-#endif
 	}
 	Py_DECREF(tmp);
 	return pnew;
@@ -4207,8 +4162,6 @@ error:
 }
 
 
-#ifdef INTERN_STRINGS
-
 static PyObject *interned;
 
 void PyString_InternInPlace(PyObject **p)
@@ -4284,8 +4237,6 @@ PyObject *PyString_InternFromString(const char *cp)
 	return s;
 }
 
-#endif
-
 void PyString_Fini()
 {
 	int i;
@@ -4299,7 +4250,6 @@ void PyString_Fini()
 	nullstring = NULL;
 #endif
 
-#ifdef INTERN_STRINGS
 	if (interned) 
 	{
 		int pos, changed;
@@ -4318,10 +4268,8 @@ void PyString_Fini()
 			}
 		} while (changed);
 	}
-#endif
 }
 
-#ifdef INTERN_STRINGS
 void _Py_ReleaseInternedStrings()
 {
 	if (interned) 
@@ -4332,4 +4280,3 @@ void _Py_ReleaseInternedStrings()
 		interned = NULL;
 	}
 }
-#endif

@@ -7,10 +7,8 @@ extern char *strerror(int);
 #endif
 #endif
 
-#ifdef MS_WIN32
 #include "windows.h"
 #include "winbase.h"
-#endif
 
 #include <ctype.h>
 
@@ -236,9 +234,7 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 	PyObject *v;
 	char *s;
 	int i = errno;
-#ifdef MS_WIN32
 	char *s_buf = NULL;
-#endif
 #ifdef EINTR
 	if (i == EINTR && PyErr_CheckSignals())
 	{
@@ -250,11 +246,6 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 		s = "Error";
 	}
 	else
-#ifndef MS_WIN32
-	{
-		s = strerror(i);
-	}
-#else
 	{
 		if (i > 0 && i < _sys_nerr) 
 		{
@@ -279,7 +270,6 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 			}
 		}
 	}
-#endif
 	if (filename != NULL)
 	{
 		v = Py_BuildValue("(iss)", i, s, filename);
@@ -293,9 +283,7 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 		PyErr_SetObject(exc, v);
 		Py_DECREF(v);
 	}
-#ifdef MS_WIN32
 	LocalFree(s_buf);
-#endif
 	return NULL;
 }
 

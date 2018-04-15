@@ -14,7 +14,7 @@
 
 #ifndef PY_UNICODE_TYPE
 
-# if defined(MS_WIN32) && Py_UNICODE_SIZE == 2
+# if Py_UNICODE_SIZE == 2
 #  define HAVE_USABLE_WCHAR_T
 #  define PY_UNICODE_TYPE wchar_t
 # endif
@@ -496,8 +496,6 @@ extern DL_IMPORT(PyObject *) PyUnicode_TranslateCharmap(
     const char *errors	
     );
 
-#ifdef MS_WIN32
-
 extern DL_IMPORT(PyObject*) PyUnicode_DecodeMBCS(
     const char *string,     
     int length,           
@@ -513,8 +511,6 @@ extern DL_IMPORT(PyObject*) PyUnicode_EncodeMBCS(
     int length,               
     const char *errors        
     );
-
-#endif
 
 extern DL_IMPORT(int) PyUnicode_EncodeDecimal(
     Py_UNICODE *s,	

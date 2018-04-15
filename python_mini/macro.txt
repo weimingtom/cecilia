@@ -1,3 +1,4 @@
+fileobject.c(not done) <----------
 abstract.c
 myreadline.c
 -----------------------------
@@ -11,6 +12,8 @@ keep:
 #ifdef EINTR
 #ifdef LLTRACE
 #ifdef CHECKEXC
+#define Py_TRACE_REFS
+#define Py_REF_DEBUG
 
 -----------------------------
 removed:
@@ -48,3 +51,41 @@ register
 --->#if !defined(USE_STACKCHECK)
 #if !defined(HAVE_SIGNAL_H)
 #ifdef CASE_TOO_BIG
+
+
+#if Py_single_input != single_input
+  #error "single_input has changed -- update Py_single_input in python.h"
+#endif
+#if Py_file_input != file_input
+  #error "file_input has changed -- update Py_file_input in python.h"
+#endif
+#if Py_eval_input != eval_input
+  #error "eval_input has changed -- update Py_eval_input in python.h"
+#endif
+
+#ifdef CACHE_HASH
+--->#ifdef INTERN_STRINGS
+#ifdef COUNT_ALLOCS
+#ifndef WITH_CYCLE_GC
+#ifdef SHOW_CONVERSION_COUNTS
+
+#ifndef DONT_HAVE_SYS_TYPES_H
+#ifdef MS_WIN32
+--->MS_WIN64
+
+#ifdef __MWERKS__
+#ifdef HAVE_FOPENRF
+#ifdef NO_FOPEN_ERRNO
+#ifdef _MSC_VER
+#ifdef HAVE_SETVBUF
+#if !defined(HAVE_LARGEFILE_SUPPORT)
+
+
+#if SIZEOF_OFF_T >= 8
+typedef off_t Py_off_t;
+#elif SIZEOF_FPOS_T >= 8
+typedef fpos_t Py_off_t;
+#else
+#error "Large file support, but neither off_t nor fpos_t is large enough."
+#endif
+

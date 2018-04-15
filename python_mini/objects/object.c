@@ -11,83 +11,6 @@ DL_IMPORT(long) _Py_RefTotal;
 
 DL_IMPORT(int) Py_DivisionWarningFlag;
 
-#ifdef COUNT_ALLOCS
-
-static PyTypeObject *type_list;
-extern int tuple_zero_allocs, fast_tuple_allocs;
-extern int quick_int_allocs, quick_neg_int_allocs;
-extern int null_strings, one_strings;
-
-void dump_counts()
-{
-	PyTypeObject *tp;
-
-	for (tp = type_list; tp; tp = tp->tp_next)
-	{
-		fprintf(stderr, "%s alloc'd: %d, freed: %d, max in use: %d\n",
-			tp->tp_name, tp->tp_allocs, tp->tp_frees,
-			tp->tp_maxalloc);
-	}
-	fprintf(stderr, "fast tuple allocs: %d, empty: %d\n",
-		fast_tuple_allocs, tuple_zero_allocs);
-	fprintf(stderr, "fast int allocs: pos: %d, neg: %d\n",
-		quick_int_allocs, quick_neg_int_allocs);
-	fprintf(stderr, "null strings: %d, 1-strings: %d\n",
-		null_strings, one_strings);
-}
-
-PyObject *get_counts()
-{
-	PyTypeObject *tp;
-	PyObject *result;
-	PyObject *v;
-
-	result = PyList_New(0);
-	if (result == NULL)
-	{
-		return NULL;
-	}
-	for (tp = type_list; tp; tp = tp->tp_next) 
-	{
-		v = Py_BuildValue("(siii)", tp->tp_name, tp->tp_allocs,
-				  tp->tp_frees, tp->tp_maxalloc);
-		if (v == NULL) 
-		{
-			Py_DECREF(result);
-			return NULL;
-		}
-		if (PyList_Append(result, v) < 0) 
-		{
-			Py_DECREF(v);
-			Py_DECREF(result);
-			return NULL;
-		}
-		Py_DECREF(v);
-	}
-	return result;
-}
-
-void inc_count(PyTypeObject *tp)
-{
-	if (tp->tp_allocs == 0) 
-	{
-		if (tp->tp_next != NULL)
-		{
-			Py_FatalError("XXX inc_count sanity check");
-		}
-		tp->tp_next = type_list;
-		Py_INCREF(tp);
-		type_list = tp;
-	}
-	tp->tp_allocs++;
-	if (tp->tp_allocs - tp->tp_frees > tp->tp_maxalloc)
-	{
-		tp->tp_maxalloc = tp->tp_allocs - tp->tp_frees;
-	}
-}
-
-#endif
-
 PyObject *PyObject_Init(PyObject *op, PyTypeObject *tp)
 {
 	if (op == NULL)
@@ -1874,9 +1797,6 @@ void _Py_NewReference(PyObject *op)
 	op->_ob_prev = &refchain;
 	refchain._ob_next->_ob_prev = op;
 	refchain._ob_next = op;
-#ifdef COUNT_ALLOCS
-	inc_count(op->ob_type);
-#endif
 }
 
 void _Py_ForgetReference(PyObject *op)
@@ -1909,9 +1829,6 @@ void _Py_ForgetReference(PyObject *op)
 	op->_ob_next->_ob_prev = op->_ob_prev;
 	op->_ob_prev->_ob_next = op->_ob_next;
 	op->_ob_next = op->_ob_prev = NULL;
-#ifdef COUNT_ALLOCS
-	op->ob_type->tp_frees++;
-#endif
 }
 
 void _Py_Dealloc(PyObject *op)

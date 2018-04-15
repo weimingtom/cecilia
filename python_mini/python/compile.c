@@ -11,16 +11,6 @@
 
 #include <ctype.h>
 
-#if Py_single_input != single_input
-  #error "single_input has changed -- update Py_single_input in python.h"
-#endif
-#if Py_file_input != file_input
-  #error "file_input has changed -- update Py_file_input in python.h"
-#endif
-#if Py_eval_input != eval_input
-  #error "eval_input has changed -- update Py_eval_input in python.h"
-#endif
-
 int Py_OptimizeFlag = 0;
 
 #define OP_DELETE 0

@@ -197,13 +197,6 @@ typedef struct _typeobject {
 	PyObject *tp_cache;
 	PyObject *tp_subclasses;
 	PyObject *tp_weaklist;
-
-#ifdef COUNT_ALLOCS
-	int tp_allocs;
-	int tp_frees;
-	int tp_maxalloc;
-	struct _typeobject *tp_next;
-#endif
 } PyTypeObject;
 
 
@@ -293,11 +286,7 @@ extern DL_IMPORT(long) _Py_HashPointer(void*);
 
 #define Py_TPFLAGS_READYING (1L<<13)
 
-#ifdef WITH_CYCLE_GC
 #define Py_TPFLAGS_HAVE_GC (1L<<14)
-#else
-#define Py_TPFLAGS_HAVE_GC 0
-#endif
 
 #define Py_TPFLAGS_DEFAULT  ( \
                              Py_TPFLAGS_HAVE_GETCHARBUFFER | \
@@ -327,17 +316,8 @@ extern DL_IMPORT(void) _Py_ResetReferences();
 #endif
 
 #ifndef Py_TRACE_REFS
-#ifdef COUNT_ALLOCS
-#define _Py_Dealloc(op) ((op)->ob_type->tp_frees++, (*(op)->ob_type->tp_dealloc)((PyObject *)(op)))
-#define _Py_ForgetReference(op) ((op)->ob_type->tp_frees++)
-#else
 #define _Py_Dealloc(op) (*(op)->ob_type->tp_dealloc)((PyObject *)(op))
 #define _Py_ForgetReference(op)
-#endif
-#endif
-
-#ifdef COUNT_ALLOCS
-extern DL_IMPORT(void) inc_count(PyTypeObject *);
 #endif
 
 #ifdef Py_REF_DEBUG
@@ -345,11 +325,7 @@ extern DL_IMPORT(void) inc_count(PyTypeObject *);
 extern DL_IMPORT(long) _Py_RefTotal;
 
 #ifndef Py_TRACE_REFS
-#ifdef COUNT_ALLOCS
-#define _Py_NewReference(op) (inc_count((op)->ob_type), _Py_RefTotal++, (op)->ob_refcnt = 1)
-#else
 #define _Py_NewReference(op) (_Py_RefTotal++, (op)->ob_refcnt = 1)
-#endif
 #endif
 
 #define Py_INCREF(op) (_Py_RefTotal++, (op)->ob_refcnt++)
@@ -361,11 +337,7 @@ extern DL_IMPORT(long) _Py_RefTotal;
 		           __FILE__, __LINE__, (op)->ob_refcnt)
 #else
 
-#ifdef COUNT_ALLOCS
-#define _Py_NewReference(op) (inc_count((op)->ob_type), (op)->ob_refcnt = 1)
-#else
 #define _Py_NewReference(op) ((op)->ob_refcnt = 1)
-#endif
 
 #define Py_INCREF(op) ((op)->ob_refcnt++)
 #define Py_DECREF(op) \

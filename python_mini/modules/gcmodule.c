@@ -1,8 +1,6 @@
 //20180406
 #include "python.h"
 
-#ifdef WITH_CYCLE_GC
-
 #define AS_GC(o) ((PyGC_Head *)(o)-1)
 
 #define FROM_GC(g) ((PyObject *)(((PyGC_Head *)g)+1))
@@ -772,7 +770,6 @@ void _PyGC_Dump(PyGC_Head *g)
 	_PyObject_Dump(FROM_GC(g));
 }
 
-#endif
 
 void _PyObject_GC_Track(PyObject *op)
 {
@@ -781,20 +778,17 @@ void _PyObject_GC_Track(PyObject *op)
 
 void _PyObject_GC_UnTrack(PyObject *op)
 {
-#ifdef WITH_CYCLE_GC
 	PyGC_Head *gc = AS_GC(op);
 	if (gc->gc.gc_next != NULL)
 	{
 		_PyObject_GC_UNTRACK(op);
 	}
-#endif
 }
 
 PyObject *_PyObject_GC_Malloc(PyTypeObject *tp, int nitems)
 {
 	PyObject *op;
 	const size_t basicsize = _PyObject_VAR_SIZE(tp, nitems);
-#ifdef WITH_CYCLE_GC
 	const size_t nbytes = sizeof(PyGC_Head) + basicsize;
 	PyGC_Head *g = PyObject_MALLOC(nbytes);
 	if (g == NULL)
@@ -814,13 +808,6 @@ PyObject *_PyObject_GC_Malloc(PyTypeObject *tp, int nitems)
 		collecting = 0;
 	}
 	op = FROM_GC(g);
-#else
-	op = PyObject_MALLOC(basicsize);
-	if (op == NULL)
-	{
-		return (PyObject *)PyErr_NoMemory();
-	}
-#endif
 	return op;
 }
 
@@ -847,7 +834,6 @@ PyVarObject *_PyObject_GC_NewVar(PyTypeObject *tp, int nitems)
 PyVarObject *_PyObject_GC_Resize(PyVarObject *op, int nitems)
 {
 	const size_t basicsize = _PyObject_VAR_SIZE(op->ob_type, nitems);
-#ifdef WITH_CYCLE_GC
 	PyGC_Head *g = AS_GC(op);
 	g = PyObject_REALLOC(g,  sizeof(PyGC_Head) + basicsize);
 	if (g == NULL)
@@ -855,20 +841,12 @@ PyVarObject *_PyObject_GC_Resize(PyVarObject *op, int nitems)
 		return (PyVarObject *)PyErr_NoMemory();
 	}
 	op = (PyVarObject *) FROM_GC(g);
-#else
-	op = PyObject_REALLOC(op, basicsize);
-	if (op == NULL)
-	{
-		return (PyVarObject *)PyErr_NoMemory();
-	}
-#endif
 	op->ob_size = nitems;
 	return op;
 }
 
 void _PyObject_GC_Del(PyObject *op)
 {
-#ifdef WITH_CYCLE_GC
 	PyGC_Head *g = AS_GC(op);
 	if (g->gc.gc_next != NULL)
 	{
@@ -879,8 +857,5 @@ void _PyObject_GC_Del(PyObject *op)
 		allocated--;
 	}
 	PyObject_FREE(g);
-#else
-	PyObject_FREE(op);
-#endif
 }
 

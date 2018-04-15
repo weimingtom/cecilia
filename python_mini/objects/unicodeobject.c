@@ -4,9 +4,7 @@
 #include "unicodeobject.h"
 #include "ucnhash.h"
 
-#ifdef MS_WIN32
 #include <windows.h>
-#endif
 
 #define MAX_UNICODE_FREELIST_SIZE       1024
 #define KEEPALIVE_SIZE_LIMIT       9
@@ -2420,7 +2418,7 @@ PyObject *PyUnicode_AsASCIIString(PyObject *unicode)
 				 NULL);
 }
 
-#if defined(MS_WIN32) && defined(HAVE_USABLE_WCHAR_T)
+#if defined(HAVE_USABLE_WCHAR_T)
 
 PyObject *PyUnicode_DecodeMBCS(const char *s,
 				int size,

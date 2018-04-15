@@ -33,9 +33,7 @@ struct _inittab _PyImport_Inittab[] = {
 	{"sys", NULL},
 	{"exceptions", NULL},
 
-#ifdef WITH_CYCLE_GC
 	{"gc", initgc},
-#endif
 
 	{0, 0}
 };

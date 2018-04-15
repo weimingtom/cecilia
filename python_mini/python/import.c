@@ -31,9 +31,7 @@ struct filedescr * _PyImport_Filetab = NULL;
 
 static const struct filedescr _PyImport_StandardFiletab[] = {
 	{".py", "r", PY_SOURCE},
-#ifdef MS_WIN32
 	{".pyw", "r", PY_SOURCE},
-#endif
 	{".pyc", "rb", PY_COMPILED},
 	{0, 0}
 };
@@ -483,12 +481,10 @@ static char *make_compiled_pathname(char *pathname, char *buf, size_t buflen)
 		return NULL;
 	}
 
-#ifdef MS_WIN32
 	if (len >= 4 && strcmp(&pathname[len-4], ".pyw") == 0)
 	{
 		--len;
 	}
-#endif
 	memcpy(buf, pathname, len);
 	buf[len] = Py_OptimizeFlag ? 'o' : 'c';
 	buf[len+1] = '\0';
@@ -964,23 +960,14 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 	return fdp;
 }
 
-#if defined(MS_WIN32) || defined(__CYGWIN__)
+
 #include <windows.h>
 #ifdef __CYGWIN__
 #include <sys/cygwin.h>
 #endif
 
-#elif defined(DJGPP)
-#include <dir.h>
-
-#elif defined(__MACH__) && defined(__APPLE__) && defined(HAVE_DIRENT_H)
-#include <sys/types.h>
-#include <dirent.h>
-#endif
-
 static int case_ok(char *buf, int len, int namelen, char *name)
 {
-#if defined(MS_WIN32) || defined(__CYGWIN__)
 	WIN32_FIND_DATA data;
 	HANDLE h;
 #ifdef __CYGWIN__
@@ -1007,74 +994,6 @@ static int case_ok(char *buf, int len, int namelen, char *name)
 	}
 	FindClose(h);
 	return strncmp(data.cFileName, name, namelen) == 0;
-
-#elif defined(DJGPP)
-	struct ffblk ffblk;
-	int done;
-
-	if (Py_GETENV("PYTHONCASEOK") != NULL)
-	{
-		return 1;
-	}
-
-	done = findfirst(buf, &ffblk, FA_ARCH|FA_RDONLY|FA_HIDDEN|FA_DIREC);
-	if (done) 
-	{
-		PyErr_Format(PyExc_NameError,
-		  "Can't find file for module %.100s\n(filename %.300s)",
-		  name, buf);
-		return 0;
-	}
-	return strncmp(ffblk.ff_name, name, namelen) == 0;
-
-#elif defined(__MACH__) && defined(__APPLE__) && defined(HAVE_DIRENT_H)
-	DIR *dirp;
-	struct dirent *dp;
-	char dirname[MAXPATHLEN + 1];
-	const int dirlen = len - namelen - 1; 
-
-	if (Py_GETENV("PYTHONCASEOK") != NULL)
-	{
-		return 1;
-	}
-
-	if (dirlen <= 0) 
-	{
-		dirname[0] = '.';
-		dirname[1] = '\0';
-	}
-	else 
-	{
-		assert(dirlen <= MAXPATHLEN);
-		memcpy(dirname, buf, dirlen);
-		dirname[dirlen] = '\0';
-	}
-	dirp = opendir(dirname);
-	if (dirp) 
-	{
-		char *nameWithExt = buf + len - namelen;
-		while ((dp = readdir(dirp)) != NULL) 
-		{
-			const int thislen =
-#ifdef _DIRENT_HAVE_D_NAMELEN
-						dp->d_namlen;
-#else
-						strlen(dp->d_name);
-#endif
-			if (thislen >= namelen &&
-			    strcmp(dp->d_name, nameWithExt) == 0) 
-			{
-				closedir(dirp);
-				return 1;
-			}
-		}
-		closedir(dirp);
-	}
-	return 0; 
-#else
-	return 1;
-
-#endif
 }
 
 
