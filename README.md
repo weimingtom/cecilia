@@ -72,3 +72,7 @@ https://github.com/skulpt/skulpt
 
 * Python Tutorial in Chinese  
 https://github.com/sixu05202004/pythontutorial  
+
+* MicroPython / mpy  
+http://www.micropython.org  
+https://github.com/micropython/micropython/tree/master/ports/windows  
