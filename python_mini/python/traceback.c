@@ -148,11 +148,7 @@ static int tb_displayline(PyObject *f, char *filename, int lineno, char *name)
 	{
 		return -1;
 	}
-#ifdef MPW
-#define FMT "  File \"%.500s\"; line %d # in %.500s\n"
-#else
 #define FMT "  File \"%.500s\", line %d, in %.500s\n"
-#endif
 	xfp = fopen(filename, "r");
 	if (xfp == NULL) 
 	{

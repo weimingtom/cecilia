@@ -2,10 +2,8 @@
 #include "python.h"
 #include <ctype.h>
 
-#if !defined(__STDC__)
 extern double fmod(double, double);
 extern double pow(double, double);
-#endif
 
 #if defined(sun) && !defined(__SVR4)
 double (*_Py_math_funcs_hack[])() = {

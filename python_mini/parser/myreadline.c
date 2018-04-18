@@ -1,10 +1,8 @@
 //20170403
 
 #include "python.h"
-#ifdef MS_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include "windows.h"
-#endif
 
 int (*PyOS_InputHook)() = NULL;
 
@@ -22,7 +20,6 @@ static int my_fgets(char *buf, int len, FILE *fp)
 		if (p != NULL)
 		{
 			return 0;
-#ifdef MS_WINDOWS
 		}
 		if (GetLastError() == ERROR_OPERATION_ABORTED) 
 		{
@@ -31,7 +28,6 @@ static int my_fgets(char *buf, int len, FILE *fp)
 				return 1;
 			}
 		}
-#endif
 		if (feof(fp)) 
 		{
 			return -1;

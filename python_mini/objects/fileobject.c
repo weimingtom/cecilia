@@ -228,31 +228,15 @@ typedef fpos_t Py_off_t;
 
 static int _portable_fseek(FILE *fp, Py_off_t offset, int whence)
 {
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-	return fseek(fp, offset, whence);
-#elif defined(HAVE_FSEEKO) && SIZEOF_OFF_T >= 8
-	return fseeko(fp, offset, whence);
-#elif defined(HAVE_FSEEK64)
-	return fseek64(fp, offset, whence);
-#elif defined(__BEOS__)
-	return _fseek(fp, offset, whence);
-#elif SIZEOF_FPOS_T >= 8
 	fpos_t pos;
 	switch (whence) 
 	{
 	case SEEK_END:
-#ifdef MS_WINDOWS
 		fflush(fp);
 		if (_lseeki64(fileno(fp), 0, 2) == -1)
 		{
 			return -1;
 		}
-#else
-		if (fseek(fp, 0, SEEK_END) != 0)
-		{
-			return -1;
-		}
-#endif
 		//no break
 
 	case SEEK_CUR:
@@ -264,30 +248,17 @@ static int _portable_fseek(FILE *fp, Py_off_t offset, int whence)
 		break;
 	}
 	return fsetpos(fp, &offset);
-#else
-#error "Large file support, but no way to fseek."
-#endif
 }
 
 
 static Py_off_t _portable_ftell(FILE* fp)
 {
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-	return ftell(fp);
-#elif defined(HAVE_FTELLO) && SIZEOF_OFF_T >= 8
-	return ftello(fp);
-#elif defined(HAVE_FTELL64)
-	return ftell64(fp);
-#elif SIZEOF_FPOS_T >= 8
 	fpos_t pos;
 	if (fgetpos(fp, &pos) != 0)
 	{
 		return -1;
 	}
 	return pos;
-#else
-#error "Large file support, but no way to ftell."
-#endif
 }
 
 
@@ -307,12 +278,8 @@ static PyObject *file_seek(PyFileObject *f, PyObject *args)
 	{
 		return NULL;
 	}
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-	offset = PyInt_AsLong(offobj);
-#else
 	offset = PyLong_Check(offobj) ?
 		PyLong_AsLongLong(offobj) : PyInt_AsLong(offobj);
-#endif
 	if (PyErr_Occurred())
 	{
 		return NULL;
@@ -334,8 +301,6 @@ static PyObject *file_seek(PyFileObject *f, PyObject *args)
 }
 
 
-#ifdef HAVE_FTRUNCATE
-
 static PyObject *file_truncate(PyFileObject *f, PyObject *args)
 {
 	int ret;
@@ -353,13 +318,9 @@ static PyObject *file_truncate(PyFileObject *f, PyObject *args)
 	}
 	if (newsizeobj != NULL) 
 	{
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-		newsize = PyInt_AsLong(newsizeobj);
-#else
 		newsize = PyLong_Check(newsizeobj) ?
 				PyLong_AsLongLong(newsizeobj) :
 				PyInt_AsLong(newsizeobj);
-#endif
 		if (PyErr_Occurred())
 		{
 			return NULL;
@@ -411,8 +372,6 @@ onioerror:
 	return NULL;
 }
 
-#endif 
-
 static PyObject *file_tell(PyFileObject *f)
 {
 	Py_off_t pos;
@@ -431,11 +390,7 @@ static PyObject *file_tell(PyFileObject *f)
 		clearerr(f->f_fp);
 		return NULL;
 	}
-#if !defined(HAVE_LARGEFILE_SUPPORT)
-	return PyInt_FromLong(pos);
-#else
 	return PyLong_FromLongLong(pos);
-#endif
 }
 
 static PyObject *file_fileno(PyFileObject *f)
@@ -483,21 +438,12 @@ static PyObject *file_isatty(PyFileObject *f)
 }
 
 
-#if BUFSIZ < 8192
-#define SMALLCHUNK 8192
-#else
-#define SMALLCHUNK BUFSIZ
-#endif
 
-#if SIZEOF_INT < 4
-#define BIGCHUNK  (512 * 32)
-#else
+#define SMALLCHUNK 8192
 #define BIGCHUNK  (512 * 1024)
-#endif
 
 static size_t new_buffersize(PyFileObject *f, size_t currentsize)
 {
-#ifdef HAVE_FSTAT
 	off_t pos, end;
 	struct stat st;
 	if (fstat(fileno(f->f_fp), &st) == 0) 
@@ -517,7 +463,6 @@ static size_t new_buffersize(PyFileObject *f, size_t currentsize)
 			return currentsize + end - pos + 1;
 		}
 	}
-#endif
 	if (currentsize > SMALLCHUNK) 
 	{
 		if (currentsize <= BIGCHUNK)
@@ -642,15 +587,9 @@ static PyObject *file_readinto(PyFileObject *f, PyObject *args)
 	return PyInt_FromLong((long)ndone);
 }
 
-#if !defined(USE_FGETS_IN_GETLINE) && !defined(HAVE_GETC_UNLOCKED)
+
 #define USE_FGETS_IN_GETLINE
-#endif
 
-#if defined(DONT_USE_FGETS_IN_GETLINE) && defined(USE_FGETS_IN_GETLINE)
-#undef USE_FGETS_IN_GETLINE
-#endif
-
-#ifdef USE_FGETS_IN_GETLINE
 static PyObject *getline_via_fgets(FILE *fp)
 {
 #define INITBUFSIZE 100
@@ -777,17 +716,10 @@ static PyObject *getline_via_fgets(FILE *fp)
 #undef MAXBUFSIZE
 #undef INCBUFSIZE
 }
-#endif
 
-#ifdef HAVE_GETC_UNLOCKED
-#define GETC(f) getc_unlocked(f)
-#define FLOCKFILE(f) flockfile(f)
-#define FUNLOCKFILE(f) funlockfile(f)
-#else
 #define GETC(f) getc(f)
 #define FLOCKFILE(f)
 #define FUNLOCKFILE(f)
-#endif
 
 static PyObject *get_line(PyFileObject *f, int n)
 {
@@ -797,12 +729,10 @@ static PyObject *get_line(PyFileObject *f, int n)
 	size_t n1, n2;
 	PyObject *v;
 
-#ifdef USE_FGETS_IN_GETLINE
 	if (n <= 0)
 	{
 		return getline_via_fgets(fp);
 	}
-#endif
 	n2 = n > 0 ? n : 100;
 	v = PyString_FromStringAndSize((char *)NULL, n2);
 	if (v == NULL)
@@ -1348,12 +1278,10 @@ static char seek_doc[] =
 	"\n"
 	"Note that not all file objects are seekable.";
 
-#ifdef HAVE_FTRUNCATE
 static char truncate_doc[] =
 	"truncate([size]) -> None.  Truncate the file to at most size bytes.\n"
 	"\n"
 	"Size defaults to the current file position, as returned by tell().";
-#endif
 
 static char tell_doc[] =
 	"tell() -> current file position, an integer (may be a long integer).";
@@ -1400,9 +1328,7 @@ static PyMethodDef file_methods[] = {
 	{"write",	(PyCFunction)file_write,      METH_VARARGS, write_doc},
 	{"fileno",	(PyCFunction)file_fileno,     METH_NOARGS,  fileno_doc},
 	{"seek",	(PyCFunction)file_seek,       METH_VARARGS, seek_doc},
-#ifdef HAVE_FTRUNCATE
 	{"truncate",	(PyCFunction)file_truncate,   METH_VARARGS, truncate_doc},
-#endif
 	{"tell",	(PyCFunction)file_tell,       METH_NOARGS,  tell_doc},
 	{"readinto",	(PyCFunction)file_readinto,   METH_OLDARGS, readinto_doc},
 	{"readlines",	(PyCFunction)file_readlines,  METH_VARARGS, readlines_doc},

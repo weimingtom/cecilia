@@ -1,4 +1,4 @@
-fileobject.c(not done) <----------
+fileobject.c(not done(x) done(y)) <----------
 abstract.c
 myreadline.c
 -----------------------------
@@ -8,7 +8,6 @@ remove register
 keep:
 
 #ifdef Py_DEBUG
-#ifdef MS_WINDOWS
 #ifdef EINTR
 #ifdef LLTRACE
 #ifdef CHECKEXC
@@ -78,9 +77,8 @@ register
 #ifdef NO_FOPEN_ERRNO
 #ifdef _MSC_VER
 #ifdef HAVE_SETVBUF
+
 #if !defined(HAVE_LARGEFILE_SUPPORT)
-
-
 #if SIZEOF_OFF_T >= 8
 typedef off_t Py_off_t;
 #elif SIZEOF_FPOS_T >= 8
@@ -88,4 +86,34 @@ typedef fpos_t Py_off_t;
 #else
 #error "Large file support, but neither off_t nor fpos_t is large enough."
 #endif
+
+#if !defined(HAVE_LARGEFILE_SUPPORT)
+	return fseek(fp, offset, whence);
+#elif defined(HAVE_FSEEKO) && SIZEOF_OFF_T >= 8
+	return fseeko(fp, offset, whence);
+#elif defined(HAVE_FSEEK64)
+	return fseek64(fp, offset, whence);
+#elif defined(__BEOS__)
+	return _fseek(fp, offset, whence);
+#elif SIZEOF_FPOS_T >= 8
+
+
+#ifdef MS_WINDOWS
+--->#if !defined(__QNX__)
+--->#ifndef __STDC__
+--->#ifndef MS_WINDOWS
+--->#ifdef HAVE_SETVBUF
+------>#ifndef MPW
+#if !defined(HAVE_LARGEFILE_SUPPORT)
+#ifdef HAVE_FTRUNCATE
+#if BUFSIZ < 8192
+#if SIZEOF_INT < 4
+#ifdef HAVE_FSTAT
+
+#if !defined(USE_FGETS_IN_GETLINE) && !defined(HAVE_GETC_UNLOCKED)
+#if defined(DONT_USE_FGETS_IN_GETLINE) && defined(USE_FGETS_IN_GETLINE)
+#ifdef HAVE_GETC_UNLOCKED
+#ifdef USE_FGETS_IN_GETLINE
+#ifdef HAVE_FTRUNCATE
+
 

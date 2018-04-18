@@ -1393,15 +1393,6 @@ int _Py_AskYesNo(char *prompt)
 }
 #endif
 
-#ifdef MPW
-
-int isatty(int fd)
-{
-	return fd == fileno(stdin);
-}
-
-#endif
-
 int Py_FdIsInteractive(FILE *fp, char *filename)
 {
 	if (isatty((int)fileno(fp)))

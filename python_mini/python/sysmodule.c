@@ -682,11 +682,9 @@ static char sys_doc[] =
 	"prefix -- prefix used to find the Python library\n"
 	"exec_prefix -- prefix used to find the machine-specific Python library\n"
 	""
-#ifdef MS_WINDOWS
 	"dllhandle -- [Windows only] integer handle of the Python DLL\n"
 	"winver -- [Windows only] version number of the Python DLL\n"
 	""
-#endif
 	"__stdin__ -- the original stdin; don't touch!\n"
 	"__stdout__ -- the original stdout; don't touch!\n"
 	"__stderr__ -- the original stderr; don't touch!\n"

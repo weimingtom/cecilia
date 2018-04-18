@@ -913,15 +913,7 @@ long _Py_HashDouble(double v)
 	long hipart;
 	long x;	
 
-#ifdef MPW 
-{
-	extended e;
-	fractpart = modf(v, &e);
-	intpart = e;
-}
-#else
 	fractpart = modf(v, &intpart);
-#endif
 	if (fractpart == 0.0) 
 	{
 		if (intpart > LONG_MAX || -intpart > LONG_MAX) 

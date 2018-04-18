@@ -3,15 +3,9 @@
 #include "osdefs.h"
 #include "compile.h"
 
-#ifdef MS_WINDOWS
 #include <fcntl.h>
-#endif
 
-#if defined(PYOS_OS2) || defined(MS_WINDOWS)
 #define PYTHONHOMEHELP "<prefix>\\lib"
-#else
-#define PYTHONHOMEHELP "<prefix>/pythonX.X"
-#endif
 
 #include "pygetopt.h"
 
@@ -269,36 +263,15 @@ DL_EXPORT(int) Py_Main(int argc, char **argv)
 
 	if (unbuffered) 
 	{
-#ifdef MS_WINDOWS
 		_setmode(fileno(stdin), O_BINARY);
 		_setmode(fileno(stdout), O_BINARY);
-#endif
-#ifndef MPW
-#ifdef HAVE_SETVBUF
 		setvbuf(stdin,  (char *)NULL, _IONBF, BUFSIZ);
 		setvbuf(stdout, (char *)NULL, _IONBF, BUFSIZ);
 		setvbuf(stderr, (char *)NULL, _IONBF, BUFSIZ);
-#else 
-		setbuf(stdin,  (char *)NULL);
-		setbuf(stdout, (char *)NULL);
-		setbuf(stderr, (char *)NULL);
-#endif
-#else
-		setvbuf(stdin,  (char *)NULL, _IOLBF, BUFSIZ);
-		setvbuf(stdout, (char *)NULL, _IOLBF, BUFSIZ);
-		setvbuf(stderr, (char *)NULL, _IOLBF, BUFSIZ);
-#endif
 	}
 	else if (Py_InteractiveFlag) 
 	{
-#ifdef MS_WINDOWS
 		setvbuf(stdout, (char *)NULL, _IONBF, BUFSIZ);
-#else
-#ifdef HAVE_SETVBUF
-		setvbuf(stdin,  (char *)NULL, _IOLBF, BUFSIZ);
-		setvbuf(stdout, (char *)NULL, _IOLBF, BUFSIZ);
-#endif
-#endif
 	}
 
 	Py_SetProgramName(argv[0]);

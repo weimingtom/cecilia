@@ -1,12 +1,6 @@
 //20180109
 #include "python.h"
 
-#ifndef __STDC__
-#ifndef MS_WINDOWS
-extern char *strerror(int);
-#endif
-#endif
-
 #include "windows.h"
 #include "winbase.h"
 
@@ -292,7 +286,6 @@ PyObject *PyErr_SetFromErrno(PyObject *exc)
 	return PyErr_SetFromErrnoWithFilename(exc, NULL);
 }
 
-#ifdef MS_WINDOWS 
 PyObject *PyErr_SetFromWindowsErrWithFilename(
 	int ierr,
 	const char *filename)
@@ -340,7 +333,6 @@ PyObject *PyErr_SetFromWindowsErr(int ierr)
 {
 	return PyErr_SetFromWindowsErrWithFilename(ierr, NULL);
 }
-#endif
 
 void _PyErr_BadInternalCall(char *filename, int lineno)
 {

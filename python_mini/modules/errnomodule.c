@@ -2,9 +2,7 @@
 
 #include "python.h"
 
-#ifdef MS_WINDOWS
 #include <winsock.h>
-#endif
 
 static PyMethodDef errno_methods[] = {
 	{NULL,	      	NULL}

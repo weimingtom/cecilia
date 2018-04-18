@@ -1,11 +1,7 @@
 //20180318
 #include "python.h"
 
-#ifdef MPW
-typedef extended va_double;
-#else
 typedef double va_double;
-#endif
 
 char *_Py_PackageContext = NULL;
 

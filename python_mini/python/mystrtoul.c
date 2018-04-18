@@ -92,7 +92,6 @@ unsigned long PyOS_strtoul(char *str, char **ptr, int base)
 		}
 		temp = result;
 		result = result * base + c;
-#ifndef MPW
 		if (base == 10) 
 		{
 			if(((long)(result - c) / base != (long)temp))
@@ -107,7 +106,6 @@ unsigned long PyOS_strtoul(char *str, char **ptr, int base)
 				ovf = 1;
 			}
 		}
-#endif
 		str++;
     }
 

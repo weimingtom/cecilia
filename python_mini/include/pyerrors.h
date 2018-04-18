@@ -47,9 +47,7 @@ extern DL_IMPORT(PyObject *) PyExc_UnboundLocalError;
 extern DL_IMPORT(PyObject *) PyExc_UnicodeError;
 extern DL_IMPORT(PyObject *) PyExc_ValueError;
 extern DL_IMPORT(PyObject *) PyExc_ZeroDivisionError;
-#ifdef MS_WINDOWS
 extern DL_IMPORT(PyObject *) PyExc_WindowsError;
-#endif
 
 extern DL_IMPORT(PyObject *) PyExc_MemoryErrorInst;
 
@@ -67,10 +65,8 @@ extern DL_IMPORT(PyObject *) PyErr_SetFromErrno(PyObject *);
 extern DL_IMPORT(PyObject *) PyErr_SetFromErrnoWithFilename(PyObject *, char *);
 extern DL_IMPORT(PyObject *) PyErr_Format(PyObject *, const char *, ...)
 			__attribute__((format(printf, 2, 3)));
-#ifdef MS_WINDOWS
 extern DL_IMPORT(PyObject *) PyErr_SetFromWindowsErrWithFilename(int, const char *);
 extern DL_IMPORT(PyObject *) PyErr_SetFromWindowsErr(int);
-#endif
 
 extern DL_IMPORT(void) PyErr_BadInternalCall();
 extern DL_IMPORT(void) _PyErr_BadInternalCall(char *filename, int lineno);

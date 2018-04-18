@@ -586,9 +586,7 @@ static char IOError__doc__[] = "I/O operation failed.";
 
 static char OSError__doc__[] = "OS system call failed.";
 
-#ifdef MS_WINDOWS
 static char WindowsError__doc__[] = "MS-Windows OS system call failed.";
-#endif
 
 static char EOFError__doc__[] = "Read beyond end of file.";
 
@@ -919,9 +917,7 @@ PyObject *PyExc_UnicodeError;
 PyObject *PyExc_TypeError;
 PyObject *PyExc_ValueError;
 PyObject *PyExc_ZeroDivisionError;
-#ifdef MS_WINDOWS
 PyObject *PyExc_WindowsError;
-#endif
 
 PyObject *PyExc_MemoryErrorInst;
 
@@ -951,9 +947,7 @@ static struct {
 	{"EnvironmentError",   &PyExc_EnvironmentError,  0, EnvironmentError__doc__, EnvironmentError_methods},
 	{"IOError", &PyExc_IOError, &PyExc_EnvironmentError, IOError__doc__},
 	{"OSError", &PyExc_OSError, &PyExc_EnvironmentError, OSError__doc__},
-#ifdef MS_WINDOWS
 	{"WindowsError", &PyExc_WindowsError, &PyExc_OSError, WindowsError__doc__},
-#endif
 	{"EOFError",     &PyExc_EOFError,     0, EOFError__doc__},
 	{"RuntimeError", &PyExc_RuntimeError, 0, RuntimeError__doc__},
 	{"NotImplementedError", &PyExc_NotImplementedError, &PyExc_RuntimeError, NotImplementedError__doc__},
