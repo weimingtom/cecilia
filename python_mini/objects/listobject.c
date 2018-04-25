@@ -1,11 +1,7 @@
 //20170418
 #include "python.h"
 
-#ifdef STDC_HEADERS
 #include <stddef.h>
-#else
-#include <sys/types.h>
-#endif
 
 static int roundupsize(int n)
 {

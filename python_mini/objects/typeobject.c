@@ -401,9 +401,6 @@ static int call_finalizer(PyObject *self)
 	PyObject *error_type, *error_value, *error_traceback;
 
 #ifdef Py_TRACE_REFS
-#ifndef Py_REF_DEBUG
-#   error "Py_TRACE_REFS defined but Py_REF_DEBUG not."
-#endif
 	_Py_NewReference((PyObject *)self);
 #else 
 	Py_INCREF(self);

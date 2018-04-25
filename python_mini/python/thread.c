@@ -39,14 +39,6 @@ extern char *getenv(const char *);
 #define SGI_THREADS
 #endif
 
-#ifdef HAVE_THREAD_H
-#define SOLARIS_THREADS
-#endif
-
-#if defined(sun) && !defined(SOLARIS_THREADS)
-#define SUN_LWP
-#endif
-
 #if defined(__MWERKS__) && !defined(__BEOS__)
 #define _POSIX_THREADS
 #endif
@@ -95,10 +87,6 @@ void PyThread_init_thread()
 
 #ifdef SGI_THREADS
 #include "thread_sgi.h"
-#endif
-
-#ifdef SOLARIS_THREADS
-#include "thread_solaris.h"
 #endif
 
 #ifdef SUN_LWP

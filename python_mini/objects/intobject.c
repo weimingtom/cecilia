@@ -67,29 +67,22 @@ static PyIntObject *fill_free_list()
 	return p + N_INTOBJECTS - 1;
 }
 
-#ifndef NSMALLPOSINTS
 #define NSMALLPOSINTS		100
-#endif
 
-#ifndef NSMALLNEGINTS
 #define NSMALLNEGINTS		1
-#endif
 
-#if NSMALLNEGINTS + NSMALLPOSINTS > 0
+
 static PyIntObject *small_ints[NSMALLNEGINTS + NSMALLPOSINTS];
-#endif
 
 PyObject *PyInt_FromLong(long ival)
 {
 	PyIntObject *v;
-#if NSMALLNEGINTS + NSMALLPOSINTS > 0
 	if (-NSMALLNEGINTS <= ival && ival < NSMALLPOSINTS &&
 	    (v = small_ints[ival + NSMALLNEGINTS]) != NULL) 
 	{
 		Py_INCREF(v);
 		return (PyObject *) v;
 	}
-#endif
 	if (free_list == NULL) 
 	{
 		if ((free_list = fill_free_list()) == NULL)
@@ -101,13 +94,11 @@ PyObject *PyInt_FromLong(long ival)
 	free_list = (PyIntObject *)v->ob_type;
 	PyObject_INIT(v, &PyInt_Type);
 	v->ob_ival = ival;
-#if NSMALLNEGINTS + NSMALLPOSINTS > 0
 	if (-NSMALLNEGINTS <= ival && ival < NSMALLPOSINTS) 
 	{
 		Py_INCREF(v);
 		small_ints[ival + NSMALLNEGINTS] = v;
 	}
-#endif
 	return (PyObject *) v;
 }
 
@@ -330,18 +321,6 @@ static PyObject *int_mul(PyObject *v, PyObject *w)
 	{
 repeat:
 		a = PyInt_AsLong(w);
-#if LONG_MAX != INT_MAX
-		if (a > INT_MAX) 
-		{
-			PyErr_SetString(PyExc_ValueError,
-					"sequence repeat count too large");
-			return NULL;
-		}
-		else if (a < INT_MIN)
-		{
-			a = INT_MIN;
-		}
-#endif
 		return (*v->ob_type->tp_as_sequence->sq_repeat)(v, a);
 	}
 	if (USE_SQ_REPEAT(w)) 
@@ -950,7 +929,6 @@ void PyInt_Fini()
 	int bc, bf;	
 	int irem, isum;
 
-#if NSMALLNEGINTS + NSMALLPOSINTS > 0
     PyIntObject **q;
 
     i = NSMALLNEGINTS + NSMALLPOSINTS;
@@ -960,7 +938,6 @@ void PyInt_Fini()
         Py_XDECREF(*q);
         *q++ = NULL;
     }
-#endif
 	bc = 0;
 	bf = 0;
 	isum = 0;
@@ -996,7 +973,6 @@ void PyInt_Fini()
 						free_list;
 					free_list = p;
 				}
-#if NSMALLNEGINTS + NSMALLPOSINTS > 0
 				else if (-NSMALLNEGINTS <= p->ob_ival &&
 					 p->ob_ival < NSMALLPOSINTS &&
 					 small_ints[p->ob_ival +
@@ -1006,7 +982,6 @@ void PyInt_Fini()
 					small_ints[p->ob_ival +
 						   NSMALLNEGINTS] = p;
 				}
-#endif
 			}
 		}
 		else 

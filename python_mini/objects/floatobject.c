@@ -5,13 +5,6 @@
 extern double fmod(double, double);
 extern double pow(double, double);
 
-#if defined(sun) && !defined(__SVR4)
-double (*_Py_math_funcs_hack[])() = {
-	acos, asin, atan, atan2, ceil, cos, cosh, exp, fabs, floor,
-	fmod, log, log10, pow, sin, sinh, sqrt, tan, tanh
-};
-#endif
-
 #define BLOCK_SIZE	1000
 #define BHEAD_SIZE	8
 #define N_FLOATOBJECTS	((BLOCK_SIZE - BHEAD_SIZE) / sizeof(PyFloatObject))

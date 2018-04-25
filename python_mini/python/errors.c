@@ -354,11 +354,7 @@ PyObject *PyErr_Format(PyObject *exception, const char *format, ...)
 	va_list vargs;
 	PyObject* string;
 
-#ifdef HAVE_STDARG_PROTOTYPES
 	va_start(vargs, format);
-#else
-	va_start(vargs);
-#endif
 
 	string = PyString_FromFormatV(format, vargs);
 	PyErr_SetObject(exception, string);

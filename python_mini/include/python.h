@@ -15,9 +15,7 @@
 #include "patchlevel.h"
 #include "pyconfig.h"
 
-#ifdef HAVE_LIMITS_H
 #include <limits.h>
-#endif
 
 #ifndef DL_IMPORT
 #define DL_IMPORT(RTYPE) RTYPE

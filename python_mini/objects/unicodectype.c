@@ -59,12 +59,6 @@ Py_UNICODE _PyUnicode_ToTitlecase(Py_UNICODE ch)
 		ch += ctype->upper;
 	}
 
-#ifdef Py_UNICODE_WIDE
-    if (ch > 0x10000)
-	{
-		ch -= 0x10000;
-	}
-#endif
     return ch;
 }
 
@@ -353,8 +347,6 @@ int _PyUnicode_IsNumeric(Py_UNICODE ch)
 	return 1;
 }
 
-#ifndef WANT_WCTYPE_FUNCTIONS
-
 int _PyUnicode_IsWhitespace(Py_UNICODE ch)
 {
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
@@ -381,12 +373,6 @@ Py_UNICODE _PyUnicode_ToUppercase(Py_UNICODE ch)
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     ch += ctype->upper;
-#ifdef Py_UNICODE_WIDE
-    if (ch > 0x10000)
-	{
-		ch -= 0x10000;
-	}
-#endif
     return ch;
 }
 
@@ -395,12 +381,6 @@ Py_UNICODE _PyUnicode_ToLowercase(Py_UNICODE ch)
     const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
 
     ch += ctype->lower;
-#ifdef Py_UNICODE_WIDE
-    if (ch > 0x10000)
-	{
-		ch -= 0x10000;
-	}
-#endif
     return ch;
 }
 
@@ -411,36 +391,3 @@ int _PyUnicode_IsAlpha(Py_UNICODE ch)
     return (ctype->flags & ALPHA_MASK) != 0;
 }
 
-#else
-
-int _PyUnicode_IsWhitespace(Py_UNICODE ch)
-{
-    return iswspace(ch);
-}
-
-int _PyUnicode_IsLowercase(Py_UNICODE ch)
-{
-    return iswlower(ch);
-}
-
-int _PyUnicode_IsUppercase(Py_UNICODE ch)
-{
-    return iswupper(ch);
-}
-
-Py_UNICODE _PyUnicode_ToLowercase(Py_UNICODE ch)
-{
-    return towlower(ch);
-}
-
-Py_UNICODE _PyUnicode_ToUppercase(Py_UNICODE ch)
-{
-    return towupper(ch);
-}
-
-int _PyUnicode_IsAlpha(Py_UNICODE ch)
-{
-    return iswalpha(ch);
-}
-
-#endif

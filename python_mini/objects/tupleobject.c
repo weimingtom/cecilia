@@ -1,18 +1,12 @@
 //20170427
 #include "python.h"
 
-#ifndef MAXSAVESIZE
 #define MAXSAVESIZE	20 
-#endif
 
-#ifndef MAXSAVEDTUPLES 
 #define MAXSAVEDTUPLES  2000 
-#endif
 
-#if MAXSAVESIZE > 0
 static PyTupleObject *free_tuples[MAXSAVESIZE];
 static int num_free_tuples[MAXSAVESIZE];
-#endif
 
 PyObject *PyTuple_New(int size)
 {
@@ -23,7 +17,6 @@ PyObject *PyTuple_New(int size)
 		PyErr_BadInternalCall();
 		return NULL;
 	}
-#if MAXSAVESIZE > 0
 	if (size == 0 && free_tuples[0]) 
 	{
 		op = free_tuples[0];
@@ -43,7 +36,6 @@ PyObject *PyTuple_New(int size)
 		_Py_NewReference((PyObject *)op);
 	}
 	else
-#endif
 	{
 		int nbytes = size * sizeof(PyObject *);
 		if (nbytes / sizeof(PyObject *) != (size_t)size ||
@@ -62,14 +54,12 @@ PyObject *PyTuple_New(int size)
 	{
 		op->ob_item[i] = NULL;
 	}
-#if MAXSAVESIZE > 0
 	if (size == 0) 
 	{
 		free_tuples[0] = op;
 		++num_free_tuples[0];
 		Py_INCREF(op);
 	}
-#endif
 	_PyObject_GC_TRACK(op);
 	return (PyObject *) op;
 }
@@ -139,7 +129,6 @@ static void tupledealloc(PyTupleObject *op)
 		{
 			Py_XDECREF(op->ob_item[i]);
 		}
-#if MAXSAVESIZE > 0
 		if (len < MAXSAVESIZE &&
 		    num_free_tuples[len] < MAXSAVEDTUPLES &&
 		    op->ob_type == &PyTuple_Type)
@@ -149,7 +138,6 @@ static void tupledealloc(PyTupleObject *op)
 			free_tuples[len] = op;
 			goto done;
 		}
-#endif
 	}
 	op->ob_type->tp_free((PyObject *)op);
 done:
@@ -719,7 +707,6 @@ int _PyTuple_Resize(PyObject **pv, int newsize)
 
 void PyTuple_Fini()
 {
-#if MAXSAVESIZE > 0
 	int i;
 
 	Py_XDECREF(free_tuples[0]);
@@ -737,5 +724,4 @@ void PyTuple_Fini()
 			PyObject_GC_Del(q);
 		}
 	}
-#endif
 }

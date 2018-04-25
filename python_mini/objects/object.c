@@ -953,25 +953,8 @@ long _Py_HashDouble(double v)
 
 long _Py_HashPointer(void *p)
 {
-#if SIZEOF_LONG >= SIZEOF_VOID_P
 	return (long)p;
-#else
-	PyObject* longobj;
-	long x;
-	
-	if ((longobj = PyLong_FromVoidPtr(p)) == NULL) 
-	{
-		x = -1;
-		goto finally;
-	}
-	x = PyObject_Hash(longobj);
-	
-finally:
-	Py_XDECREF(longobj);
-	return x;
-#endif
 }
-
 
 long PyObject_Hash(PyObject *v)
 {
@@ -1793,9 +1776,6 @@ void _Py_NewReference(PyObject *op)
 
 void _Py_ForgetReference(PyObject *op)
 {
-#ifdef SLOW_UNREF_CHECK
-    PyObject *p;
-#endif
 	if (op->ob_refcnt < 0)
 	{
 		Py_FatalError("UNREF negative refcnt");
@@ -1805,19 +1785,6 @@ void _Py_ForgetReference(PyObject *op)
 	{
 		Py_FatalError("UNREF invalid object");
 	}
-#ifdef SLOW_UNREF_CHECK
-	for (p = refchain._ob_next; p != &refchain; p = p->_ob_next) 
-	{
-		if (p == op)
-		{
-			break;
-		}
-	}
-	if (p == &refchain)
-	{
-		Py_FatalError("UNREF unknown object");
-	}
-#endif
 	op->_ob_next->_ob_prev = op->_ob_prev;
 	op->_ob_prev->_ob_next = op->_ob_next;
 	op->_ob_next = op->_ob_prev = NULL;
@@ -1893,12 +1860,6 @@ int (*_Py_abstract_hack)(PyObject *) = PyObject_Size;
 
 void *PyMem_Malloc(size_t nbytes)
 {
-#if _PyMem_EXTRA > 0
-	if (nbytes == 0)
-	{
-		nbytes = _PyMem_EXTRA;
-	}
-#endif
 	return PyMem_MALLOC(nbytes);
 }
 
@@ -2075,6 +2036,3 @@ void _PyTrash_destroy_chain()
 	}
 }
 
-#ifdef WITH_PYMALLOC
-#include "obmalloc.c"
-#endif

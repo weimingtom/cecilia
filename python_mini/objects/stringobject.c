@@ -2,20 +2,13 @@
 #include "python.h"
 #include <ctype.h>
 
-#if !defined(HAVE_LIMITS_H) && !defined(UCHAR_MAX)
-#define UCHAR_MAX 255
-#endif
-
 static PyStringObject *characters[UCHAR_MAX + 1];
 
-#ifndef DONT_SHARE_SHORT_STRINGS
 static PyStringObject *nullstring;
-#endif
 
 PyObject *PyString_FromStringAndSize(const char *str, int size)
 {
 	PyStringObject *op;
-#ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0 && (op = nullstring) != NULL) 
 	{
 		Py_INCREF(op);
@@ -27,7 +20,6 @@ PyObject *PyString_FromStringAndSize(const char *str, int size)
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
-#endif
 
 	op = (PyStringObject *)
 		PyObject_MALLOC(sizeof(PyStringObject) + size * sizeof(char));
@@ -43,7 +35,6 @@ PyObject *PyString_FromStringAndSize(const char *str, int size)
 		memcpy(op->ob_sval, str, size);
 	}
 	op->ob_sval[size] = '\0';
-#ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0) 
 	{
 		PyObject *t = (PyObject *)op;
@@ -60,7 +51,6 @@ PyObject *PyString_FromStringAndSize(const char *str, int size)
 		characters[*str & UCHAR_MAX] = op;
 		Py_INCREF(op);
 	}
-#endif
 	return (PyObject *) op;
 }
 
@@ -77,7 +67,6 @@ PyObject *PyString_FromString(const char *str)
 			"string is too long for a Python string");
 		return NULL;
 	}
-#ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0 && (op = nullstring) != NULL) 
 	{
 		Py_INCREF(op);
@@ -88,7 +77,6 @@ PyObject *PyString_FromString(const char *str)
 		Py_INCREF(op);
 		return (PyObject *)op;
 	}
-#endif
 
 	op = (PyStringObject *)
 		PyObject_MALLOC(sizeof(PyStringObject) + size * sizeof(char));
@@ -100,7 +88,6 @@ PyObject *PyString_FromString(const char *str)
 	op->ob_shash = -1;
 	op->ob_sinterned = NULL;
 	memcpy(op->ob_sval, str, size+1);
-#ifndef DONT_SHARE_SHORT_STRINGS
 	if (size == 0) 
 	{
 		PyObject *t = (PyObject *)op;
@@ -117,7 +104,6 @@ PyObject *PyString_FromString(const char *str)
 		characters[*str & UCHAR_MAX] = op;
 		Py_INCREF(op);
 	}
-#endif
 	return (PyObject *) op;
 }
 
@@ -297,11 +283,7 @@ PyObject *PyString_FromFormat(const char *format, ...)
 	PyObject* ret;
 	va_list vargs;
 
-#ifdef HAVE_STDARG_PROTOTYPES
 	va_start(vargs, format);
-#else
-	va_start(vargs);
-#endif
 	ret = PyString_FromFormatV(format, vargs);
 	va_end(vargs);
 	return ret;
@@ -4245,10 +4227,8 @@ void PyString_Fini()
 		Py_XDECREF(characters[i]);
 		characters[i] = NULL;
 	}
-#ifndef DONT_SHARE_SHORT_STRINGS
 	Py_XDECREF(nullstring);
 	nullstring = NULL;
-#endif
 
 	if (interned) 
 	{

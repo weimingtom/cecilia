@@ -3,29 +3,6 @@
 
 #include <ctype.h>
 
-#ifndef Py_UNICODE_SIZE
-#error Must define Py_UNICODE_SIZE
-#endif
-
-
-#if Py_UNICODE_SIZE >= 4
-#define Py_UNICODE_WIDE
-#endif
-
-#ifndef PY_UNICODE_TYPE
-
-# if Py_UNICODE_SIZE == 2
-#  define HAVE_USABLE_WCHAR_T
-#  define PY_UNICODE_TYPE wchar_t
-# endif
-
-# if defined(Py_UNICODE_WIDE)
-#  define PY_UNICODE_TYPE Py_UCS4
-# endif
-
-#endif
-
-
 #ifdef HAVE_USABLE_WCHAR_T
 # ifndef HAVE_WCHAR_H
 #  define HAVE_WCHAR_H
@@ -48,7 +25,6 @@ typedef unsigned long Py_UCS4;
 typedef PY_UNICODE_TYPE Py_UNICODE;
 
 
-#ifndef Py_UNICODE_WIDE
 
 # define PyUnicode_AsASCIIString PyUnicodeUCS2_AsASCIIString
 # define PyUnicode_AsCharmapString PyUnicodeUCS2_AsCharmapString
@@ -118,105 +94,6 @@ typedef PY_UNICODE_TYPE Py_UNICODE;
 # define _PyUnicode_ToTitlecase _PyUnicodeUCS2_ToTitlecase
 # define _PyUnicode_ToUppercase _PyUnicodeUCS2_ToUppercase
 
-#else
-
-# define PyUnicode_AsASCIIString PyUnicodeUCS4_AsASCIIString
-# define PyUnicode_AsCharmapString PyUnicodeUCS4_AsCharmapString
-# define PyUnicode_AsEncodedString PyUnicodeUCS4_AsEncodedString
-# define PyUnicode_AsLatin1String PyUnicodeUCS4_AsLatin1String
-# define PyUnicode_AsRawUnicodeEscapeString PyUnicodeUCS4_AsRawUnicodeEscapeString
-# define PyUnicode_AsUTF16String PyUnicodeUCS4_AsUTF16String
-# define PyUnicode_AsUTF8String PyUnicodeUCS4_AsUTF8String
-# define PyUnicode_AsUnicode PyUnicodeUCS4_AsUnicode
-# define PyUnicode_AsUnicodeEscapeString PyUnicodeUCS4_AsUnicodeEscapeString
-# define PyUnicode_AsWideChar PyUnicodeUCS4_AsWideChar
-# define PyUnicode_Compare PyUnicodeUCS4_Compare
-# define PyUnicode_Concat PyUnicodeUCS4_Concat
-# define PyUnicode_Contains PyUnicodeUCS4_Contains
-# define PyUnicode_Count PyUnicodeUCS4_Count
-# define PyUnicode_Decode PyUnicodeUCS4_Decode
-# define PyUnicode_DecodeASCII PyUnicodeUCS4_DecodeASCII
-# define PyUnicode_DecodeCharmap PyUnicodeUCS4_DecodeCharmap
-# define PyUnicode_DecodeLatin1 PyUnicodeUCS4_DecodeLatin1
-# define PyUnicode_DecodeRawUnicodeEscape PyUnicodeUCS4_DecodeRawUnicodeEscape
-# define PyUnicode_DecodeUTF16 PyUnicodeUCS4_DecodeUTF16
-# define PyUnicode_DecodeUTF8 PyUnicodeUCS4_DecodeUTF8
-# define PyUnicode_DecodeUnicodeEscape PyUnicodeUCS4_DecodeUnicodeEscape
-# define PyUnicode_Encode PyUnicodeUCS4_Encode
-# define PyUnicode_EncodeASCII PyUnicodeUCS4_EncodeASCII
-# define PyUnicode_EncodeCharmap PyUnicodeUCS4_EncodeCharmap
-# define PyUnicode_EncodeDecimal PyUnicodeUCS4_EncodeDecimal
-# define PyUnicode_EncodeLatin1 PyUnicodeUCS4_EncodeLatin1
-# define PyUnicode_EncodeRawUnicodeEscape PyUnicodeUCS4_EncodeRawUnicodeEscape
-# define PyUnicode_EncodeUTF16 PyUnicodeUCS4_EncodeUTF16
-# define PyUnicode_EncodeUTF8 PyUnicodeUCS4_EncodeUTF8
-# define PyUnicode_EncodeUnicodeEscape PyUnicodeUCS4_EncodeUnicodeEscape
-# define PyUnicode_Find PyUnicodeUCS4_Find
-# define PyUnicode_Format PyUnicodeUCS4_Format
-# define PyUnicode_FromEncodedObject PyUnicodeUCS4_FromEncodedObject
-# define PyUnicode_FromObject PyUnicodeUCS4_FromObject
-# define PyUnicode_FromUnicode PyUnicodeUCS4_FromUnicode
-# define PyUnicode_FromWideChar PyUnicodeUCS4_FromWideChar
-# define PyUnicode_GetDefaultEncoding PyUnicodeUCS4_GetDefaultEncoding
-# define PyUnicode_GetMax PyUnicodeUCS4_GetMax
-# define PyUnicode_GetSize PyUnicodeUCS4_GetSize
-# define PyUnicode_Join PyUnicodeUCS4_Join
-# define PyUnicode_Replace PyUnicodeUCS4_Replace
-# define PyUnicode_Resize PyUnicodeUCS4_Resize
-# define PyUnicode_SetDefaultEncoding PyUnicodeUCS4_SetDefaultEncoding
-# define PyUnicode_Split PyUnicodeUCS4_Split
-# define PyUnicode_Splitlines PyUnicodeUCS4_Splitlines
-# define PyUnicode_Tailmatch PyUnicodeUCS4_Tailmatch
-# define PyUnicode_Translate PyUnicodeUCS4_Translate
-# define PyUnicode_TranslateCharmap PyUnicodeUCS4_TranslateCharmap
-# define _PyUnicode_AsDefaultEncodedString _PyUnicodeUCS4_AsDefaultEncodedString
-# define _PyUnicode_Fini _PyUnicodeUCS4_Fini
-# define _PyUnicode_Init _PyUnicodeUCS4_Init
-# define _PyUnicode_IsAlpha _PyUnicodeUCS4_IsAlpha
-# define _PyUnicode_IsDecimalDigit _PyUnicodeUCS4_IsDecimalDigit
-# define _PyUnicode_IsDigit _PyUnicodeUCS4_IsDigit
-# define _PyUnicode_IsLinebreak _PyUnicodeUCS4_IsLinebreak
-# define _PyUnicode_IsLowercase _PyUnicodeUCS4_IsLowercase
-# define _PyUnicode_IsNumeric _PyUnicodeUCS4_IsNumeric
-# define _PyUnicode_IsTitlecase _PyUnicodeUCS4_IsTitlecase
-# define _PyUnicode_IsUppercase _PyUnicodeUCS4_IsUppercase
-# define _PyUnicode_IsWhitespace _PyUnicodeUCS4_IsWhitespace
-# define _PyUnicode_ToDecimalDigit _PyUnicodeUCS4_ToDecimalDigit
-# define _PyUnicode_ToDigit _PyUnicodeUCS4_ToDigit
-# define _PyUnicode_ToLowercase _PyUnicodeUCS4_ToLowercase
-# define _PyUnicode_ToNumeric _PyUnicodeUCS4_ToNumeric
-# define _PyUnicode_ToTitlecase _PyUnicodeUCS4_ToTitlecase
-# define _PyUnicode_ToUppercase _PyUnicodeUCS4_ToUppercase
-
-
-#endif
-
-#if defined(HAVE_USABLE_WCHAR_T) && defined(WANT_WCTYPE_FUNCTIONS)
-
-#include <wctype.h>
-
-#define Py_UNICODE_ISSPACE(ch) iswspace(ch)
-
-#define Py_UNICODE_ISLOWER(ch) iswlower(ch)
-#define Py_UNICODE_ISUPPER(ch) iswupper(ch)
-#define Py_UNICODE_ISTITLE(ch) _PyUnicode_IsTitlecase(ch)
-#define Py_UNICODE_ISLINEBREAK(ch) _PyUnicode_IsLinebreak(ch)
-
-#define Py_UNICODE_TOLOWER(ch) towlower(ch)
-#define Py_UNICODE_TOUPPER(ch) towupper(ch)
-#define Py_UNICODE_TOTITLE(ch) _PyUnicode_ToTitlecase(ch)
-
-#define Py_UNICODE_ISDECIMAL(ch) _PyUnicode_IsDecimalDigit(ch)
-#define Py_UNICODE_ISDIGIT(ch) _PyUnicode_IsDigit(ch)
-#define Py_UNICODE_ISNUMERIC(ch) _PyUnicode_IsNumeric(ch)
-
-#define Py_UNICODE_TODECIMAL(ch) _PyUnicode_ToDecimalDigit(ch)
-#define Py_UNICODE_TODIGIT(ch) _PyUnicode_ToDigit(ch)
-#define Py_UNICODE_TONUMERIC(ch) _PyUnicode_ToNumeric(ch)
-
-#define Py_UNICODE_ISALPHA(ch) iswalpha(ch)
-
-#else
 
 #define Py_UNICODE_ISSPACE(ch) _PyUnicode_IsWhitespace(ch)
 
@@ -238,8 +115,6 @@ typedef PY_UNICODE_TYPE Py_UNICODE;
 #define Py_UNICODE_TONUMERIC(ch) _PyUnicode_ToNumeric(ch)
 
 #define Py_UNICODE_ISALPHA(ch) _PyUnicode_IsAlpha(ch)
-
-#endif
 
 #define Py_UNICODE_ISALNUM(ch) \
        (Py_UNICODE_ISALPHA(ch) || \

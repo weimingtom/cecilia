@@ -564,28 +564,11 @@ overflow:
 
 PyObject *PyLong_FromVoidPtr(void *p)
 {
-#if SIZEOF_VOID_P <= SIZEOF_LONG
 	return PyInt_FromLong((long)p);
-#else
-
-#ifndef HAVE_LONG_LONG
-#   error "PyLong_FromVoidPtr: sizeof(void*) > sizeof(long), but no long long"
-#endif
-#if SIZEOF_LONG_LONG < SIZEOF_VOID_P
-#   error "PyLong_FromVoidPtr: sizeof(LONG_LONG) < sizeof(void*)"
-#endif
-	if (p == NULL)
-	{
-		return PyInt_FromLong(0);
-	}
-	return PyLong_FromLongLong((LONG_LONG)p);
-
-#endif
 }
 
 void *PyLong_AsVoidPtr(PyObject *vv)
 {
-#if SIZEOF_VOID_P <= SIZEOF_LONG
 	long x;
 
 	if (PyInt_Check(vv))
@@ -596,26 +579,6 @@ void *PyLong_AsVoidPtr(PyObject *vv)
 	{
 		x = PyLong_AsLong(vv);
 	}
-#else
-
-#ifndef HAVE_LONG_LONG
-#   error "PyLong_AsVoidPtr: sizeof(void*) > sizeof(long), but no long long"
-#endif
-#if SIZEOF_LONG_LONG < SIZEOF_VOID_P
-#   error "PyLong_AsVoidPtr: sizeof(LONG_LONG) < sizeof(void*)"
-#endif
-	LONG_LONG x;
-
-	if (PyInt_Check(vv))
-	{
-		x = PyInt_AS_LONG(vv);
-	}
-	else
-	{
-		x = PyLong_AsLongLong(vv);
-	}
-
-#endif
 
 	if (x == -1 && PyErr_Occurred())
 	{
@@ -623,8 +586,6 @@ void *PyLong_AsVoidPtr(PyObject *vv)
 	}
 	return (void *)x;
 }
-
-#ifdef HAVE_LONG_LONG
 
 #define IS_LITTLE_ENDIAN (int)*(unsigned char*)&one
 
@@ -694,8 +655,6 @@ unsigned LONG_LONG PyLong_AsUnsignedLongLong(PyObject *vv)
 }
 
 #undef IS_LITTLE_ENDIAN
-
-#endif
 
 
 static int convert_binop(PyObject *v, PyObject *w, PyLongObject **a, PyLongObject **b) 

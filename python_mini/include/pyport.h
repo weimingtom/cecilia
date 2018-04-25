@@ -13,10 +13,8 @@
 #define Py_FPROTO(x) Py_PROTO(x)
 #endif
 
-#ifdef HAVE_LONG_LONG
 #ifndef LONG_LONG
 #define LONG_LONG long long
-#endif
 #endif
 
 #ifdef HAVE_UINTPTR_T
@@ -30,10 +28,6 @@ typedef int		Py_intptr_t;
 #elif SIZEOF_VOID_P <= SIZEOF_LONG
 typedef unsigned long	Py_uintptr_t;
 typedef long		Py_intptr_t;
-
-#elif defined(HAVE_LONG_LONG) && (SIZEOF_VOID_P <= SIZEOF_LONG_LONG)
-typedef unsigned LONG_LONG	Py_uintptr_t;
-typedef LONG_LONG		Py_intptr_t;
 
 #else
 #   error "Python needs a typedef for Py_uintptr_t in pyport.h."

@@ -1,9 +1,17 @@
-fileobject.c(not done(x) done(y)) <----------
+weakrefobject.c(done) <----------
+unicodeobject.c(todo)
+typeobject.c(todo)
+structseq.c(todo)
+object.c
+moduleobject.c
+fileobject.c(not done(x) done(y))
 abstract.c
 myreadline.c
 -----------------------------
 todo:
 remove register 
+remove #define
+remove #   error
 -----------------------------
 keep:
 
@@ -116,4 +124,44 @@ typedef fpos_t Py_off_t;
 #ifdef USE_FGETS_IN_GETLINE
 #ifdef HAVE_FTRUNCATE
 
+#if defined(sun) && !defined(__SVR4)
+-->#if defined(sun) && !defined(SOLARIS_THREADS)
+-->#ifdef SOLARIS_THREADS
+-->#ifdef HAVE_THREAD_H
 
+#ifndef NSMALLPOSINTS
+#ifndef NSMALLNEGINTS
+#if NSMALLNEGINTS + NSMALLPOSINTS > 0
+#if LONG_MAX != INT_MAX
+
+#ifdef STDC_HEADERS
+#if SIZEOF_VOID_P <= SIZEOF_LONG
+#ifdef HAVE_LONG_LONG
+--->#elif defined(HAVE_LONG_LONG) && (SIZEOF_VOID_P <= SIZEOF_LONG_LONG)
+
+#if SIZEOF_LONG >= SIZEOF_VOID_P
+#ifdef SLOW_UNREF_CHECK
+#if _PyMem_EXTRA > 0
+#ifdef WITH_PYMALLOC
+
+#ifndef DONT_SHARE_SHORT_STRINGS
+#if !defined(HAVE_LIMITS_H) && !defined(UCHAR_MAX)
+#ifdef HAVE_STDARG_PROTOTYPES
+
+#ifndef MAXSAVESIZE
+#ifndef MAXSAVEDTUPLES 
+#if MAXSAVESIZE > 0
+
+#ifdef Py_UNICODE_WIDE
+#ifndef WANT_WCTYPE_FUNCTIONS
+--->#ifndef Py_UNICODE_WIDE
+--->#if Py_UNICODE_SIZE >= 4
+------>#if defined(HAVE_USABLE_WCHAR_T) && defined(WANT_WCTYPE_FUNCTIONS)
+------>#ifndef PY_UNICODE_TYPE
+------>#ifndef Py_UNICODE_SIZE
+
+#ifdef WORDS_BIGENDIAN
+#ifdef HAVE_WCHAR_H
+#ifdef HAVE_USABLE_WCHAR_T
+#ifdef BYTEORDER_IS_LITTLE_ENDIAN
+#if defined(HAVE_USABLE_WCHAR_T)

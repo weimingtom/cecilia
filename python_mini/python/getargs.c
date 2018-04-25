@@ -567,7 +567,6 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			break;
 		}
 	
-#ifdef HAVE_LONG_LONG
 	case 'L': 
 		{
 			LONG_LONG *p = va_arg( *p_va, LONG_LONG * );
@@ -582,8 +581,7 @@ static char *convertsimple(PyObject *arg, char **p_format, va_list *p_va, char *
 			}
 			break;
 		}
-#endif
-	
+
 	case 'f': 
 		{
 			float *p = va_arg(*p_va, float *);
@@ -1430,13 +1428,11 @@ static char *skipitem(char **p_format, va_list *p_va)
 			break;
 		}
 	
-#ifdef HAVE_LONG_LONG
 	case 'L':
 		{
 			va_arg(*p_va, LONG_LONG *);
 			break;
 		}
-#endif
 	
 	case 'f':
 		{
@@ -1528,11 +1524,7 @@ int PyArg_UnpackTuple(PyObject *args, char *name, int min, int max, ...)
 	PyObject **o;
 	va_list vargs;
 
-#ifdef HAVE_STDARG_PROTOTYPES
 	va_start(vargs, max);
-#else
-	va_start(vargs);
-#endif
 
 	assert(min >= 0);
 	assert(min <= max);

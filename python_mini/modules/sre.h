@@ -5,11 +5,7 @@
 
 #include "sre_constants.h"
 
-#ifdef Py_UNICODE_WIDE
-#define SRE_CODE unsigned long
-#else
 #define SRE_CODE unsigned short
-#endif
 
 typedef struct {
     PyObject_VAR_HEAD
