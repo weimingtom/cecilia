@@ -195,27 +195,6 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
 		}
 		p = GetProcAddress(hDLL, funcname);
 	}
-#ifdef MS_WIN16
-	{
-		HINSTANCE hDLL;
-		char pathbuf[16];
-		if (strchr(pathname, '\\') == NULL &&
-		    strchr(pathname, '/') == NULL)
-		{
-			PyOS_snprintf(pathbuf, sizeof(pathbuf), ".\\%-.13s", pathname);
-			pathname = pathbuf;
-		}
-		hDLL = LoadLibrary(pathname);
-		if (hDLL < HINSTANCE_ERROR)
-		{
-			char errBuf[256];
-			PyOS_snprintf(errBuf, sizeof(errBuf), "DLL load failed with error code %d", hDLL);
-			PyErr_SetString(PyExc_ImportError, errBuf);
-			return NULL;
-		}
-		p = GetProcAddress(hDLL, funcname);
-	}
-#endif
 
 	return p;
 }

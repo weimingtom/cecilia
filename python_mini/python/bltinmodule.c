@@ -5,11 +5,7 @@
 #include "eval.h"
 #include <ctype.h>
 
-#if defined(HAVE_USABLE_WCHAR_T)
 const char *Py_FileSystemDefaultEncoding = "mbcs";
-#else
-const char *Py_FileSystemDefaultEncoding = NULL;
-#endif
 
 static PyObject *filterstring(PyObject *, PyObject *);
 static PyObject *filtertuple (PyObject *, PyObject *);
@@ -609,11 +605,7 @@ static PyObject *builtin_execfile(PyObject *self, PyObject *args)
 	{
 		if (S_ISDIR(s.st_mode))
 		{
-#if defined(PYOS_OS2) && defined(PYCC_VACPP)
-			errno = EOS2ERR;
-#else
 			errno = EISDIR;
-#endif
 		}
 		else
 		{

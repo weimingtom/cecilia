@@ -73,10 +73,6 @@ typedef long		Py_intptr_t;
 #include <stat.h>
 #endif
 
-#if defined(PYCC_VACPP)
-#define S_IFMT (S_IFDIR|S_IFCHR|S_IFREG)
-#endif
-
 #ifndef S_ISREG
 #define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
 #endif

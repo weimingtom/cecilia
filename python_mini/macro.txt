@@ -1,3 +1,10 @@
+graminit.c(done)<---------------
+getplatform.c
+getcompiler.c
+getargs.c
+errors.c
+compile.c
+ceval.c(done)
 weakrefobject.c(done) <----------
 unicodeobject.c(todo)
 typeobject.c(todo)
@@ -21,6 +28,11 @@ keep:
 #ifdef CHECKEXC
 #define Py_TRACE_REFS
 #define Py_REF_DEBUG
+
+#define LLTRACE  1
+#define CHECKEXC 1
+
+#ifdef _DEBUG
 
 -----------------------------
 removed:
@@ -165,3 +177,20 @@ typedef fpos_t Py_off_t;
 #ifdef HAVE_USABLE_WCHAR_T
 #ifdef BYTEORDER_IS_LITTLE_ENDIAN
 #if defined(HAVE_USABLE_WCHAR_T)
+
+
+#if defined(HAVE_USABLE_WCHAR_T)
+#if defined(PYOS_OS2) && defined(PYCC_VACPP)
+--->#if defined(PYOS_OS2)
+--->#if defined(PYCC_VACPP)
+
+#ifdef MS_WIN16
+--->#ifndef MS_WIN16
+
+#ifdef EINTR
+
+#ifndef COMPILER
+#ifdef __GNUC__
+#ifdef __cplusplus
+
+#ifndef PLATFORM

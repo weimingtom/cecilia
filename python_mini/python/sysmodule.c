@@ -666,7 +666,6 @@ static char sys_doc[] =
 	"  The function exc_info() should be used instead of these three,\n"
 	"  because it is thread-safe.\n"
 	""
-#ifndef MS_WIN16
 	"\n"
 	"Static objects:\n"
 	"\n"
@@ -706,7 +705,6 @@ static char sys_doc[] =
 	"setrecursionlimit() -- set the max recursion depth for the interpreter\n"
 	"settrace() -- set the global debug tracing function\n"
 	""
-#endif 
 	;
 
 PyObject *_PySys_Init()

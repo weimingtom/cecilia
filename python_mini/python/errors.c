@@ -229,12 +229,10 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 	char *s;
 	int i = errno;
 	char *s_buf = NULL;
-#ifdef EINTR
 	if (i == EINTR && PyErr_CheckSignals())
 	{
 		return NULL;
 	}
-#endif
 	if (i == 0)
 	{
 		s = "Error";

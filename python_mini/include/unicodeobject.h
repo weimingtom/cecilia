@@ -3,11 +3,9 @@
 
 #include <ctype.h>
 
-#ifdef HAVE_USABLE_WCHAR_T
 # ifndef HAVE_WCHAR_H
 #  define HAVE_WCHAR_H
 # endif
-#endif
 
 #ifdef HAVE_WCHAR_H
 # ifdef _HAVE_BSDI
