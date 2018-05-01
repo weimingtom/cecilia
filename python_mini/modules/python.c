@@ -2,15 +2,8 @@
 #include "python.h"
 #include <stdio.h>
 
-#ifdef _MSC_VER
 #include <windows.h>
 #include <crtdbg.h>
-
-#if USE_VC6_MEMORY_LEAK
-#define __INSURE__ 1
-#endif
-
-#endif
 
 extern DL_EXPORT(int) Py_Main(int, char **);
 

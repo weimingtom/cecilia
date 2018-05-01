@@ -1,8 +1,6 @@
 //20180119
 #include "python.h"
 
-#ifdef HAVE_DYNAMIC_LOADING
-
 #include "importdl.h"
 
 extern dl_funcptr _PyImport_GetDynLoadFunc(const char *name,
@@ -80,5 +78,3 @@ PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname, FILE *fp)
 	Py_INCREF(m);
 	return m;
 }
-
-#endif

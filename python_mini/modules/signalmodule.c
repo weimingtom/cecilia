@@ -402,11 +402,6 @@ DL_EXPORT(void) initsignal()
 	PyDict_SetItemString(d, "SIGSYS", x);
     Py_XDECREF(x);
 #endif
-#ifdef SIGPIPE
-	x = PyInt_FromLong(SIGPIPE);
-	PyDict_SetItemString(d, "SIGPIPE", x);
-    Py_XDECREF(x);
-#endif
 #ifdef SIGALRM
 	x = PyInt_FromLong(SIGALRM);
 	PyDict_SetItemString(d, "SIGALRM", x);

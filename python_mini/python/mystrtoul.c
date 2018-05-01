@@ -1,10 +1,6 @@
 //20180123
 #include "python.h"
 
-#if defined(__sgi) && !defined(_SGI_MP_SOURCE)
-#define _SGI_MP_SOURCE
-#endif
-
 #define Py_CHARMASK(c)		((c) & 0xff)
 
 #include <ctype.h>

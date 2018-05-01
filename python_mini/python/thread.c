@@ -1,50 +1,8 @@
 //20180114
 #include "python.h"
-
-#ifndef DL_IMPORT
-#define DL_IMPORT(RTYPE) RTYPE
-#endif
-
-#ifndef DONT_HAVE_STDIO_H
 #include <stdio.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#else
-#ifdef Py_DEBUG
-extern char *getenv(const char *);
-#endif
-#endif
-
-#ifdef __DGUX
-#define _USING_POSIX4A_DRAFT6
-#endif
-
-#ifdef __sgi
-#ifndef HAVE_PTHREAD_H
-#undef _POSIX_THREADS
-#endif
-#endif
-
 #include "pythread.h"
-
-#ifdef __ksr__
-#define _POSIX_THREADS
-#endif
-
-#ifndef _POSIX_THREADS
-
-#ifdef __sgi
-#define SGI_THREADS
-#endif
-
-#if defined(__MWERKS__) && !defined(__BEOS__)
-#define _POSIX_THREADS
-#endif
-
-#endif
-
 
 #ifdef Py_DEBUG
 static int thread_debug = 0;
@@ -85,38 +43,4 @@ void PyThread_init_thread()
 	PyThread__init_thread();
 }
 
-#ifdef SGI_THREADS
-#include "thread_sgi.h"
-#endif
-
-#ifdef SUN_LWP
-#include "thread_lwp.h"
-#endif
-
-#ifdef HAVE_PTH
-#include "thread_pth.h"
-#endif
-
-#ifdef _POSIX_THREADS
-#include "thread_pthread.h"
-#endif
-
-#ifdef C_THREADS
-#include "thread_cthread.h"
-#endif
-
-#ifdef NT_THREADS
 #include "thread_nt.h"
-#endif
-
-#ifdef OS2_THREADS
-#include "thread_os2.h"
-#endif
-
-#ifdef BEOS_THREADS
-#include "thread_beos.h"
-#endif
-
-#ifdef WINCE_THREADS
-#include "thread_wince.h"
-#endif

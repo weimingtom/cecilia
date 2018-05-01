@@ -1,9 +1,7 @@
 //20180406
 #include "python.h"
 
-#ifndef DONT_HAVE_STDIO_H
 #include <stdio.h>
-#endif
 
 #ifndef DATE
 #ifdef __DATE__

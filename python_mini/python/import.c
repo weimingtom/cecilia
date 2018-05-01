@@ -10,9 +10,7 @@
 #include "osdefs.h"
 #include "importdl.h"
 
-#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
 
 #define CANT_WRITE(int_value)	(int_value > 32767)
 
@@ -593,23 +591,14 @@ static PyCodeObject *parse_source_module(char *pathname, FILE *fp)
 
 static FILE *open_exclusive(char *filename)
 {
-#if defined(O_EXCL)&&defined(O_CREAT)&&defined(O_WRONLY)&&defined(O_TRUNC)
 	int fd;
 	unlink(filename);
-	fd = open(filename, O_EXCL|O_CREAT|O_WRONLY|O_TRUNC
-#ifdef O_BINARY
-				|O_BINARY
-#endif
-
-			, 0666);
+	fd = open(filename, O_EXCL|O_CREAT|O_WRONLY|O_TRUNC|O_BINARY, 0666);
 	if (fd < 0)
 	{
 		return NULL;
 	}
 	return fdopen(fd, "wb");
-#else
-	return fopen(filename, "wb");
-#endif
 }
 
 static void write_compiled_module(PyCodeObject *co, char *cpathname, long mtime)
@@ -675,13 +664,6 @@ static PyObject *load_source_module(char *name, char *pathname, FILE *fp)
 	{
 		return NULL;
 	}
-#if SIZEOF_TIME_T > 4
-	if (mtime >> 32) 
-	{
-		PyErr_SetString(PyExc_OverflowError, "modification time overflows a 4 byte field");
-		return NULL;
-	}
-#endif
 	cpathname = make_compiled_pathname(pathname, buf, (size_t)MAXPATHLEN + 1);
 	if (cpathname != NULL &&
 	    (fpc = check_compiled_module(pathname, mtime, cpathname))) 
@@ -807,11 +789,6 @@ static int is_builtin(char *name)
 	return 0;
 }
 
-#ifdef MS_COREDLL
-extern FILE *PyWin_FindRegisteredModule(const char *, struct filedescr **,
-					char *, int);
-#endif
-
 static int case_ok(char *, int, int, char *);
 static int find_init_module(char *);
 
@@ -868,14 +845,6 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 			return &fd_frozen;
 		}
 
-#ifdef MS_COREDLL
-		fp = PyWin_FindRegisteredModule(name, &fdp, buf, buflen);
-		if (fp != NULL) 
-		{
-			*p_fp = fp;
-			return fdp;
-		}
-#endif
 		path = PySys_GetObject("path");
 	}
 	if (path == NULL || !PyList_Check(path)) 
@@ -904,9 +873,7 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 			continue;
 		}
 		if (len > 0 && buf[len-1] != SEP
-#ifdef ALTSEP
 		    && buf[len-1] != ALTSEP
-#endif
 		    )
 		{
 			buf[len++] = SEP;
@@ -914,7 +881,6 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 		strcpy(buf+len, name);
 		len += namelen;
 
-#ifdef HAVE_STAT
 		if (stat(buf, &statbuf) == 0 &&
 		    S_ISDIR(statbuf.st_mode) &&
 		    find_init_module(buf) && 
@@ -922,9 +888,6 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 		{
 			return &fd_package;
 		}
-#else
-
-#endif
 		for (fdp = _PyImport_Filetab; fdp->suffix != NULL; fdp++) 
 		{
 			strcpy(buf + len, fdp->suffix);
@@ -962,29 +925,18 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 
 
 #include <windows.h>
-#ifdef __CYGWIN__
-#include <sys/cygwin.h>
-#endif
 
 static int case_ok(char *buf, int len, int namelen, char *name)
 {
 	WIN32_FIND_DATA data;
 	HANDLE h;
-#ifdef __CYGWIN__
-	char tempbuf[MAX_PATH];
-#endif
 
 	if (Py_GETENV("PYTHONCASEOK") != NULL)
 	{
 		return 1;
 	}
 
-#ifdef __CYGWIN__
-	cygwin32_conv_to_win32_path(buf, tempbuf);
-	h = FindFirstFile(tempbuf, &data);
-#else
 	h = FindFirstFile(buf, &data);
-#endif
 	if (h == INVALID_HANDLE_VALUE) 
 	{
 		PyErr_Format(PyExc_NameError,
@@ -997,7 +949,6 @@ static int case_ok(char *buf, int len, int namelen, char *name)
 }
 
 
-#ifdef HAVE_STAT
 static int find_init_module(char *buf)
 {
 	const size_t save_len = strlen(buf);
@@ -1034,11 +985,6 @@ static int find_init_module(char *buf)
 	return 0;
 }
 
-#else
-
-#endif
-
-
 static int init_builtin(char *);
 
 static PyObject *load_module(char *name, FILE *fp, char *buf, int type)
@@ -1068,11 +1014,9 @@ static PyObject *load_module(char *name, FILE *fp, char *buf, int type)
 		m = load_compiled_module(name, buf, fp);
 		break;
 
-#ifdef HAVE_DYNAMIC_LOADING
 	case C_EXTENSION:
 		m = _PyImport_LoadDynamicModule(name, buf, fp);
 		break;
-#endif
 
 	case PKG_DIRECTORY:
 		m = load_package(name, buf);
@@ -2064,8 +2008,6 @@ static PyObject *imp_load_compiled(PyObject *self, PyObject *args)
 	return m;
 }
 
-#ifdef HAVE_DYNAMIC_LOADING
-
 static PyObject *imp_load_dynamic(PyObject *self, PyObject *args)
 {
 	char *name;
@@ -2089,8 +2031,6 @@ static PyObject *imp_load_dynamic(PyObject *self, PyObject *args)
 	m = _PyImport_LoadDynamicModule(name, pathname, fp);
 	return m;
 }
-
-#endif 
 
 static PyObject *imp_load_source(PyObject *self, PyObject *args)
 {
@@ -2236,9 +2176,7 @@ static PyMethodDef imp_methods[] = {
 	{"is_builtin",		imp_is_builtin,		1},
 	{"is_frozen",		imp_is_frozen,		1},
 	{"load_compiled",	imp_load_compiled,	1},
-#ifdef HAVE_DYNAMIC_LOADING
 	{"load_dynamic",	imp_load_dynamic,	1},
-#endif
 	{"load_package",	imp_load_package,	1},
 	{"load_source",		imp_load_source,	1},
 	{NULL,			NULL}

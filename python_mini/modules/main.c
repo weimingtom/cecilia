@@ -342,10 +342,6 @@ DL_EXPORT(int) Py_Main(int argc, char **argv)
 
 	Py_Finalize();
 
-#ifdef __INSURE__
-	_Py_ReleaseInternedStrings();
-#endif
-
 	return sts;
 }
 

@@ -59,19 +59,13 @@ typedef long		Py_intptr_t;
 
 #endif 
 
-#ifndef DONT_HAVE_STAT
 #define HAVE_STAT
-#endif
 
 #ifndef DONT_HAVE_FSTAT
 #define HAVE_FSTAT
 #endif
 
-#ifndef DONT_HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#elif defined(HAVE_STAT_H)
-#include <stat.h>
-#endif
 
 #ifndef S_ISREG
 #define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)

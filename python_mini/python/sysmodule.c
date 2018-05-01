@@ -5,11 +5,6 @@
 #include "frameobject.h"
 #include "osdefs.h"
 
-#ifdef MS_COREDLL
-extern void *PyWin_DLLhModule;
-extern const char *PyWin_DLLVersionString;
-#endif
-
 PyObject *PySys_GetObject(char *name)
 {
 	PyThreadState *tstate = PyThreadState_Get();
@@ -412,67 +407,6 @@ static char getrecursionlimit_doc[] =
 	"of the Python interpreter stack.  This limit prevents infinite\n"
 	"recursion from causing an overflow of the C stack and crashing Python.";
 
-#ifdef HAVE_DLOPEN
-static PyObject *sys_setdlopenflags(PyObject *self, PyObject *args)
-{
-	int new_val;
-    PyThreadState *tstate = PyThreadState_Get();
-	if (!PyArg_ParseTuple(args, "i:setdlopenflags", &new_val))
-	{
-		return NULL;
-	}
-	if (!tstate)
-	{
-		return NULL;
-    }
-    tstate->interp->dlopenflags = new_val;
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-static char setdlopenflags_doc[] =
-	"setdlopenflags(n) -> None\n"
-	"\n"
-	"Set the flags that will be used for dlopen() calls. Among other\n"
-	"things, this will enable a lazy resolving of symbols when importing\n"
-	"a module, if called as sys.setdlopenflags(0)\n"
-	"To share symbols across extension modules, call as\n"
-	"sys.setdlopenflags(dl.RTLD_NOW|dl.RTLD_GLOBAL)";
-
-static PyObject *sys_getdlopenflags(PyObject *self, PyObject *args)
-{
-        PyThreadState *tstate = PyThreadState_Get();
-        if (!tstate)
-		{
-			return NULL;
-        }
-		return PyInt_FromLong(tstate->interp->dlopenflags);
-}
-
-static char getdlopenflags_doc[] =
-	"getdlopenflags() -> int\n"
-	"\n"
-	"Return the current value of the flags that are used for dlopen()\n"
-	"calls. The flag constants are defined in the dl module.";
-
-#endif
-
-#ifdef USE_MALLOPT
-#include <malloc.h>
-
-static PyObject *sys_mdebug(PyObject *self, PyObject *args)
-{
-	int flag;
-	if (!PyArg_ParseTuple(args, "i:mdebug", &flag))
-	{
-		return NULL;
-	}
-	mallopt(M_DEBUG, flag);
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-#endif
-
 static PyObject *sys_getrefcount(PyObject *self, PyObject *arg)
 {
 	return PyInt_FromLong(arg->ob_refcnt);
@@ -540,9 +474,6 @@ static PyMethodDef sys_methods[] = {
 	{"excepthook",	sys_excepthook, METH_VARARGS, excepthook_doc},
 	{"exit",	sys_exit, METH_OLDARGS, exit_doc},
 	{"getdefaultencoding", (PyCFunction)sys_getdefaultencoding, METH_NOARGS, getdefaultencoding_doc}, 
-#ifdef HAVE_DLOPEN
-	{"getdlopenflags", (PyCFunction)sys_getdlopenflags, METH_NOARGS, getdlopenflags_doc},
-#endif
 #ifdef Py_TRACE_REFS
 	{"getobjects",	_Py_GetObjects, METH_VARARGS},
 	{"gettotalrefcount", (PyCFunction)sys_gettotalrefcount, METH_NOARGS},
@@ -550,15 +481,8 @@ static PyMethodDef sys_methods[] = {
 	{"getrefcount",	(PyCFunction)sys_getrefcount, METH_O, getrefcount_doc},
 	{"getrecursionlimit", (PyCFunction)sys_getrecursionlimit, METH_NOARGS, getrecursionlimit_doc},
 	{"_getframe", sys_getframe, METH_VARARGS, getframe_doc},
-#ifdef USE_MALLOPT
-	{"mdebug",	sys_mdebug, METH_VARARGS},
-#endif
 	{"setdefaultencoding", sys_setdefaultencoding, METH_VARARGS, setdefaultencoding_doc}, 
 	{"setcheckinterval",	sys_setcheckinterval, METH_VARARGS, setcheckinterval_doc}, 
-#ifdef HAVE_DLOPEN
-	{"setdlopenflags", sys_setdlopenflags, METH_VARARGS, 
-	 setdlopenflags_doc},
-#endif
 	{"setprofile",	sys_setprofile, METH_O, setprofile_doc},
 	{"setrecursionlimit", sys_setrecursionlimit, METH_VARARGS, setrecursionlimit_doc},
 	{"settrace",	sys_settrace, METH_O, settrace_doc},
@@ -742,15 +666,7 @@ PyObject *_PySys_Init()
 	PyDict_SetItemString(sysdict, "hexversion",
 			     v = PyInt_FromLong(PY_VERSION_HEX));
 	Py_XDECREF(v);
-#if PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_ALPHA
-	s = "alpha";
-#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_BETA
-	s = "beta";
-#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_GAMMA
-	s = "candidate";
-#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_FINAL
 	s = "final";
-#endif
 	PyDict_SetItemString(sysdict, "version_info",
 			     v = Py_BuildValue("iiisi", PY_MAJOR_VERSION,
 					       PY_MINOR_VERSION,
@@ -798,14 +714,6 @@ PyObject *_PySys_Init()
 				     v = PyString_FromString(value));
 		Py_XDECREF(v);
 	}
-#ifdef MS_COREDLL
-	PyDict_SetItemString(sysdict, "dllhandle",
-			     v = PyLong_FromVoidPtr(PyWin_DLLhModule));
-	Py_XDECREF(v);
-	PyDict_SetItemString(sysdict, "winver",
-			     v = PyString_FromString(PyWin_DLLVersionString));
-	Py_XDECREF(v);
-#endif
 	if (warnoptions == NULL) 
 	{
 		warnoptions = PyList_New(0);
@@ -927,43 +835,6 @@ void PySys_SetArgv(int argc, char **argv)
 		char *p = NULL;
 		int n = 0;
 		PyObject *a;
-#ifdef HAVE_READLINK
-		char link[MAXPATHLEN+1];
-		char argv0copy[2*MAXPATHLEN+1];
-		int nr = 0;
-		if (argc > 0 && argv0 != NULL)
-		{
-			nr = readlink(argv0, link, MAXPATHLEN);
-		}
-		if (nr > 0) 
-		{
-			link[nr] = '\0';
-			if (link[0] == SEP)
-			{
-				argv0 = link;
-			}
-			else if (strchr(link, SEP) == NULL)
-			{
-				;
-			}
-			else 
-			{
-				char *q = strrchr(argv0, SEP);
-				if (q == NULL)
-				{
-					argv0 = link;
-				}
-				else 
-				{
-					strcpy(argv0copy, argv0);
-					q = strrchr(argv0copy, SEP);
-					strcpy(q+1, link);
-					argv0 = argv0copy;
-				}
-			}
-		}
-#endif
-#if SEP == '\\'
 		if (argc > 0 && argv0 != NULL) 
 		{
 			char *q;
@@ -982,22 +853,6 @@ void PySys_SetArgv(int argc, char **argv)
 				}
 			}
 		}
-#else
-		if (argc > 0 && argv0 != NULL)
-		{
-			p = strrchr(argv0, SEP);
-		}
-		if (p != NULL) 
-		{
-			n = p + 1 - argv0;
-#if SEP == '/'
-			if (n > 1)
-			{
-				n--;
-			}
-#endif
-		}
-#endif
 		a = PyString_FromStringAndSize(argv0, n);
 		if (a == NULL)
 		{

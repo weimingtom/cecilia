@@ -5,9 +5,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#ifdef _MSC_VER
 #include <direct.h>
-#endif
 
 #ifdef WITH_NEXT_FRAMEWORK
 #include <mach-o/dyld.h>
@@ -153,11 +151,7 @@ static void copy_absolute(char *path, char *p)
     }
 	else 
 	{
-#ifdef _MSC_VER
 		_getcwd(path, MAXPATHLEN);
-#else
-        getcwd(path, MAXPATHLEN);
-#endif
         if (p[0] == '.' && p[1] == SEP)
 		{
             p += 2;

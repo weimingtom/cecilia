@@ -24,44 +24,6 @@
 #define DL_EXPORT(RTYPE) RTYPE
 #endif
 
-#if defined(_MSC_VER) && defined(_DEBUG) && USE_VC6_MEMORY_LEAK
-
-#include <crtdbg.h>
-#include <malloc.h>
-#include <stdlib.h>
-#define _CRTDBG_MAP_ALLOC
-
-#ifdef malloc
-#undef malloc
-#endif
-#define malloc(s) (_malloc_dbg(s, _NORMAL_BLOCK, __FILE__, __LINE__))
-
-#ifdef free
-#undef free
-#endif
-#define free(s) (_free_dbg(s, _NORMAL_BLOCK))
-
-#ifdef calloc
-#undef calloc
-#endif
-#define calloc(m, s) (_calloc_dbg(m, s, _NORMAL_BLOCK, __FILE__, __LINE__))
-
-#ifdef realloc
-#undef realloc
-#endif
-#define realloc(m, s) (_realloc_dbg(m, s, _NORMAL_BLOCK, __FILE__, __LINE__))
-
-#ifdef new
-#undef new
-#endif
-#define new DEBUG_NEW
-
-#endif
-
-#if defined(__sgi) && !defined(_SGI_MP_SOURCE)
-#define _SGI_MP_SOURCE
-#endif
-
 #include <stdio.h>
 #ifndef NULL
 #   error "python.h requires that stdio.h define NULL."

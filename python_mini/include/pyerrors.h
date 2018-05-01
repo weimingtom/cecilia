@@ -86,11 +86,8 @@ extern DL_IMPORT(void) PyErr_SetInterrupt();
 extern DL_IMPORT(void) PyErr_SyntaxLocation(char *, int);
 extern DL_IMPORT(PyObject *) PyErr_ProgramText(char *, int);
 
-#if !defined(HAVE_SNPRINTF)
-# define HAVE_SNPRINTF
 # define snprintf _snprintf
 # define vsnprintf _vsnprintf
-#endif
 
 #include <stdarg.h>
 extern DL_IMPORT(int) PyOS_snprintf(char *str, size_t size, const char  *format, ...)

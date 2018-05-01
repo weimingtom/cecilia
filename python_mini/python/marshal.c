@@ -88,14 +88,6 @@ static void w_long(long x, WFILE *p)
 	w_byte((char)((x>>24) & 0xff), p);
 }
 
-#if SIZEOF_LONG > 4
-static void w_long64(long x, WFILE *p)
-{
-	w_long(x, p);
-	w_long(x>>32, p);
-}
-#endif
-
 static void w_object(PyObject *v, WFILE *p)
 {
 	int i, n;
@@ -125,15 +117,6 @@ static void w_object(PyObject *v, WFILE *p)
 	else if (PyInt_Check(v)) 
 	{
 		long x = PyInt_AS_LONG((PyIntObject *)v);
-#if SIZEOF_LONG > 4
-		long y = Py_ARITHMETIC_RIGHT_SHIFT(long, x, 31);
-		if (y && y != -1) 
-		{
-			w_byte(TYPE_INT64, p);
-			w_long64(x, p);
-		}
-		else
-#endif
 		{
 			w_byte(TYPE_INT, p);
 			w_long(x, p);
@@ -340,9 +323,6 @@ static long r_long(RFILE *p)
 		x |= (long)rs_byte(p) << 16;
 		x |= (long)rs_byte(p) << 24;
 	}
-#if SIZEOF_LONG > 4
-	x |= -(x & 0x80000000L);
-#endif
 	return x;
 }
 
@@ -350,10 +330,6 @@ static PyObject *r_long64(RFILE *p)
 {
 	long lo4 = r_long(p);
 	long hi4 = r_long(p);
-#if SIZEOF_LONG > 4
-	long x = (hi4 << 32) | (lo4 & 0xFFFFFFFFL);
-	return PyInt_FromLong(x);
-#else
 	unsigned char buf[8];
 	int one = 1;
 	int is_little_endian = (int)*(char*)&one;
@@ -368,7 +344,6 @@ static PyObject *r_long64(RFILE *p)
 		memcpy(buf + 4, &lo4, 4);
 	}
 	return _PyLong_FromByteArray(buf, 8, is_little_endian, 1);
-#endif
 }
 
 static PyObject *r_object(RFILE *p)
@@ -690,7 +665,6 @@ long PyMarshal_ReadLongFromFile(FILE *fp)
 	return r_long(&rf);
 }
 
-#ifdef HAVE_FSTAT
 static off_t getfilesize(FILE *fp)
 {
 	struct stat st;
@@ -703,21 +677,17 @@ static off_t getfilesize(FILE *fp)
 		return st.st_size;
 	}
 }
-#endif
 
 PyObject *PyMarshal_ReadLastObjectFromFile(FILE *fp)
 {
 #define SMALL_FILE_LIMIT (1L << 14)
 #define REASONABLE_FILE_LIMIT (1L << 18)
-#ifdef HAVE_FSTAT
 	off_t filesize;
-#endif
 	if (PyErr_Occurred()) 
 	{
 		fprintf(stderr, "XXX rd_object called with exception set\n");
 		return NULL;
 	}
-#ifdef HAVE_FSTAT
 	filesize = getfilesize(fp);
 	if (filesize > 0) 
 	{
@@ -743,7 +713,6 @@ PyObject *PyMarshal_ReadLastObjectFromFile(FILE *fp)
 			return v;
 		}
 	}
-#endif
 	return PyMarshal_ReadObjectFromFile(fp);
 #undef SMALL_FILE_LIMIT
 #undef REASONABLE_FILE_LIMIT

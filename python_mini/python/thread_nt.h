@@ -1,4 +1,6 @@
 //20180114
+#pragma once
+
 #include <windows.h>
 #include <limits.h>
 #include <process.h>
@@ -48,10 +50,6 @@ BOOL InitializeNonRecursiveMutex(PNRMUTEX mutex)
 	mutex->hevent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	return mutex->hevent != NULL;
 }
-
-#ifdef InterlockedCompareExchange
-#undef InterlockedCompareExchange
-#endif
 
 #define InterlockedCompareExchange(dest,exchange,comperand) (ixchg((dest), (exchange), (comperand)))
 
@@ -206,34 +204,6 @@ void PyThread__exit_thread()
 {
 	do_PyThread_exit_thread(1);
 }
-
-#ifndef NO_EXIT_PROG
-static void do_PyThread_exit_prog(int status, int no_cleanup)
-{
-	dprintf(("PyThread_exit_prog(%d) called\n", status));
-	if (!initialized)
-	{
-		if (no_cleanup)
-		{
-			_exit(status);
-		}
-		else
-		{
-			exit(status);
-		}
-	}
-}
-
-void PyThread_exit_prog(int status)
-{
-	do_PyThread_exit_prog(status, 0);
-}
-
-void PyThread__exit_prog(int status)
-{
-	do_PyThread_exit_prog(status, 1);
-}
-#endif
 
 PyThread_type_lock PyThread_allocate_lock()
 {

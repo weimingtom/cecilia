@@ -11,9 +11,7 @@
 #include "eval.h"
 #include "marshal.h"
 
-#ifdef HAVE_SIGNAL_H
 #include <signal.h>
-#endif
 
 #undef BYTE
 #include "windows.h"
@@ -1367,14 +1365,6 @@ void Py_Exit(int sts)
 
 static void initsigs()
 {
-#ifdef HAVE_SIGNAL_H
-#ifdef SIGPIPE
-	signal(SIGPIPE, SIG_IGN);
-#endif
-#ifdef SIGXFZ
-	signal(SIGXFZ, SIG_IGN);
-#endif
-#endif
 	PyOS_InitInterrupts();
 }
 
@@ -1408,8 +1398,6 @@ int Py_FdIsInteractive(FILE *fp, char *filename)
 	       (strcmp(filename, "???") == 0);
 }
 
-#if defined(WIN32) && defined(_MSC_VER)
-
 #include <malloc.h>
 #include <excpt.h>
 
@@ -1424,35 +1412,15 @@ int PyOS_CheckStack()
 	return 1;
 }
 
-#endif
-
 PyOS_sighandler_t PyOS_getsig(int sig)
 {
-#ifdef HAVE_SIGACTION
-	struct sigaction context;
-	context.sa_handler = SIG_ERR;
-	sigaction(sig, NULL, &context);
-	return context.sa_handler;
-#else
 	PyOS_sighandler_t handler;
 	handler = signal(sig, SIG_IGN);
 	signal(sig, handler);
 	return handler;
-#endif
 }
 
 PyOS_sighandler_t PyOS_setsig(int sig, PyOS_sighandler_t handler)
 {
-#ifdef HAVE_SIGACTION
-	struct sigaction context;
-	PyOS_sighandler_t oldhandler;
-	context.sa_handler = SIG_ERR;
-	sigaction(sig, NULL, &context);
-	oldhandler = context.sa_handler;
-	context.sa_handler = handler;
-	sigaction(sig, &context, NULL);
-	return oldhandler;
-#else
 	return signal(sig, handler);
-#endif
 }

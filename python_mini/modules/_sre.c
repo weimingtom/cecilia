@@ -29,15 +29,10 @@ static char copyright[] =
 #define PyObject_DEL(op) PyMem_DEL((op))
 #endif
 
-#if defined(_MSC_VER)
+
 #pragma optimize("agtw", on)
 #pragma warning(disable: 4710)
 #define LOCAL(type) static __inline type __fastcall
-#elif defined(USE_INLINE)
-#define LOCAL(type) static inline type
-#else
-#define LOCAL(type) static type
-#endif
 
 #define SRE_ERROR_ILLEGAL -1 
 #define SRE_ERROR_STATE -2 

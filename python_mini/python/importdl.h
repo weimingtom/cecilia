@@ -1,10 +1,5 @@
 //20180119
-#ifndef Py_IMPORTDL_H
-#define Py_IMPORTDL_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 enum filetype {
 	SEARCH_ERROR,
@@ -33,8 +28,3 @@ extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname,
 
 #include <windows.h>
 typedef FARPROC dl_funcptr;
-
-#ifdef __cplusplus
-}
-#endif
-#endif

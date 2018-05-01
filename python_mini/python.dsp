@@ -457,10 +457,6 @@ SOURCE=.\python\thread_nt.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\python\thread_pthread.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\python\traceback.c
 # End Source File
 # End Group

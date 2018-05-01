@@ -1,3 +1,7 @@
+traceback.c(done)<---------------
+sysmodule.c
+pythonrun.c
+marshal.c
 graminit.c(done)<---------------
 getplatform.c
 getcompiler.c
@@ -19,6 +23,7 @@ todo:
 remove register 
 remove #define
 remove #   error
+remove not needed header file
 -----------------------------
 keep:
 
@@ -194,3 +199,73 @@ typedef fpos_t Py_off_t;
 #ifdef __cplusplus
 
 #ifndef PLATFORM
+
+#ifdef HAVE_FCNTL_H
+#if defined(O_EXCL)&&defined(O_CREAT)&&defined(O_WRONLY)&&defined(O_TRUNC)
+#ifdef O_BINARY
+#if SIZEOF_TIME_T > 4
+#ifdef MS_COREDLL
+#ifdef ALTSEP
+#ifdef HAVE_STAT
+--->#ifndef DONT_HAVE_STAT
+--->#ifndef DONT_HAVE_SYS_STAT_H
+#ifdef __CYGWIN__
+#ifdef HAVE_DYNAMIC_LOADING
+
+#ifdef __cplusplus
+#if SIZEOF_LONG > 4
+#ifdef HAVE_FSTAT
+
+#ifndef HAVE_SNPRINTF
+--->#ifdef HAVE_SNPRINTF
+
+#if defined(__sgi) && !defined(_SGI_MP_SOURCE)
+-->#if defined(__sgi) && !defined(_SGI_MP_SOURCE)
+#ifdef WANT_SIGFPE_HANDLER
+
+#ifdef HAVE_DLOPEN
+
+#ifdef HAVE_SIGNAL_H
+#ifdef SIGPIPE
+#ifdef SIGXFZ
+#if defined(WIN32) && defined(_MSC_VER)
+--->#if defined(_MSC_VER)
+--->#if defined(WIN32) && defined(_MSC_VER)
+--->#if defined(_DEBUG) && USE_VC6_MEMORY_LEAK
+--->__INSURE__
+--->#ifdef __INSURE__
+#ifdef HAVE_SIGACTION
+
+#ifdef USE_MALLOPT
+#if PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_ALPHA
+	s = "alpha";
+#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_BETA
+	s = "beta";
+#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_GAMMA
+	s = "candidate";
+#elif PY_RELEASE_LEVEL == PY_RELEASE_LEVEL_FINAL
+	s = "final";
+#endif
+#ifdef HAVE_READLINK
+#if SEP == '\\'
+#if SEP == '/'
+
+#ifndef DL_IMPORT
+#ifndef DONT_HAVE_STDIO_H
+#ifdef HAVE_STDLIB_H
+#ifdef __DGUX
+#ifdef __ksr__
+#ifndef _POSIX_THREADS
+#if defined(__MWERKS__) && !defined(__BEOS__)
+#ifdef SGI_THREADS
+#ifdef SUN_LWP
+#ifdef HAVE_PTH
+#ifdef _POSIX_THREADS
+#ifdef C_THREADS
+#ifdef NT_THREADS
+#ifdef OS2_THREADS
+#ifdef BEOS_THREADS
+#ifdef WINCE_THREADS
+
+#ifdef InterlockedCompareExchange
+#ifndef NO_EXIT_PROG

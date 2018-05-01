@@ -100,9 +100,7 @@ extern DL_IMPORT(char) *(*PyOS_ReadlineFunctionPointer)(char *);
 
 #define PYOS_STACK_MARGIN 2048
 
-#if defined(WIN32) && defined(_MSC_VER)
 #define USE_STACKCHECK
-#endif
 
 DL_IMPORT(int) PyOS_CheckStack();
 
