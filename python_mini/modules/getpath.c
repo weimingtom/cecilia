@@ -7,34 +7,11 @@
 
 #include <direct.h>
 
-#ifdef WITH_NEXT_FRAMEWORK
-#include <mach-o/dyld.h>
-#endif
-
-#ifndef VERSION
 #define VERSION "2.1"
-#endif
 
-#ifndef VPATH
 #define VPATH "."
-#endif
 
-#ifndef PREFIX
-#define PREFIX "/usr/local"
-#endif
-
-#ifndef EXEC_PREFIX
-#define EXEC_PREFIX PREFIX
-#endif
-
-#ifndef PYTHONPATH
-#define PYTHONPATH PREFIX "/lib/python" VERSION ":" \
-              EXEC_PREFIX "/lib/python" VERSION "/lib-dynload"
-#endif
-
-#ifndef LANDMARK
 #define LANDMARK "os.py"
-#endif
 
 static char prefix[MAXPATHLEN+1];
 static char exec_prefix[MAXPATHLEN+1];
@@ -304,9 +281,6 @@ static void calculate_path()
     size_t bufsz;
     size_t prefixsz;
     char *defpath = pythonpath;
-#ifdef WITH_NEXT_FRAMEWORK
-    NSModule pythonModule;
-#endif
 
 	if (strchr(prog, SEP))
 	{
@@ -357,47 +331,6 @@ static void calculate_path()
 	}
 	strncpy(argv0_path, progpath, MAXPATHLEN);
 	argv0_path[MAXPATHLEN] = '\0';
-
-#ifdef WITH_NEXT_FRAMEWORK
-	pythonModule = NSModuleForSymbol(NSLookupAndBindSymbol("_Py_Initialize"));
-    buf = NSLibraryNameForModule(pythonModule);
-    if (buf != NULL) 
-	{
-        strncpy(argv0_path, buf, MAXPATHLEN);
-        reduce(argv0_path);
-        joinpath(argv0_path, lib_python);
-        joinpath(argv0_path, LANDMARK);
-        if (!ismodule(argv0_path)) 
-		{
-			strncpy(argv0_path, prog, MAXPATHLEN);
-        }
-        else 
-		{
-			strncpy(argv0_path, buf, MAXPATHLEN);
-        }
-    }
-#endif
-
-#if HAVE_READLINK
-    {
-        char tmpbuffer[MAXPATHLEN+1];
-        int linklen = readlink(progpath, tmpbuffer, MAXPATHLEN);
-        while (linklen != -1) 
-		{
-            tmpbuffer[linklen] = '\0';
-            if (tmpbuffer[0] == SEP)
-            {
-				strncpy(argv0_path, tmpbuffer, MAXPATHLEN);
-            }
-			else 
-			{
-                reduce(argv0_path);
-                joinpath(argv0_path, tmpbuffer);
-            }
-            linklen = readlink(argv0_path, tmpbuffer, MAXPATHLEN);
-        }
-    }
-#endif
 
     reduce(argv0_path);
     

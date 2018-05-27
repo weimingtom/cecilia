@@ -1,7 +1,5 @@
 //20180406
-
-#ifndef SRE_INCLUDED
-#define SRE_INCLUDED
+#pragma once
 
 #include "sre_constants.h"
 
@@ -65,5 +63,3 @@ typedef struct {
     PyObject* pattern;
     SRE_STATE state;
 } ScannerObject;
-
-#endif

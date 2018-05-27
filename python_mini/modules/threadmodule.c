@@ -288,22 +288,6 @@ static char exit_doc[] =
 	"This is synonymous to ``raise SystemExit''.  It will cause the current\n"
 	"thread to exit silently unless the exception is caught.";
 
-#ifndef NO_EXIT_PROG
-static PyObject *thread_PyThread_exit_prog(PyObject *self, PyObject *args)
-{
-	int sts;
-	if (!PyArg_Parse(args, "i", &sts))
-	{
-		return NULL;
-	}
-	Py_Exit(sts);
-	for (;;) 
-	{
-		;
-	}
-}
-#endif
-
 static PyObject *thread_PyThread_allocate_lock(PyObject *self, PyObject *args)
 {
 	if (!PyArg_NoArgs(args))
@@ -363,9 +347,6 @@ static PyMethodDef thread_methods[] = {
 	 METH_OLDARGS, exit_doc},
 	{"get_ident",		(PyCFunction)thread_get_ident, 
 	 METH_OLDARGS, get_ident_doc},
-#ifndef NO_EXIT_PROG
-	{"exit_prog",		(PyCFunction)thread_PyThread_exit_prog},
-#endif
 	{NULL,			NULL}
 };
 

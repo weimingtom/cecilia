@@ -6,22 +6,6 @@
 
 #include <signal.h>
 
-#ifndef SIG_ERR
-#define SIG_ERR ((PyOS_sighandler_t)(-1))
-#endif
-
-#ifndef NSIG
-# if defined(_NSIG)
-#  define NSIG _NSIG		
-# elif defined(_SIGMAX)
-#  define NSIG (_SIGMAX + 1)
-# elif defined(SIGMAX)
-#  define NSIG (SIGMAX + 1)
-# else
-#  define NSIG 64
-# endif
-#endif
-
 #include <sys/types.h>
 #include "pythread.h"
 static long main_thread;
@@ -61,75 +45,14 @@ static int checksignals_witharg(void * unused)
 
 static void signal_handler(int sig_num)
 {
-#ifdef WITH_PTH
-	if (PyThread_get_thread_ident() != main_thread) 
-	{
-		pth_raise(*(pth_t *) main_thread, sig_num);
-		return;
-	}
-#endif
 	if (getpid() == main_pid) 
 	{
 		is_tripped++;
 		Handlers[sig_num].tripped = 1;
 		Py_AddPendingCall(checksignals_witharg, NULL);
 	}
-#ifdef SIGCHLD
-	if (sig_num == SIGCHLD) 
-	{
-		return;
-	}
-#endif
-#ifdef HAVE_SIGINTERRUPT
-	siginterrupt(sig_num, 1);
-#endif
 	PyOS_setsig(sig_num, signal_handler);
 }
-
-#ifdef HAVE_ALARM
-static PyObject *signal_alarm(PyObject *self, PyObject *args)
-{
-	int t;
-	if (!PyArg_Parse(args, "i", &t))
-	{
-		return NULL;
-	}
-	return PyInt_FromLong((long)alarm(t));
-}
-
-static char alarm_doc[] =
-	"alarm(seconds)\n"
-	"\n"
-	"Arrange for SIGALRM to arrive after the given number of seconds.";
-#endif
-
-#ifdef HAVE_PAUSE
-static PyObject *signal_pause(PyObject *self, PyObject *args)
-{
-	if (!PyArg_NoArgs(args))
-	{
-		return NULL;
-	}
-
-	Py_BEGIN_ALLOW_THREADS
-	pause();
-	Py_END_ALLOW_THREADS
-	if (PyErr_CheckSignals())
-	{
-		return NULL;
-	}
-
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-static char pause_doc[] =
-	"pause()\n"
-	"\n"
-	"Wait until a signal arrives.";
-
-#endif
-
 
 static PyObject *signal_signal(PyObject *self, PyObject *args)
 {
@@ -171,9 +94,6 @@ static PyObject *signal_signal(PyObject *self, PyObject *args)
 	{
 		func = signal_handler;
 	}
-#ifdef HAVE_SIGINTERRUPT
-	siginterrupt(sig_num, 1);
-#endif
 	if (PyOS_setsig(sig_num, func) == SIG_ERR) 
 	{
 		PyErr_SetFromErrno(PyExc_RuntimeError);
@@ -229,14 +149,8 @@ static char getsignal_doc[] =
 
 
 static PyMethodDef signal_methods[] = {
-#ifdef HAVE_ALARM
-	{"alarm",	        signal_alarm, METH_OLDARGS, alarm_doc},
-#endif
 	{"signal",	        signal_signal, METH_OLDARGS, signal_doc},
 	{"getsignal",	        signal_getsignal, METH_OLDARGS, getsignal_doc},
-#ifdef HAVE_PAUSE
-	{"pause",	        signal_pause, METH_OLDARGS, pause_doc},
-#endif
 	{"default_int_handler", signal_default_int_handler, 
 	 METH_OLDARGS, default_int_handler_doc},
 	{NULL,			NULL}
@@ -332,176 +246,27 @@ DL_EXPORT(void) initsignal()
 		old_siginthandler = PyOS_setsig(SIGINT, signal_handler);
 	}
 
-#ifdef SIGHUP
-	x = PyInt_FromLong(SIGHUP);
-	PyDict_SetItemString(d, "SIGHUP", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGINT
 	x = PyInt_FromLong(SIGINT);
 	PyDict_SetItemString(d, "SIGINT", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGBREAK
 	x = PyInt_FromLong(SIGBREAK);
 	PyDict_SetItemString(d, "SIGBREAK", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGQUIT
-	x = PyInt_FromLong(SIGQUIT);
-	PyDict_SetItemString(d, "SIGQUIT", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGILL
 	x = PyInt_FromLong(SIGILL);
 	PyDict_SetItemString(d, "SIGILL", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGTRAP
-	x = PyInt_FromLong(SIGTRAP);
-	PyDict_SetItemString(d, "SIGTRAP", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGIOT
-	x = PyInt_FromLong(SIGIOT);
-	PyDict_SetItemString(d, "SIGIOT", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGABRT
 	x = PyInt_FromLong(SIGABRT);
 	PyDict_SetItemString(d, "SIGABRT", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGEMT
-	x = PyInt_FromLong(SIGEMT);
-	PyDict_SetItemString(d, "SIGEMT", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGFPE
 	x = PyInt_FromLong(SIGFPE);
 	PyDict_SetItemString(d, "SIGFPE", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGKILL
-	x = PyInt_FromLong(SIGKILL);
-	PyDict_SetItemString(d, "SIGKILL", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGBUS
-	x = PyInt_FromLong(SIGBUS);
-	PyDict_SetItemString(d, "SIGBUS", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGSEGV
 	x = PyInt_FromLong(SIGSEGV);
 	PyDict_SetItemString(d, "SIGSEGV", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGSYS
-	x = PyInt_FromLong(SIGSYS);
-	PyDict_SetItemString(d, "SIGSYS", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGALRM
-	x = PyInt_FromLong(SIGALRM);
-	PyDict_SetItemString(d, "SIGALRM", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGTERM
 	x = PyInt_FromLong(SIGTERM);
 	PyDict_SetItemString(d, "SIGTERM", x);
     Py_XDECREF(x);
-#endif
-#ifdef SIGUSR1
-	x = PyInt_FromLong(SIGUSR1);
-	PyDict_SetItemString(d, "SIGUSR1", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGUSR2
-	x = PyInt_FromLong(SIGUSR2);
-	PyDict_SetItemString(d, "SIGUSR2", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGCLD
-	x = PyInt_FromLong(SIGCLD);
-	PyDict_SetItemString(d, "SIGCLD", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGCHLD
-	x = PyInt_FromLong(SIGCHLD);
-	PyDict_SetItemString(d, "SIGCHLD", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGPWR
-	x = PyInt_FromLong(SIGPWR);
-	PyDict_SetItemString(d, "SIGPWR", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGIO
-	x = PyInt_FromLong(SIGIO);
-	PyDict_SetItemString(d, "SIGIO", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGURG
-	x = PyInt_FromLong(SIGURG);
-	PyDict_SetItemString(d, "SIGURG", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGWINCH
-	x = PyInt_FromLong(SIGWINCH);
-	PyDict_SetItemString(d, "SIGWINCH", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGPOLL
-	x = PyInt_FromLong(SIGPOLL);
-	PyDict_SetItemString(d, "SIGPOLL", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGSTOP
-	x = PyInt_FromLong(SIGSTOP);
-	PyDict_SetItemString(d, "SIGSTOP", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGTSTP
-	x = PyInt_FromLong(SIGTSTP);
-	PyDict_SetItemString(d, "SIGTSTP", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGCONT
-	x = PyInt_FromLong(SIGCONT);
-	PyDict_SetItemString(d, "SIGCONT", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGTTIN
-	x = PyInt_FromLong(SIGTTIN);
-	PyDict_SetItemString(d, "SIGTTIN", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGTTOU
-	x = PyInt_FromLong(SIGTTOU);
-	PyDict_SetItemString(d, "SIGTTOU", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGVTALRM
-	x = PyInt_FromLong(SIGVTALRM);
-	PyDict_SetItemString(d, "SIGVTALRM", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGPROF
-	x = PyInt_FromLong(SIGPROF);
-	PyDict_SetItemString(d, "SIGPROF", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGXCPU
-	x = PyInt_FromLong(SIGXCPU);
-	PyDict_SetItemString(d, "SIGXCPU", x);
-    Py_XDECREF(x);
-#endif
-#ifdef SIGXFSZ
-	x = PyInt_FromLong(SIGXFSZ);
-	PyDict_SetItemString(d, "SIGXFSZ", x);
-    Py_XDECREF(x);
-#endif
     if (!PyErr_Occurred())
 	{
 		return;
