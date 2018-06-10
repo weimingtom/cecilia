@@ -1,42 +1,21 @@
 //20180324
 #pragma once
 
-#ifndef _GNU_SOURCE
 # define _GNU_SOURCE	1
-#endif
-
-#if 0
-#ifndef _XOPEN_SOURCE
-# define _XOPEN_SOURCE	500
-#endif
-#endif
-
 
 #include "patchlevel.h"
 #include "pyconfig.h"
 
 #include <limits.h>
 
-#ifndef DL_IMPORT
 #define DL_IMPORT(RTYPE) RTYPE
-#endif
-#ifndef DL_EXPORT
 #define DL_EXPORT(RTYPE) RTYPE
-#endif
 
 #include <stdio.h>
-#ifndef NULL
-#   error "python.h requires that stdio.h define NULL."
-#endif
 
 #include <string.h>
 #include <errno.h>
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 #include <assert.h>
 
@@ -97,7 +76,3 @@
 #define Py_single_input 256
 #define Py_file_input 257
 #define Py_eval_input 258
-
-#ifdef HAVE_PTH
-#include <pth.h>
-#endif

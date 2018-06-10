@@ -13,7 +13,7 @@ void PyGrammar_AddAccelerators(grammar *g)
 	dfa *d;
 	int i;
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 	fprintf(stderr, "Adding parser accelerators ...\n");
 #endif
 	d = g->g_dfa;
@@ -22,7 +22,7 @@ void PyGrammar_AddAccelerators(grammar *g)
 		fixdfa(g, d);
 	}
 	g->g_accel = 1;
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 	fprintf(stderr, "Done.\n");
 #endif
 }

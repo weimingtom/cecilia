@@ -1082,7 +1082,7 @@ letter_quote:
 	return PyToken_OneChar(c);
 }
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 void tok_dump(int type, char *start, char *end)
 {
 	printf("%s", _PyParser_TokenNames[type]);

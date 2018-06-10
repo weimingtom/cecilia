@@ -687,7 +687,7 @@ static void instance_dealloc(PyInstanceObject *inst)
 	PyObject *error_type, *error_value, *error_traceback;
 	PyObject *del;
 	static PyObject *delstr;
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	extern long _Py_RefTotal;
 #endif
 	_PyObject_GC_UNTRACK(inst);
@@ -696,7 +696,7 @@ static void instance_dealloc(PyInstanceObject *inst)
 		PyObject_ClearWeakRefs((PyObject *) inst);
 	}
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	inst->ob_type = &PyInstance_Type;
 	_Py_NewReference((PyObject *)inst);
 #else
@@ -722,7 +722,7 @@ static void instance_dealloc(PyInstanceObject *inst)
 		Py_DECREF(del);
 	}
 	PyErr_Restore(error_type, error_value, error_traceback);
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	_Py_RefTotal--;
 #endif
 	if (--inst->ob_refcnt > 0) 
@@ -730,7 +730,7 @@ static void instance_dealloc(PyInstanceObject *inst)
 		_PyObject_GC_TRACK(inst);
 		return;
 	}
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	_Py_ForgetReference((PyObject *)inst);
 #endif
 	Py_DECREF(inst->in_class);

@@ -3,22 +3,11 @@
 
 #include <ctype.h>
 
-# ifndef HAVE_WCHAR_H
 #  define HAVE_WCHAR_H
-# endif
 
-#ifdef HAVE_WCHAR_H
-# ifdef _HAVE_BSDI
-#  include <time.h>
-# endif
 #  include <wchar.h>
-#endif
 
-#if SIZEOF_INT >= 4 
 typedef unsigned int Py_UCS4; 
-#elif SIZEOF_LONG >= 4
-typedef unsigned long Py_UCS4; 
-#endif
 
 typedef PY_UNICODE_TYPE Py_UNICODE;
 
@@ -187,8 +176,6 @@ extern DL_IMPORT(PyObject*) PyUnicode_FromObject(
     PyObject *obj 
     );
 
-#ifdef HAVE_WCHAR_H
-
 extern DL_IMPORT(PyObject*) PyUnicode_FromWideChar(
     const wchar_t *w,  
     int size                    
@@ -199,8 +186,6 @@ extern DL_IMPORT(int) PyUnicode_AsWideChar(
     wchar_t *w,       
     int size                   
     );
-
-#endif
 
 extern DL_IMPORT(PyObject*) PyUnicode_FromOrdinal(int ordinal);
 

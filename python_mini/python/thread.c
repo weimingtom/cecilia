@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "pythread.h"
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 static int thread_debug = 0;
 #define dprintf(args)	((thread_debug & 1) && printf args)
 #define d2printf(args)	((thread_debug & 8) && printf args)
@@ -19,7 +19,7 @@ static void PyThread__init_thread();
 
 void PyThread_init_thread()
 {
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 	char *p = getenv("THREADDEBUG");
 
 	if (p) 

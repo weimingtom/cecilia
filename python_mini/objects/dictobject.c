@@ -448,7 +448,7 @@ void PyDict_Clear(PyObject *op)
 	int table_is_malloced;
 	int fill;
 	dictentry small_copy[PyDict_MINSIZE];
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 	int i, n;
 #endif
 
@@ -457,7 +457,7 @@ void PyDict_Clear(PyObject *op)
 		return;
 	}
 	mp = (dictobject *)op;
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 	n = mp->ma_mask + 1;
 	i = 0;
 #endif
@@ -481,7 +481,7 @@ void PyDict_Clear(PyObject *op)
 
 	for (ep = table; fill > 0; ++ep) 
 	{
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 		assert(i < n);
 		++i;
 #endif
@@ -491,7 +491,7 @@ void PyDict_Clear(PyObject *op)
 			Py_DECREF(ep->me_key);
 			Py_XDECREF(ep->me_value);
 		}
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 		else
 		{
 			assert(ep->me_value == NULL);

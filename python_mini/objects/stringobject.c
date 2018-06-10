@@ -3292,7 +3292,7 @@ int _PyString_Resize(PyObject **pv, int newsize)
 		PyErr_BadInternalCall();
 		return -1;
 	}
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	--_Py_RefTotal;
 #endif
 	_Py_ForgetReference(v);

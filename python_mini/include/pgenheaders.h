@@ -3,9 +3,7 @@
 
 #include "pyconfig.h"
 
-#ifndef DL_IMPORT
 #define DL_IMPORT(RTYPE) RTYPE
-#endif
 
 #include <stdio.h>
 #include <string.h>

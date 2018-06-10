@@ -3,35 +3,23 @@
 
 #include "pymem.h"
 
-#ifndef PyCore_OBJECT_MALLOC_FUNC
 #undef PyCore_OBJECT_REALLOC_FUNC
 #undef PyCore_OBJECT_FREE_FUNC
 #define PyCore_OBJECT_MALLOC_FUNC    PyCore_MALLOC_FUNC
 #define PyCore_OBJECT_REALLOC_FUNC   PyCore_REALLOC_FUNC
 #define PyCore_OBJECT_FREE_FUNC      PyCore_FREE_FUNC
-#endif
 
-#ifndef PyCore_OBJECT_MALLOC_PROTO
 #undef PyCore_OBJECT_REALLOC_PROTO
 #undef PyCore_OBJECT_FREE_PROTO
 #define PyCore_OBJECT_MALLOC_PROTO   PyCore_MALLOC_PROTO
 #define PyCore_OBJECT_REALLOC_PROTO  PyCore_REALLOC_PROTO
 #define PyCore_OBJECT_FREE_PROTO     PyCore_FREE_PROTO
-#endif
 
-#ifdef NEED_TO_DECLARE_OBJECT_MALLOC_AND_FRIEND
-extern void *PyCore_OBJECT_MALLOC_FUNC PyCore_OBJECT_MALLOC_PROTO;
-extern void *PyCore_OBJECT_REALLOC_FUNC PyCore_OBJECT_REALLOC_PROTO;
-extern void PyCore_OBJECT_FREE_FUNC PyCore_OBJECT_FREE_PROTO;
-#endif
-
-#ifndef PyCore_OBJECT_MALLOC
 #undef PyCore_OBJECT_REALLOC
 #undef PyCore_OBJECT_FREE
 #define PyCore_OBJECT_MALLOC(n)      PyCore_OBJECT_MALLOC_FUNC(n)
 #define PyCore_OBJECT_REALLOC(p, n)  PyCore_OBJECT_REALLOC_FUNC((p), (n))
 #define PyCore_OBJECT_FREE(p)        PyCore_OBJECT_FREE_FUNC(p)
-#endif
 
 extern DL_IMPORT(void *) PyObject_Malloc(size_t);
 extern DL_IMPORT(void *) PyObject_Realloc(void *, size_t);
@@ -60,10 +48,6 @@ extern DL_IMPORT(void) _PyObject_Del(PyObject *);
 	( (op)->ob_size = (size), PyObject_INIT((op), (typeobj)) )
 
 #define _PyObject_SIZE(typeobj) ( (typeobj)->tp_basicsize )
-
-#if ((SIZEOF_VOID_P - 1) & SIZEOF_VOID_P) != 0
-#   error "_PyObject_VAR_SIZE requires SIZEOF_VOID_P be a power of 2"
-#endif
 
 #define _PyObject_VAR_SIZE(typeobj, nitems)	\
 	(size_t)				\

@@ -74,7 +74,7 @@ DL_IMPORT(PyObject *) PyThreadState_GetDict();
 
 extern DL_IMPORT(PyThreadState *) _PyThreadState_Current;
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 #define PyThreadState_GET() PyThreadState_Get()
 #else
 #define PyThreadState_GET() (_PyThreadState_Current)

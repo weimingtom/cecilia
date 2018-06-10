@@ -5,7 +5,7 @@
 #include "frameobject.h"
 #include "traceback.h"
 
-#if defined( Py_TRACE_REFS ) || defined( Py_REF_DEBUG )
+#ifdef _DEBUG
 DL_IMPORT(long) _Py_RefTotal;
 #endif
 
@@ -1754,7 +1754,7 @@ void _Py_ReadyTypes()
 }
 
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 
 static PyObject refchain = {&refchain, &refchain};
 

@@ -7,7 +7,7 @@
 #include "parser.h"
 #include "errcode.h"
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 extern int Py_DebugFlag;
 #define D(x) if (!Py_DebugFlag); else x
 #else
@@ -38,7 +38,7 @@ static int s_push(stack *s, dfa *d, node *parent)
 	return 0;
 }
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 static void s_pop(stack *s)
 {
 	if (s_empty(s))
@@ -293,7 +293,7 @@ int PyParser_AddToken(parser_state *ps, int type, char *str,
 }
 
 
-#ifdef Py_DEBUG
+#ifdef _DEBUG
 void dumptree(grammar *g, node *n)
 {
 	int i;

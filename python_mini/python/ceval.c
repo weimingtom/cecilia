@@ -9,11 +9,6 @@
 
 #include <ctype.h>
 
-#ifdef Py_DEBUG
-#define LLTRACE  1
-#define CHECKEXC 1
-#endif
-
 typedef PyObject *(*callproc)(PyObject *, PyObject *, PyObject *);
 
 static PyObject *eval_frame(PyFrameObject *);
@@ -27,7 +22,7 @@ static PyObject *load_args(PyObject ***, int);
 #define CALL_FLAG_VAR 1
 #define CALL_FLAG_KW 2
 
-#ifdef LLTRACE
+#ifdef _DEBUG
 static int prtrace(PyObject *, char *);
 #endif
 
@@ -423,10 +418,8 @@ static PyObject *eval_frame(PyFrameObject *f)
 	PyThreadState *tstate = PyThreadState_GET();
 	PyCodeObject *co;
 	unsigned char *first_instr;
-#ifdef LLTRACE
+#ifdef _DEBUG
 	int lltrace;
-#endif
-#if defined(Py_DEBUG) || defined(LLTRACE)
 	char *filename;
 #endif
 
@@ -445,7 +438,7 @@ static PyObject *eval_frame(PyFrameObject *f)
 #define BASIC_PUSH(v)	(*stack_pointer++ = (v))
 #define BASIC_POP()	(*--stack_pointer)
 
-#ifdef LLTRACE
+#ifdef _DEBUG
 #define PUSH(v)		{ (BASIC_PUSH(v), \
                                lltrace && prtrace(TOP(), "push")); \
                                assert(STACK_LEVEL() <= f->f_stacksize); }
@@ -518,10 +511,8 @@ static PyObject *eval_frame(PyFrameObject *f)
 	assert(stack_pointer != NULL);
 	f->f_stacktop = NULL;
 
-#ifdef LLTRACE
+#ifdef _DEBUG
 	lltrace = PyDict_GetItemString(f->f_globals, "__lltrace__") != NULL;
-#endif
-#if defined(Py_DEBUG) || defined(LLTRACE)
 	filename = PyString_AsString(co->co_filename);
 #endif
 
@@ -565,7 +556,7 @@ static PyObject *eval_frame(PyFrameObject *f)
 		}
 
 
-#if defined(Py_DEBUG) || defined(LLTRACE)
+#if defined(_DEBUG)
 		f->f_lasti = INSTR_OFFSET();
 #endif
 
@@ -577,7 +568,7 @@ static PyObject *eval_frame(PyFrameObject *f)
 
 dispatch_opcode:
 
-#ifdef LLTRACE
+#ifdef _DEBUG
 		if (lltrace) 
 		{
 			if (HAS_ARG(opcode)) 
@@ -2109,7 +2100,7 @@ slow_compare:
 			continue;
 
 		case SET_LINENO:
-#ifdef LLTRACE
+#ifdef _DEBUG
 			if (lltrace)
 			{
 				printf("--- %s:%d \n", filename, oparg);
@@ -2371,7 +2362,7 @@ on_error:
 		{
 			if (err == 0 && x != NULL) 
 			{
-#ifdef CHECKEXC
+#ifdef _DEBUG
 				if (PyErr_Occurred())
 				{
 					fprintf(stderr,
@@ -2397,7 +2388,7 @@ on_error:
 				why = WHY_EXCEPTION;
 			}
 		}
-#ifdef CHECKEXC
+#ifdef _DEBUG
 		else 
 		{
 			if (PyErr_Occurred()) 
@@ -3061,7 +3052,7 @@ Error:
 }
 
 
-#ifdef LLTRACE
+#ifdef _DEBUG
 static int prtrace(PyObject *v, char *str)
 {
 	printf("%s ", str);

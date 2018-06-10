@@ -7,9 +7,6 @@ typedef struct {
 	long me_hash;
 	PyObject *me_key;
 	PyObject *me_value;
-#ifdef USE_CACHE_ALIGNED
-	long aligner;
-#endif
 } PyDictEntry;
 
 typedef struct _dictobject PyDictObject;

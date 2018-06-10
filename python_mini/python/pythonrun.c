@@ -33,7 +33,7 @@ static void initsigs();
 static void call_sys_exitfunc();
 static void call_ll_exitfuncs();
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 int _Py_AskYesNo(char *prompt);
 #endif
 
@@ -183,11 +183,11 @@ void Py_Finalize()
 
 	_PyImport_Fini();
 
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
 #endif
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	if (Py_GETENV("PYTHONDUMPREFS")) 
 	{
 		_Py_PrintReferences(stderr);
@@ -214,7 +214,7 @@ void Py_Finalize()
 
 	call_ll_exitfuncs();
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	_Py_ResetReferences();
 #endif
 }
@@ -452,7 +452,7 @@ int PyRun_InteractiveLoopFlags(FILE *fp, char *filename, PyCompilerFlags *flags)
 	for (;;) 
 	{
 		ret = PyRun_InteractiveOneFlags(fp, filename, flags);
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 		fprintf(stderr, "[%ld refs]\n", _Py_RefTotal);
 #endif
 		if (ret == E_EOF)
@@ -1368,7 +1368,7 @@ static void initsigs()
 	PyOS_InitInterrupts();
 }
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 
 int _Py_AskYesNo(char *prompt)
 {

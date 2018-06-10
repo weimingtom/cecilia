@@ -412,7 +412,7 @@ static PyObject *sys_getrefcount(PyObject *self, PyObject *arg)
 	return PyInt_FromLong(arg->ob_refcnt);
 }
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 static PyObject *sys_gettotalrefcount(PyObject *self)
 {
 	extern long _Py_RefTotal;
@@ -464,7 +464,7 @@ static PyObject *sys_getframe(PyObject *self, PyObject *args)
 	return (PyObject*)f;
 }
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 extern PyObject *_Py_GetObjects(PyObject *, PyObject *);
 #endif
 
@@ -474,7 +474,7 @@ static PyMethodDef sys_methods[] = {
 	{"excepthook",	sys_excepthook, METH_VARARGS, excepthook_doc},
 	{"exit",	sys_exit, METH_OLDARGS, exit_doc},
 	{"getdefaultencoding", (PyCFunction)sys_getdefaultencoding, METH_NOARGS, getdefaultencoding_doc}, 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	{"getobjects",	_Py_GetObjects, METH_VARARGS},
 	{"gettotalrefcount", (PyCFunction)sys_gettotalrefcount, METH_NOARGS},
 #endif

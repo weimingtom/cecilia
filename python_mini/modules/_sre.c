@@ -28,11 +28,7 @@ static char copyright[] =
 #define SRE_ERROR_RECURSION_LIMIT -3 
 #define SRE_ERROR_MEMORY -9
 
-#if defined(VERBOSE)
-#define TRACE(v) printf v
-#else
 #define TRACE(v)
-#endif
 
 #define SRE_DIGIT_MASK 1
 #define SRE_SPACE_MASK 2

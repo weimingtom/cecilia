@@ -20,7 +20,7 @@ extern DL_IMPORT(int) PyModule_AddStringConstant(PyObject *, char *, char *);
 #define PYTHON_API_VERSION 1011
 #define PYTHON_API_STRING "1011"
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 #define Py_InitModule4 Py_InitModule4TraceRefs
 #endif
 

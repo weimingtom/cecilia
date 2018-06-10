@@ -1,15 +1,7 @@
 //20180324
 #pragma once
 
-#ifdef Py_DEBUG
-
-#define Py_TRACE_REFS
-
-#define Py_REF_DEBUG
-
-#endif
-
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 #define PyObject_HEAD \
 	struct _object *_ob_next, *_ob_prev; \
 	int ob_refcnt; \
@@ -300,14 +292,7 @@ extern DL_IMPORT(long) _Py_HashPointer(void*);
 
 #define PyType_HasFeature(t,f)  (((t)->tp_flags & (f)) != 0)
 
-
-#ifdef Py_TRACE_REFS
-#ifndef Py_REF_DEBUG
-#define Py_REF_DEBUG
-#endif
-#endif
-
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 extern DL_IMPORT(void) _Py_Dealloc(PyObject *);
 extern DL_IMPORT(void) _Py_NewReference(PyObject *);
 extern DL_IMPORT(void) _Py_ForgetReference(PyObject *);
@@ -315,16 +300,16 @@ extern DL_IMPORT(void) _Py_PrintReferences(FILE *);
 extern DL_IMPORT(void) _Py_ResetReferences();
 #endif
 
-#ifndef Py_TRACE_REFS
+#ifndef _DEBUG
 #define _Py_Dealloc(op) (*(op)->ob_type->tp_dealloc)((PyObject *)(op))
 #define _Py_ForgetReference(op)
 #endif
 
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 
 extern DL_IMPORT(long) _Py_RefTotal;
 
-#ifndef Py_TRACE_REFS
+#ifndef _DEBUG
 #define _Py_NewReference(op) (_Py_RefTotal++, (op)->ob_refcnt = 1)
 #endif
 
@@ -365,13 +350,8 @@ extern DL_IMPORT(PyObject) _Py_NotImplementedStruct;
 #define Py_GT 4
 #define Py_GE 5
 
-#ifdef BAD_STATIC_FORWARD
 #define staticforward extern
 #define statichere static
-#else
-#define staticforward static
-#define statichere static
-#endif
 
 #define PyTrash_UNWIND_LEVEL 50
 

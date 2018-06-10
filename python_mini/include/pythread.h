@@ -26,11 +26,6 @@ DL_IMPORT(int) PyThread_down_sema(PyThread_type_sema, int);
 #define NOWAIT_SEMA	0
 DL_IMPORT(void) PyThread_up_sema(PyThread_type_sema);
 
-#ifndef NO_EXIT_PROG
-DL_IMPORT(void) PyThread_exit_prog(int);
-DL_IMPORT(void) PyThread__PyThread_exit_prog(int);
-#endif
-
 DL_IMPORT(int) PyThread_create_key();
 DL_IMPORT(void) PyThread_delete_key(int);
 DL_IMPORT(int) PyThread_set_key_value(int, void *);

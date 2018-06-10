@@ -400,7 +400,7 @@ static int call_finalizer(PyObject *self)
 	PyObject *del, *res;
 	PyObject *error_type, *error_value, *error_traceback;
 
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	_Py_NewReference((PyObject *)self);
 #else 
 	Py_INCREF(self);
@@ -425,7 +425,7 @@ static int call_finalizer(PyObject *self)
 
 	PyErr_Restore(error_type, error_value, error_traceback);
 
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	_Py_RefTotal--;
 #endif
 	if (--self->ob_refcnt > 0) 
@@ -433,7 +433,7 @@ static int call_finalizer(PyObject *self)
 		assert(((PyGC_Head *)(self)-1)->gc.gc_next != NULL);
 		return -1;
 	}
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 	_Py_ForgetReference((PyObject *)self);
 #endif
 

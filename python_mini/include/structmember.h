@@ -1,13 +1,7 @@
 //20180324
 #pragma once
 
-#ifdef HAVE_STDDEF_H
 #include <stddef.h>
-#endif
-
-#ifndef offsetof
-#define offsetof(type, member) ( (int) & ((type*)0) -> member )
-#endif
 
 struct memberlist {
 	char *name;

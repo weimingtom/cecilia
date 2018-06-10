@@ -505,10 +505,6 @@ SOURCE=.\include\complexobject.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\cStringIO.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\descrobject.h
 # End Source File
 # Begin Source File
@@ -629,10 +625,6 @@ SOURCE=.\include\pgenheaders.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\py_curses.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\pydebug.h
 # End Source File
 # Begin Source File
@@ -646,10 +638,6 @@ SOURCE=.\include\pyfpe.h
 # Begin Source File
 
 SOURCE=.\include\pygetopt.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\pymactoolbox.h
 # End Source File
 # Begin Source File
 

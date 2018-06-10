@@ -29,7 +29,7 @@ PyObject *PyTuple_New(int size)
 	{
 		free_tuples[size] = (PyTupleObject *) op->ob_item[0];
 		num_free_tuples[size]--;
-#ifdef Py_TRACE_REFS
+#ifdef _DEBUG
 		op->ob_size = size;
 		op->ob_type = &PyTuple_Type;
 #endif
@@ -678,7 +678,7 @@ int _PyTuple_Resize(PyObject **pv, int newsize)
 		return *pv == NULL ? -1 : 0;
 	}
 
-#ifdef Py_REF_DEBUG
+#ifdef _DEBUG
 	--_Py_RefTotal;
 #endif
 	_PyObject_GC_UNTRACK(v);

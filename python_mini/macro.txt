@@ -1,3 +1,7 @@
+(*) cStringIO.h
+
+------------
+weakrefobject.h(done)
 _sre.c(done)<------------------
 errnomodule.c
 getbuildinfo.c
@@ -32,22 +36,25 @@ remove register
 remove #define
 remove #   error
 remove not needed header file
+
+# define->#define
+remove not used .h files
 -----------------------------
 keep:
 
-#ifdef Py_DEBUG
-#ifdef EINTR
-#ifdef LLTRACE
-#ifdef CHECKEXC
-#define Py_TRACE_REFS
-#define Py_REF_DEBUG
+(x)#ifdef Py_DEBUG
+(x)#ifdef EINTR
+(x)#ifdef LLTRACE
+(x)#ifdef CHECKEXC
+(x)#define Py_TRACE_REFS
+(x)#define Py_REF_DEBUG
 
-#define LLTRACE  1
-#define CHECKEXC 1
+(x)#define LLTRACE  1
+(x)#define CHECKEXC 1
 
 #ifdef _DEBUG
 
-#if defined(VERBOSE)
+(x)#if defined(VERBOSE)
 
 -----------------------------
 removed:
@@ -494,3 +501,81 @@ typedef fpos_t Py_off_t;
 #ifdef USE_BUILTIN_COPY
 #if PY_VERSION_HEX >= 0x01060000
 #if PY_VERSION_HEX >= 0x02020000
+
+#ifdef USE_CACHE_ALIGNED
+#ifndef ULONG_MAX
+#ifndef LONGLONG_MAX
+#ifndef ULONGLONG_MAX
+#ifdef BAD_STATIC_FORWARD
+
+#ifndef PyCore_OBJECT_MALLOC_FUNC
+#ifndef PyCore_OBJECT_MALLOC_PROTO
+#ifdef NEED_TO_DECLARE_OBJECT_MALLOC_AND_FRIEND
+#ifndef PyCore_OBJECT_MALLOC
+#if ((SIZEOF_VOID_P - 1) & SIZEOF_VOID_P) != 0
+
+#ifndef SEP
+#ifndef MAXPATHLEN
+#ifndef DELIM
+
+#ifndef DL_IMPORT
+
+#ifdef HAVE_NCURSES_H
+
+#ifndef PyCore_MALLOC_FUNC
+#ifndef PyCore_MALLOC_PROTO
+#ifdef NEED_TO_DECLARE_MALLOC_AND_FRIEND
+#ifndef PyCore_MALLOC
+
+#ifdef HAVE_PROTOTYPES
+#ifndef LONG_LONG
+#ifdef HAVE_UINTPTR_T
+#ifdef HAVE_STDLIB_H
+#ifdef HAVE_SYS_SELECT_H
+#ifndef S_ISREG
+#ifndef S_ISDIR
+#ifdef SIGNED_RIGHT_SHIFT_ZERO_FILLS
+#ifdef INFINITY
+#ifdef SOLARIS
+#ifdef __BEOS__
+#ifdef HAVE__GETPTY
+#if defined(HAVE_OPENPTY) || defined(HAVE_FORKPTY)
+#if (!defined(__GNUC__) || __GNUC__ < 2 || \
+     (__GNUC__ == 2 && __GNUC_MINOR__ < 7) || \
+     defined(NEXT) )
+#ifdef __BORLANDC__
+#if LONG_BIT != 8 * SIZEOF_LONG
+#ifndef LONG_MIN
+#ifndef LONG_BIT
+#ifdef MALLOC_ZERO_RETURNS_NULL
+#ifndef HAVE_HYPOT
+#ifndef DL_IMPORT    
+
+#ifndef _GNU_SOURCE
+#ifndef DL_IMPORT
+#ifndef DL_EXPORT
+#ifndef NULL
+#ifdef HAVE_STDLIB_H
+#ifdef HAVE_UNISTD_H
+#ifdef HAVE_PTH
+
+#ifndef NO_EXIT_PROG
+#ifdef HAVE_STDDEF_H
+#ifndef offsetof
+
+# ifndef HAVE_WCHAR_H
+#ifdef HAVE_WCHAR_H
+# ifdef _HAVE_BSDI
+#if SIZEOF_INT >= 4 
+
+#ifndef USE_DL_EXPORT
+#if !defined(USE_DL_EXPORT) && defined(_MSC_VER)
+#if defined(__LCC__)
+#if defined(__GNUC__) && defined(_WIN32)
+#ifdef __BORLANDC__
+#ifdef USE_DL_IMPORT
+#ifdef USE_DL_EXPORT
+#ifndef MS_NO_COREDLL
+#ifndef NETSCAPE_PI
+#if Py_UNICODE_SIZE == 2
+

@@ -38,7 +38,7 @@ extern DL_IMPORT(PyTypeObject) PyFrame_Type;
 DL_IMPORT(PyFrameObject *) PyFrame_New(PyThreadState *, PyCodeObject *,
                                        PyObject *, PyObject *);
 
-#ifndef Py_DEBUG
+#ifndef _DEBUG
 #define GETITEM(v, i) PyTuple_GET_ITEM((PyTupleObject *)(v), (i))
 #define GETITEMNAME(v, i) PyString_AS_STRING((PyStringObject *)GETITEM((v), (i)))
 #else

@@ -32,7 +32,6 @@ static int my_fgets(char *buf, int len, FILE *fp)
 		{
 			return -1;
 		}
-#ifdef EINTR
 		if (errno == EINTR) 
 		{
 			if (PyOS_InterruptOccurred()) 
@@ -41,7 +40,6 @@ static int my_fgets(char *buf, int len, FILE *fp)
 			}
 			continue;
 		}
-#endif
 		if (PyOS_InterruptOccurred()) 
 		{
 			return 1;

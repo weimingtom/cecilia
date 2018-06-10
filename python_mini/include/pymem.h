@@ -3,35 +3,23 @@
 
 #include "pyport.h"
 
-#ifndef PyCore_MALLOC_FUNC
 #undef PyCore_REALLOC_FUNC
 #undef PyCore_FREE_FUNC
 #define PyCore_MALLOC_FUNC      malloc
 #define PyCore_REALLOC_FUNC     realloc
 #define PyCore_FREE_FUNC        free
-#endif
 
-#ifndef PyCore_MALLOC_PROTO
 #undef PyCore_REALLOC_PROTO
 #undef PyCore_FREE_PROTO
 #define PyCore_MALLOC_PROTO    (size_t)
 #define PyCore_REALLOC_PROTO   (void *, size_t)
 #define PyCore_FREE_PROTO      (void *)
-#endif
 
-#ifdef NEED_TO_DECLARE_MALLOC_AND_FRIEND
-extern void *PyCore_MALLOC_FUNC PyCore_MALLOC_PROTO;
-extern void *PyCore_REALLOC_FUNC PyCore_REALLOC_PROTO;
-extern void PyCore_FREE_FUNC PyCore_FREE_PROTO;
-#endif
-
-#ifndef PyCore_MALLOC
 #undef PyCore_REALLOC
 #undef PyCore_FREE
 #define PyCore_MALLOC(n)        PyCore_MALLOC_FUNC(n)
 #define PyCore_REALLOC(p, n)    PyCore_REALLOC_FUNC((p), (n))
 #define PyCore_FREE(p)          PyCore_FREE_FUNC(p)
-#endif
 
 extern DL_IMPORT(void *) PyMem_Malloc(size_t);
 extern DL_IMPORT(void *) PyMem_Realloc(void *, size_t);
