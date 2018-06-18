@@ -192,61 +192,61 @@ typedef struct _typeobject {
 } PyTypeObject;
 
 
-extern DL_IMPORT(int) PyType_IsSubtype(PyTypeObject *, PyTypeObject *);
+extern int PyType_IsSubtype(PyTypeObject *, PyTypeObject *);
 #define PyObject_TypeCheck(ob, tp) \
 	((ob)->ob_type == (tp) || PyType_IsSubtype((ob)->ob_type, (tp)))
 
-extern DL_IMPORT(PyTypeObject) PyType_Type; 
-extern DL_IMPORT(PyTypeObject) PyBaseObject_Type; 
-extern DL_IMPORT(PyTypeObject) PySuper_Type; 
+extern PyTypeObject PyType_Type; 
+extern PyTypeObject PyBaseObject_Type; 
+extern PyTypeObject PySuper_Type; 
 
 #define PyType_Check(op) PyObject_TypeCheck(op, &PyType_Type)
 #define PyType_CheckExact(op) ((op)->ob_type == &PyType_Type)
 
-extern DL_IMPORT(int) PyType_Ready(PyTypeObject *);
-extern DL_IMPORT(PyObject *) PyType_GenericAlloc(PyTypeObject *, int);
-extern DL_IMPORT(PyObject *) PyType_GenericNew(PyTypeObject *,
+extern int PyType_Ready(PyTypeObject *);
+extern PyObject * PyType_GenericAlloc(PyTypeObject *, int);
+extern PyObject * PyType_GenericNew(PyTypeObject *,
 					       PyObject *, PyObject *);
-extern DL_IMPORT(PyObject *) _PyType_Lookup(PyTypeObject *, PyObject *);
+extern PyObject * _PyType_Lookup(PyTypeObject *, PyObject *);
 
-extern DL_IMPORT(int) PyObject_Print(PyObject *, FILE *, int);
-extern DL_IMPORT(void) _PyObject_Dump(PyObject *);
-extern DL_IMPORT(PyObject *) PyObject_Repr(PyObject *);
-extern DL_IMPORT(PyObject *) PyObject_Str(PyObject *);
-extern DL_IMPORT(PyObject *) PyObject_Unicode(PyObject *);
-extern DL_IMPORT(int) PyObject_Compare(PyObject *, PyObject *);
-extern DL_IMPORT(PyObject *) PyObject_RichCompare(PyObject *, PyObject *, int);
-extern DL_IMPORT(int) PyObject_RichCompareBool(PyObject *, PyObject *, int);
-extern DL_IMPORT(PyObject *) PyObject_GetAttrString(PyObject *, char *);
-extern DL_IMPORT(int) PyObject_SetAttrString(PyObject *, char *, PyObject *);
-extern DL_IMPORT(int) PyObject_HasAttrString(PyObject *, char *);
-extern DL_IMPORT(PyObject *) PyObject_GetAttr(PyObject *, PyObject *);
-extern DL_IMPORT(int) PyObject_SetAttr(PyObject *, PyObject *, PyObject *);
-extern DL_IMPORT(int) PyObject_HasAttr(PyObject *, PyObject *);
-extern DL_IMPORT(PyObject **) _PyObject_GetDictPtr(PyObject *);
-extern DL_IMPORT(PyObject *) PyObject_GenericGetAttr(PyObject *, PyObject *);
-extern DL_IMPORT(int) PyObject_GenericSetAttr(PyObject *,
+extern int PyObject_Print(PyObject *, FILE *, int);
+extern void _PyObject_Dump(PyObject *);
+extern PyObject * PyObject_Repr(PyObject *);
+extern PyObject * PyObject_Str(PyObject *);
+extern PyObject * PyObject_Unicode(PyObject *);
+extern int PyObject_Compare(PyObject *, PyObject *);
+extern PyObject * PyObject_RichCompare(PyObject *, PyObject *, int);
+extern int PyObject_RichCompareBool(PyObject *, PyObject *, int);
+extern PyObject * PyObject_GetAttrString(PyObject *, char *);
+extern int PyObject_SetAttrString(PyObject *, char *, PyObject *);
+extern int PyObject_HasAttrString(PyObject *, char *);
+extern PyObject * PyObject_GetAttr(PyObject *, PyObject *);
+extern int PyObject_SetAttr(PyObject *, PyObject *, PyObject *);
+extern int PyObject_HasAttr(PyObject *, PyObject *);
+extern PyObject ** _PyObject_GetDictPtr(PyObject *);
+extern PyObject * PyObject_GenericGetAttr(PyObject *, PyObject *);
+extern int PyObject_GenericSetAttr(PyObject *,
 					      PyObject *, PyObject *);
-extern DL_IMPORT(long) PyObject_Hash(PyObject *);
-extern DL_IMPORT(int) PyObject_IsTrue(PyObject *);
-extern DL_IMPORT(int) PyObject_Not(PyObject *);
-extern DL_IMPORT(int) PyCallable_Check(PyObject *);
-extern DL_IMPORT(int) PyNumber_Coerce(PyObject **, PyObject **);
-extern DL_IMPORT(int) PyNumber_CoerceEx(PyObject **, PyObject **);
+extern long PyObject_Hash(PyObject *);
+extern int PyObject_IsTrue(PyObject *);
+extern int PyObject_Not(PyObject *);
+extern int PyCallable_Check(PyObject *);
+extern int PyNumber_Coerce(PyObject **, PyObject **);
+extern int PyNumber_CoerceEx(PyObject **, PyObject **);
 
-extern DL_IMPORT(void) PyObject_ClearWeakRefs(PyObject *);
+extern void PyObject_ClearWeakRefs(PyObject *);
 
 extern int _PyObject_SlotCompare(PyObject *, PyObject *);
 
 
-extern DL_IMPORT(PyObject *) PyObject_Dir(PyObject *);
+extern PyObject * PyObject_Dir(PyObject *);
 
 
-extern DL_IMPORT(int) Py_ReprEnter(PyObject *);
-extern DL_IMPORT(void) Py_ReprLeave(PyObject *);
+extern int Py_ReprEnter(PyObject *);
+extern void Py_ReprLeave(PyObject *);
 
-extern DL_IMPORT(long) _Py_HashDouble(double);
-extern DL_IMPORT(long) _Py_HashPointer(void*);
+extern long _Py_HashDouble(double);
+extern long _Py_HashPointer(void*);
 
 #define PyObject_REPR(obj) PyString_AS_STRING(PyObject_Repr(obj))
 
@@ -293,11 +293,11 @@ extern DL_IMPORT(long) _Py_HashPointer(void*);
 #define PyType_HasFeature(t,f)  (((t)->tp_flags & (f)) != 0)
 
 #ifdef _DEBUG
-extern DL_IMPORT(void) _Py_Dealloc(PyObject *);
-extern DL_IMPORT(void) _Py_NewReference(PyObject *);
-extern DL_IMPORT(void) _Py_ForgetReference(PyObject *);
-extern DL_IMPORT(void) _Py_PrintReferences(FILE *);
-extern DL_IMPORT(void) _Py_ResetReferences();
+extern void _Py_Dealloc(PyObject *);
+extern void _Py_NewReference(PyObject *);
+extern void _Py_ForgetReference(PyObject *);
+extern void _Py_PrintReferences(FILE *);
+extern void _Py_ResetReferences();
 #endif
 
 #ifndef _DEBUG
@@ -307,7 +307,7 @@ extern DL_IMPORT(void) _Py_ResetReferences();
 
 #ifdef _DEBUG
 
-extern DL_IMPORT(long) _Py_RefTotal;
+extern long _Py_RefTotal;
 
 #ifndef _DEBUG
 #define _Py_NewReference(op) (_Py_RefTotal++, (op)->ob_refcnt = 1)
@@ -335,11 +335,11 @@ extern DL_IMPORT(long) _Py_RefTotal;
 #define Py_XINCREF(op) if ((op) == NULL) ; else Py_INCREF(op)
 #define Py_XDECREF(op) if ((op) == NULL) ; else Py_DECREF(op)
 
-extern DL_IMPORT(PyObject) _Py_NoneStruct;
+extern PyObject _Py_NoneStruct;
 
 #define Py_None (&_Py_NoneStruct)
 
-extern DL_IMPORT(PyObject) _Py_NotImplementedStruct; 
+extern PyObject _Py_NotImplementedStruct; 
 
 #define Py_NotImplemented (&_Py_NotImplementedStruct)
 
@@ -369,11 +369,11 @@ extern DL_IMPORT(PyObject) _Py_NotImplementedStruct;
 			_PyTrash_destroy_chain(); \
 	} \
 
-extern DL_IMPORT(void) _PyTrash_deposit_object(PyObject*);
-extern DL_IMPORT(void) _PyTrash_destroy_chain();
+extern void _PyTrash_deposit_object(PyObject*);
+extern void _PyTrash_destroy_chain();
 
-extern DL_IMPORT(int) _PyTrash_delete_nesting;
-extern DL_IMPORT(PyObject *) _PyTrash_delete_later;
+extern int _PyTrash_delete_nesting;
+extern PyObject * _PyTrash_delete_later;
 
 #define xxPy_TRASHCAN_SAFE_BEGIN(op) 
 #define xxPy_TRASHCAN_SAFE_END(op) ;

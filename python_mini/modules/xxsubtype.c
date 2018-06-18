@@ -234,7 +234,7 @@ static PyMethodDef xxsubtype_functions[] = {
 	{NULL,		NULL}
 };
 
-DL_EXPORT(void) initxxsubtype()
+void initxxsubtype()
 {
 	PyObject *m, *d;
 

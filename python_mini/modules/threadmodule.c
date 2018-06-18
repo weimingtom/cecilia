@@ -366,7 +366,7 @@ static char lock_doc[] =
 	"unlock it.  A thread attempting to lock a lock that it has already locked\n"
 	"will block until another thread unlocks it.  Deadlocks may ensue.";
 
-DL_EXPORT(void) initthread()
+void initthread()
 {
 	PyObject *m, *d;
 

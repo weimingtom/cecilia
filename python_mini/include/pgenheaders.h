@@ -2,22 +2,14 @@
 #pragma once
 
 #include "pyconfig.h"
-
-#define DL_IMPORT(RTYPE) RTYPE
-
 #include <stdio.h>
 #include <string.h>
-
 #include <stdlib.h>
-
 #include "pymem.h"
-
 #include "pydebug.h"
 
-DL_IMPORT(void) PySys_WriteStdout(const char *format, ...)
-			__attribute__((format(printf, 1, 2)));
-DL_IMPORT(void) PySys_WriteStderr(const char *format, ...)
-			__attribute__((format(printf, 1, 2)));
+void PySys_WriteStdout(const char *format, ...);
+void PySys_WriteStderr(const char *format, ...);
 
 #define addarc _Py_addarc
 #define addbit _Py_addbit

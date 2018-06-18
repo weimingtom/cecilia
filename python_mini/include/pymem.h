@@ -21,9 +21,9 @@
 #define PyCore_REALLOC(p, n)    PyCore_REALLOC_FUNC((p), (n))
 #define PyCore_FREE(p)          PyCore_FREE_FUNC(p)
 
-extern DL_IMPORT(void *) PyMem_Malloc(size_t);
-extern DL_IMPORT(void *) PyMem_Realloc(void *, size_t);
-extern DL_IMPORT(void) PyMem_Free(void *);
+extern void * PyMem_Malloc(size_t);
+extern void * PyMem_Realloc(void *, size_t);
+extern void PyMem_Free(void *);
 
 #define PyMem_MALLOC(n)         PyCore_MALLOC(n)
 #define PyMem_REALLOC(p, n)     PyCore_REALLOC((void *)(p), (n))

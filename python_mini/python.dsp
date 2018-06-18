@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "Include" /I "." /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "Include" /I "." /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
@@ -338,6 +338,13 @@ SOURCE=.\python\ceval.c
 # Begin Source File
 
 SOURCE=.\python\codecs.c
+
+!IF  "$(CFG)" == "python - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "python - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -450,10 +457,6 @@ SOURCE=.\python\sysmodule.c
 # Begin Source File
 
 SOURCE=.\python\thread.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\python\thread_nt.h
 # End Source File
 # Begin Source File
 

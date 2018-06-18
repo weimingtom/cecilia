@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 
-extern DL_EXPORT(int) Py_Main(int, char **);
+extern int Py_Main(int, char **);
 
 int main(int argc, char **argv)
 {

@@ -1,6 +1,6 @@
 //20180324
 #pragma once
-   
+
 typedef struct PyStructSequence_Field {
 	char *name;
 	char *doc;
@@ -13,16 +13,13 @@ typedef struct PyStructSequence_Desc {
 	int n_in_sequence;
 } PyStructSequence_Desc;
 
-extern DL_IMPORT(void) PyStructSequence_InitType(PyTypeObject *type, 
-						 PyStructSequence_Desc *desc);
-       
-extern DL_IMPORT(PyObject *) PyStructSequence_New(PyTypeObject* type);
+extern void PyStructSequence_InitType(PyTypeObject *type, PyStructSequence_Desc *desc);
+extern PyObject * PyStructSequence_New(PyTypeObject* type);
 
 typedef struct {
 	PyObject_VAR_HEAD
 	PyObject *ob_item[1];
 } PyStructSequence;
 
-#define PyStructSequence_SET_ITEM(op, i, v) \
-	(((PyStructSequence *)(op))->ob_item[i] = v)
+#define PyStructSequence_SET_ITEM(op, i, v) (((PyStructSequence *)(op))->ob_item[i] = v)
 

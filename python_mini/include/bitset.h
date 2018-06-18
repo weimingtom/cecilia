@@ -1,7 +1,7 @@
 //20180318
 #pragma once
 
-#define BYTE		char
+#define BYTE char
 
 typedef BYTE *bitset;
 

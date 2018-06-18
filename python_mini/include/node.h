@@ -9,16 +9,12 @@ typedef struct _node {
     struct _node	*n_child;
 } node;
 
-extern DL_IMPORT(node *) PyNode_New(int type);
-extern DL_IMPORT(int) PyNode_AddChild(node *n, int type,
-                                      char *str, int lineno);
-extern DL_IMPORT(void) PyNode_Free(node *n);
-
-#define NCH(n)		((n)->n_nchildren)
+extern node * PyNode_New(int type);
+extern int PyNode_AddChild(node *n, int type, char *str, int lineno);
+extern void PyNode_Free(node *n);
+#define NCH(n) ((n)->n_nchildren)
 #define CHILD(n, i)	(&(n)->n_child[i])
-#define TYPE(n)		((n)->n_type)
-#define STR(n)		((n)->n_str)
-
+#define TYPE(n) ((n)->n_type)
+#define STR(n) ((n)->n_str)
 #define REQ(n, type) assert(TYPE(n) == (type))
-
-extern DL_IMPORT(void) PyNode_ListTree(node *);
+extern void PyNode_ListTree(node *);

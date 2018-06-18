@@ -29,19 +29,16 @@ typedef struct {
 #define CO_GENERATOR_ALLOWED    0x1000
 #define CO_FUTURE_DIVISION    	0x2000
 
-extern DL_IMPORT(PyTypeObject) PyCode_Type;
-
+extern PyTypeObject PyCode_Type;
 #define PyCode_Check(op) ((op)->ob_type == &PyCode_Type)
 #define PyCode_GetNumFree(op) (PyTuple_GET_SIZE((op)->co_freevars))
 
 #define CO_MAXBLOCKS 20
 
 struct _node;
-DL_IMPORT(PyCodeObject *) PyNode_Compile(struct _node *, char *);
-DL_IMPORT(PyCodeObject *) PyCode_New(
-	int, int, int, int, PyObject *, PyObject *, PyObject *, PyObject *,
-	PyObject *, PyObject *, PyObject *, PyObject *, int, PyObject *); 
-DL_IMPORT(int) PyCode_Addr2Line(PyCodeObject *, int);
+PyCodeObject * PyNode_Compile(struct _node *, char *);
+PyCodeObject * PyCode_New(int, int, int, int, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int, PyObject *); 
+int PyCode_Addr2Line(PyCodeObject *, int);
 
 typedef struct {
     int ff_found_docstring;
@@ -49,15 +46,12 @@ typedef struct {
     int ff_features;
 } PyFutureFeatures;
 
-DL_IMPORT(PyFutureFeatures *) PyNode_Future(struct _node *, char *);
-DL_IMPORT(PyCodeObject *) PyNode_CompileFlags(struct _node *, char *,
-					      PyCompilerFlags *);
+PyFutureFeatures * PyNode_Future(struct _node *, char *);
+PyCodeObject * PyNode_CompileFlags(struct _node *, char *, PyCompilerFlags *);
 
 #define FUTURE_NESTED_SCOPES "nested_scopes"
 #define FUTURE_GENERATORS "generators"
 #define FUTURE_DIVISION "division"
 
-#define _PyCode_GETCODEPTR(co, pp) \
-	((*(co)->co_code->ob_type->tp_as_buffer->bf_getreadbuffer) \
-	 ((co)->co_code, 0, (void **)(pp)))
+#define _PyCode_GETCODEPTR(co, pp) ((*(co)->co_code->ob_type->tp_as_buffer->bf_getreadbuffer)((co)->co_code, 0, (void **)(pp)))
 

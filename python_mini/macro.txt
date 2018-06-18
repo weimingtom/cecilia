@@ -1,3 +1,16 @@
+object.h(TODO)
+objimpl.h(TODO)
+pymem.h(TODO)
+pyport.h(TODO)
+unicodeobject.h(TODO)
+
+remove #undef
+
+#define __attribute__(__x)
+#define DL_IMPORT(RTYPE) RTYPE
+#define DL_EXPORT(RTYPE) RTYPE
+
+------------
 (*) cStringIO.h
 
 ------------

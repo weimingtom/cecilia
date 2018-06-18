@@ -180,7 +180,7 @@ static char module_doc[] =
 	"A signal handler function is called with two arguments:\n"
 	"the first is the signal number, the second is the interrupted stack frame.";
 
-DL_EXPORT(void) initsignal()
+void initsignal()
 {
 	PyObject *m, *d, *x;
 	int i;

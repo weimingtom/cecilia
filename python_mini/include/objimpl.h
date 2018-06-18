@@ -21,20 +21,19 @@
 #define PyCore_OBJECT_REALLOC(p, n)  PyCore_OBJECT_REALLOC_FUNC((p), (n))
 #define PyCore_OBJECT_FREE(p)        PyCore_OBJECT_FREE_FUNC(p)
 
-extern DL_IMPORT(void *) PyObject_Malloc(size_t);
-extern DL_IMPORT(void *) PyObject_Realloc(void *, size_t);
-extern DL_IMPORT(void) PyObject_Free(void *);
+extern void * PyObject_Malloc(size_t);
+extern void * PyObject_Realloc(void *, size_t);
+extern void PyObject_Free(void *);
 
 #define PyObject_MALLOC(n)           PyCore_OBJECT_MALLOC(n)
 #define PyObject_REALLOC(op, n)      PyCore_OBJECT_REALLOC((void *)(op), (n))
 #define PyObject_FREE(op)            PyCore_OBJECT_FREE((void *)(op))
 
-extern DL_IMPORT(PyObject *) PyObject_Init(PyObject *, PyTypeObject *);
-extern DL_IMPORT(PyVarObject *) PyObject_InitVar(PyVarObject *,
-                                                 PyTypeObject *, int);
-extern DL_IMPORT(PyObject *) _PyObject_New(PyTypeObject *);
-extern DL_IMPORT(PyVarObject *) _PyObject_NewVar(PyTypeObject *, int);
-extern DL_IMPORT(void) _PyObject_Del(PyObject *);
+extern PyObject * PyObject_Init(PyObject *, PyTypeObject *);
+extern PyVarObject * PyObject_InitVar(PyVarObject *, PyTypeObject *, int);
+extern PyObject * _PyObject_New(PyTypeObject *);
+extern PyVarObject * _PyObject_NewVar(PyTypeObject *, int);
+extern void _PyObject_Del(PyObject *);
 
 #define PyObject_New(type, typeobj) \
 		( (type *) _PyObject_New(typeobj) )
@@ -73,17 +72,17 @@ extern DL_IMPORT(void) _PyObject_Del(PyObject *);
 #define PyObject_IS_GC(o) (PyType_IS_GC((o)->ob_type) && \
 	((o)->ob_type->tp_is_gc == NULL || (o)->ob_type->tp_is_gc(o)))
 
-extern DL_IMPORT(PyObject *) _PyObject_GC_Malloc(PyTypeObject *, int);
-extern DL_IMPORT(PyVarObject *) _PyObject_GC_Resize(PyVarObject *, int);
+extern PyObject * _PyObject_GC_Malloc(PyTypeObject *, int);
+extern PyVarObject * _PyObject_GC_Resize(PyVarObject *, int);
 
 #define PyObject_GC_Resize(type, op, n) \
 		( (type *) _PyObject_GC_Resize((PyVarObject *)(op), (n)) )
 
-extern DL_IMPORT(PyObject *) _PyObject_GC_New(PyTypeObject *);
-extern DL_IMPORT(PyVarObject *) _PyObject_GC_NewVar(PyTypeObject *, int);
-extern DL_IMPORT(void) _PyObject_GC_Del(PyObject *);
-extern DL_IMPORT(void) _PyObject_GC_Track(PyObject *);
-extern DL_IMPORT(void) _PyObject_GC_UnTrack(PyObject *);
+extern PyObject * _PyObject_GC_New(PyTypeObject *);
+extern PyVarObject * _PyObject_GC_NewVar(PyTypeObject *, int);
+extern void _PyObject_GC_Del(PyObject *);
+extern void _PyObject_GC_Track(PyObject *);
+extern void _PyObject_GC_UnTrack(PyObject *);
 
 typedef union _gc_head {
 	struct {

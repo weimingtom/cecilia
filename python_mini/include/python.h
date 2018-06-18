@@ -1,33 +1,23 @@
 //20180324
 #pragma once
 
-# define _GNU_SOURCE	1
+#define _GNU_SOURCE	1
 
 #include "patchlevel.h"
 #include "pyconfig.h"
 
 #include <limits.h>
-
-#define DL_IMPORT(RTYPE) RTYPE
-#define DL_EXPORT(RTYPE) RTYPE
-
 #include <stdio.h>
-
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
-
 #include <assert.h>
 
 #include "pyport.h"
-
 #include "pymem.h"
-
 #include "object.h"
 #include "objimpl.h"
-
 #include "pydebug.h"
-
 #include "unicodeobject.h"
 #include "intobject.h"
 #include "longobject.h"
@@ -51,25 +41,20 @@
 #include "iterobject.h"
 #include "descrobject.h"
 #include "weakrefobject.h"
-
 #include "codecs.h"
 #include "pyerrors.h"
-
 #include "pystate.h"
-
 #include "modsupport.h"
 #include "pythonrun.h"
 #include "ceval.h"
 #include "sysmodule.h"
 #include "intrcheck.h"
 #include "import.h"
-
 #include "abstract.h"
 
-#define PyArg_GetInt(v, a)	PyArg_Parse((v), "i", (a))
-#define PyArg_NoArgs(v)		PyArg_Parse(v, "")
-
-#define Py_CHARMASK(c)		((c) & 0xff)
+#define PyArg_GetInt(v, a) PyArg_Parse((v), "i", (a))
+#define PyArg_NoArgs(v) PyArg_Parse(v, "")
+#define Py_CHARMASK(c) ((c) & 0xff)
 
 #include "pyfpe.h"
 

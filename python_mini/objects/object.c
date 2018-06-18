@@ -6,10 +6,10 @@
 #include "traceback.h"
 
 #ifdef _DEBUG
-DL_IMPORT(long) _Py_RefTotal;
+long _Py_RefTotal;
 #endif
 
-DL_IMPORT(int) Py_DivisionWarningFlag;
+int Py_DivisionWarningFlag;
 
 PyObject *PyObject_Init(PyObject *op, PyTypeObject *tp)
 {

@@ -18,11 +18,10 @@ struct filedescr {
 	char *mode;
 	enum filetype type;
 };
+
 extern struct filedescr * _PyImport_Filetab;
 extern const struct filedescr _PyImport_DynLoadFiletab[];
-
-extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname,
-					     FILE *);
+extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname, FILE *);
 
 #define MAXSUFFIXSIZE 12
 

@@ -31,12 +31,9 @@ typedef struct _frame {
     PyObject *f_localsplus[1];
 } PyFrameObject;
 
-extern DL_IMPORT(PyTypeObject) PyFrame_Type;
-
+extern PyTypeObject PyFrame_Type;
 #define PyFrame_Check(op) ((op)->ob_type == &PyFrame_Type)
-
-DL_IMPORT(PyFrameObject *) PyFrame_New(PyThreadState *, PyCodeObject *,
-                                       PyObject *, PyObject *);
+PyFrameObject * PyFrame_New(PyThreadState *, PyCodeObject *, PyObject *, PyObject *);
 
 #ifndef _DEBUG
 #define GETITEM(v, i) PyTuple_GET_ITEM((PyTupleObject *)(v), (i))
@@ -52,10 +49,8 @@ DL_IMPORT(PyFrameObject *) PyFrame_New(PyThreadState *, PyCodeObject *,
 #define Getname(f, i)	(GETITEMNAME((f)->f_code->co_names, (i)))
 #define Getnamev(f, i)	(GETITEM((f)->f_code->co_names, (i)))
 
-DL_IMPORT(void) PyFrame_BlockSetup(PyFrameObject *, int, int, int);
-DL_IMPORT(PyTryBlock *) PyFrame_BlockPop(PyFrameObject *);
-
-DL_IMPORT(PyObject **) PyFrame_ExtendStack(PyFrameObject *, int, int);
-
-DL_IMPORT(void) PyFrame_LocalsToFast(PyFrameObject *, int);
-DL_IMPORT(void) PyFrame_FastToLocals(PyFrameObject *);
+void PyFrame_BlockSetup(PyFrameObject *, int, int, int);
+PyTryBlock * PyFrame_BlockPop(PyFrameObject *);
+PyObject ** PyFrame_ExtendStack(PyFrameObject *, int, int);
+void PyFrame_LocalsToFast(PyFrameObject *, int);
+void PyFrame_FastToLocals(PyFrameObject *);

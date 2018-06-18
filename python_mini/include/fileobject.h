@@ -1,21 +1,17 @@
 //20180318
 #pragma once
 
-extern DL_IMPORT(PyTypeObject) PyFile_Type;
-
+extern PyTypeObject PyFile_Type;
 #define PyFile_Check(op) PyObject_TypeCheck(op, &PyFile_Type)
 #define PyFile_CheckExact(op) ((op)->ob_type == &PyFile_Type)
-
-extern DL_IMPORT(PyObject *) PyFile_FromString(char *, char *);
-extern DL_IMPORT(void) PyFile_SetBufSize(PyObject *, int);
-extern DL_IMPORT(PyObject *) PyFile_FromFile(FILE *, char *, char *,
-                                             int (*)(FILE *));
-extern DL_IMPORT(FILE *) PyFile_AsFile(PyObject *);
-extern DL_IMPORT(PyObject *) PyFile_Name(PyObject *);
-extern DL_IMPORT(PyObject *) PyFile_GetLine(PyObject *, int);
-extern DL_IMPORT(int) PyFile_WriteObject(PyObject *, PyObject *, int);
-extern DL_IMPORT(int) PyFile_SoftSpace(PyObject *, int);
-extern DL_IMPORT(int) PyFile_WriteString(const char *, PyObject *);
-extern DL_IMPORT(int) PyObject_AsFileDescriptor(PyObject *);
-
-extern DL_IMPORT(const char *) Py_FileSystemDefaultEncoding;
+extern PyObject * PyFile_FromString(char *, char *);
+extern void PyFile_SetBufSize(PyObject *, int);
+extern PyObject * PyFile_FromFile(FILE *, char *, char *, int (*)(FILE *));
+extern FILE * PyFile_AsFile(PyObject *);
+extern PyObject * PyFile_Name(PyObject *);
+extern PyObject * PyFile_GetLine(PyObject *, int);
+extern int PyFile_WriteObject(PyObject *, PyObject *, int);
+extern int PyFile_SoftSpace(PyObject *, int);
+extern int PyFile_WriteString(const char *, PyObject *);
+extern int PyObject_AsFileDescriptor(PyObject *);
+extern const char * Py_FileSystemDefaultEncoding;

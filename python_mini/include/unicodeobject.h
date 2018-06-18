@@ -129,7 +129,7 @@ typedef struct {
     PyObject *defenc;
 } PyUnicodeObject;
 
-extern DL_IMPORT(PyTypeObject) PyUnicode_Type;
+extern PyTypeObject PyUnicode_Type;
 
 #define PyUnicode_Check(op) PyObject_TypeCheck(op, &PyUnicode_Type)
 #define PyUnicode_CheckExact(op) ((op)->ob_type == &PyUnicode_Type)
@@ -146,85 +146,85 @@ extern DL_IMPORT(PyTypeObject) PyUnicode_Type;
 
 #define Py_UNICODE_REPLACEMENT_CHARACTER ((Py_UNICODE) 0xFFFD)
 
-extern DL_IMPORT(PyObject*) PyUnicode_FromUnicode(
+extern PyObject* PyUnicode_FromUnicode(
     const Py_UNICODE *u,        
     int size                    
     );
 
-extern DL_IMPORT(Py_UNICODE *) PyUnicode_AsUnicode(
+extern Py_UNICODE * PyUnicode_AsUnicode(
     PyObject *unicode	 	
     );
 
-extern DL_IMPORT(int) PyUnicode_GetSize(
+extern int PyUnicode_GetSize(
     PyObject *unicode	 	
     );
 
-extern DL_IMPORT(Py_UNICODE) PyUnicode_GetMax();
+extern Py_UNICODE PyUnicode_GetMax();
 
-extern DL_IMPORT(int) PyUnicode_Resize(
+extern int PyUnicode_Resize(
     PyObject **unicode,		
     int length			
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_FromEncodedObject(
+extern PyObject* PyUnicode_FromEncodedObject(
     PyObject *obj, 	
     const char *encoding,       
     const char *errors          
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_FromObject(
+extern PyObject* PyUnicode_FromObject(
     PyObject *obj 
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_FromWideChar(
+extern PyObject* PyUnicode_FromWideChar(
     const wchar_t *w,  
     int size                    
     );
 
-extern DL_IMPORT(int) PyUnicode_AsWideChar(
+extern int PyUnicode_AsWideChar(
     PyUnicodeObject *unicode,  
     wchar_t *w,       
     int size                   
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_FromOrdinal(int ordinal);
+extern PyObject* PyUnicode_FromOrdinal(int ordinal);
 
-extern DL_IMPORT(PyObject *) _PyUnicode_AsDefaultEncodedString(
+extern PyObject * _PyUnicode_AsDefaultEncodedString(
     PyObject *, const char *);
 
-extern DL_IMPORT(const char*) PyUnicode_GetDefaultEncoding();
+extern const char* PyUnicode_GetDefaultEncoding();
 
-extern DL_IMPORT(int) PyUnicode_SetDefaultEncoding(
+extern int PyUnicode_SetDefaultEncoding(
     const char *encoding
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_Decode(
+extern PyObject* PyUnicode_Decode(
     const char *s,              
     int size,                   
     const char *encoding,       
     const char *errors          
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_Encode(
+extern PyObject* PyUnicode_Encode(
     const Py_UNICODE *s,       
     int size,                  
     const char *encoding,      
     const char *errors         
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsEncodedString(
+extern PyObject* PyUnicode_AsEncodedString(
     PyObject *unicode,	 
     const char *encoding,
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF7(
+extern PyObject* PyUnicode_DecodeUTF7(
     const char *string, 
     int length,	 
     const char *errors
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF7(
+extern PyObject* PyUnicode_EncodeUTF7(
     const Py_UNICODE *data, 
     int length,	 	
     int encodeSetO,      
@@ -232,181 +232,181 @@ extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF7(
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF8(
+extern PyObject* PyUnicode_DecodeUTF8(
     const char *string, 
     int length,	 	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsUTF8String(
+extern PyObject* PyUnicode_AsUTF8String(
     PyObject *unicode	 
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF8(
+extern PyObject* PyUnicode_EncodeUTF8(
     const Py_UNICODE *data, 
     int length,	 	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeUTF16(
+extern PyObject* PyUnicode_DecodeUTF16(
     const char *string, 
     int length,	 		
     const char *errors,	
     int *byteorder
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsUTF16String(
+extern PyObject* PyUnicode_AsUTF16String(
     PyObject *unicode	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeUTF16(
+extern PyObject* PyUnicode_EncodeUTF16(
     const Py_UNICODE *data, 
     int length,	 	
     const char *errors,	
     int byteorder	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeUnicodeEscape(
+extern PyObject* PyUnicode_DecodeUnicodeEscape(
     const char *string, 
     int length,	 
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsUnicodeEscapeString(
+extern PyObject* PyUnicode_AsUnicodeEscapeString(
     PyObject *unicode	 
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeUnicodeEscape(
+extern PyObject* PyUnicode_EncodeUnicodeEscape(
     const Py_UNICODE *data, 
     int length	 	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeRawUnicodeEscape(
+extern PyObject* PyUnicode_DecodeRawUnicodeEscape(
     const char *string, 
     int length,	 	
     const char *errors
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsRawUnicodeEscapeString(
+extern PyObject* PyUnicode_AsRawUnicodeEscapeString(
     PyObject *unicode	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeRawUnicodeEscape(
+extern PyObject* PyUnicode_EncodeRawUnicodeEscape(
     const Py_UNICODE *data, 
     int length	 	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeLatin1(
+extern PyObject* PyUnicode_DecodeLatin1(
     const char *string, 
     int length,	 	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsLatin1String(
+extern PyObject* PyUnicode_AsLatin1String(
     PyObject *unicode	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeLatin1(
+extern PyObject* PyUnicode_EncodeLatin1(
     const Py_UNICODE *data, 
     int length,	 
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeASCII(
+extern PyObject* PyUnicode_DecodeASCII(
     const char *string, 
     int length,	 	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsASCIIString(
+extern PyObject* PyUnicode_AsASCIIString(
     PyObject *unicode	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeASCII(
+extern PyObject* PyUnicode_EncodeASCII(
     const Py_UNICODE *data, 
     int length,	 
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeCharmap(
+extern PyObject* PyUnicode_DecodeCharmap(
     const char *string, 
     int length,	 
     PyObject *mapping,	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsCharmapString(
+extern PyObject* PyUnicode_AsCharmapString(
     PyObject *unicode,	 
     PyObject *mapping	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeCharmap(
+extern PyObject* PyUnicode_EncodeCharmap(
     const Py_UNICODE *data, 
     int length,	 	
     PyObject *mapping,	
     const char *errors
     );
 
-extern DL_IMPORT(PyObject *) PyUnicode_TranslateCharmap(
+extern PyObject * PyUnicode_TranslateCharmap(
     const Py_UNICODE *data, 
     int length,	 
     PyObject *table,	
     const char *errors	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_DecodeMBCS(
+extern PyObject* PyUnicode_DecodeMBCS(
     const char *string,     
     int length,           
     const char *errors     
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_AsMBCSString(
+extern PyObject* PyUnicode_AsMBCSString(
     PyObject *unicode     
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_EncodeMBCS(
+extern PyObject* PyUnicode_EncodeMBCS(
     const Py_UNICODE *data,   
     int length,               
     const char *errors        
     );
 
-extern DL_IMPORT(int) PyUnicode_EncodeDecimal(
+extern int PyUnicode_EncodeDecimal(
     Py_UNICODE *s,	
     int length,		
     char *output,	
     const char *errors
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_Concat(
+extern PyObject* PyUnicode_Concat(
     PyObject *left,	 
     PyObject *right	
     );
 
-extern DL_IMPORT(PyObject*) PyUnicode_Split(
+extern PyObject* PyUnicode_Split(
     PyObject *s,	
     PyObject *sep,	
     int maxsplit	
     );		
 
-extern DL_IMPORT(PyObject*) PyUnicode_Splitlines(
+extern PyObject* PyUnicode_Splitlines(
     PyObject *s,		
     int keepends		
     );		
 
 
 
-extern DL_IMPORT(PyObject *) PyUnicode_Translate(
+extern PyObject * PyUnicode_Translate(
     PyObject *str,	
     PyObject *table,	
     const char *errors	
     );
     
-extern DL_IMPORT(PyObject*) PyUnicode_Join(
+extern PyObject* PyUnicode_Join(
     PyObject *separator, 
     PyObject *seq
     );
 
-extern DL_IMPORT(int) PyUnicode_Tailmatch(
+extern int PyUnicode_Tailmatch(
     PyObject *str,	
     PyObject *substr,	
     int start,		
@@ -414,7 +414,7 @@ extern DL_IMPORT(int) PyUnicode_Tailmatch(
     int direction	
     );
 
-extern DL_IMPORT(int) PyUnicode_Find(
+extern int PyUnicode_Find(
     PyObject *str,	 
     PyObject *substr,
     int start,		
@@ -422,98 +422,98 @@ extern DL_IMPORT(int) PyUnicode_Find(
     int direction
     );
 
-extern DL_IMPORT(int) PyUnicode_Count(
+extern int PyUnicode_Count(
     PyObject *str,	
     PyObject *substr,	
     int start,		
     int end		
     );
 
-extern DL_IMPORT(PyObject *) PyUnicode_Replace(
+extern PyObject * PyUnicode_Replace(
     PyObject *str,	 
     PyObject *substr,
     PyObject *replstr,
     int maxcount	
     );
 
-extern DL_IMPORT(int) PyUnicode_Compare(
+extern int PyUnicode_Compare(
     PyObject *left,	
     PyObject *right	
     );
 
-extern DL_IMPORT(PyObject *) PyUnicode_Format(
+extern PyObject * PyUnicode_Format(
     PyObject *format,	
     PyObject *args	
     );
 
-extern DL_IMPORT(int) PyUnicode_Contains(
+extern int PyUnicode_Contains(
     PyObject *container,
     PyObject *element	
     );
 
-extern DL_IMPORT(PyObject *) _PyUnicode_XStrip(
+extern PyObject * _PyUnicode_XStrip(
     PyUnicodeObject *self,
     int striptype,
     PyObject *sepobj
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsLowercase(
+extern int _PyUnicode_IsLowercase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsUppercase(
+extern int _PyUnicode_IsUppercase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsTitlecase(
+extern int _PyUnicode_IsTitlecase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsWhitespace(
+extern int _PyUnicode_IsWhitespace(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsLinebreak(
+extern int _PyUnicode_IsLinebreak(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToLowercase(
+extern Py_UNICODE _PyUnicode_ToLowercase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToUppercase(
+extern Py_UNICODE _PyUnicode_ToUppercase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(Py_UNICODE) _PyUnicode_ToTitlecase(
+extern Py_UNICODE _PyUnicode_ToTitlecase(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_ToDecimalDigit(
+extern int _PyUnicode_ToDecimalDigit(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_ToDigit(
+extern int _PyUnicode_ToDigit(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(double) _PyUnicode_ToNumeric(
+extern double _PyUnicode_ToNumeric(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsDecimalDigit(
+extern int _PyUnicode_IsDecimalDigit(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsDigit(
+extern int _PyUnicode_IsDigit(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsNumeric(
+extern int _PyUnicode_IsNumeric(
     Py_UNICODE ch 
     );
 
-extern DL_IMPORT(int) _PyUnicode_IsAlpha(
+extern int _PyUnicode_IsAlpha(
     Py_UNICODE ch 
     );
 

@@ -34,16 +34,11 @@ typedef struct _symtable_entry {
 	struct symtable *ste_table;
 } PySymtableEntryObject;
 
-extern DL_IMPORT(PyTypeObject) PySymtableEntry_Type;
-
+extern PyTypeObject PySymtableEntry_Type;
 #define PySymtableEntry_Check(op) ((op)->ob_type == &PySymtableEntry_Type)
-
-extern DL_IMPORT(PyObject *) PySymtableEntry_New(struct symtable *,
-						 char *, int, int);
-
-DL_IMPORT(struct symtable *) PyNode_CompileSymtable(struct _node *, char *);
-DL_IMPORT(void) PySymtable_Free(struct symtable *);
-
+extern PyObject * PySymtableEntry_New(struct symtable *, char *, int, int);
+struct symtable * PyNode_CompileSymtable(struct _node *, char *);
+void PySymtable_Free(struct symtable *);
 
 #define TOP "global"
 

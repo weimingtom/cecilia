@@ -81,7 +81,7 @@ static void usage(int exitcode, char* program)
 	exit(exitcode);
 }
 
-DL_EXPORT(int) Py_Main(int argc, char **argv)
+int Py_Main(int argc, char **argv)
 {
 	int c;
 	int sts;

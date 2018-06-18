@@ -3806,7 +3806,7 @@ static PyMethodDef _functions[] = {
     {NULL, NULL}
 };
 
-DL_EXPORT(void) init_sre()
+void init_sre()
 {
     PyObject* m;
     PyObject* d;

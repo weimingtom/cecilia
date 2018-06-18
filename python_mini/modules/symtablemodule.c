@@ -54,7 +54,7 @@ static PyMethodDef symtable_methods[] = {
 	{NULL,		NULL}
 };
 
-DL_EXPORT(void) init_symtable()
+void init_symtable()
 {
 	PyObject *m;
 

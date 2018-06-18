@@ -7,9 +7,9 @@ typedef unsigned int wdigit;
 typedef unsigned BASE_TWODIGITS_TYPE twodigits;
 typedef BASE_TWODIGITS_TYPE stwodigits;
 
-#define SHIFT	15
-#define BASE	((digit)1 << SHIFT)
-#define MASK	((int)(BASE - 1))
+#define SHIFT 15
+#define BASE ((digit)1 << SHIFT)
+#define MASK ((int)(BASE - 1))
 
 struct _longobject {
 	PyObject_HEAD
@@ -17,6 +17,5 @@ struct _longobject {
 	digit ob_digit[1];
 };
 
-DL_IMPORT(PyLongObject *) _PyLong_New(int);
-
-DL_IMPORT(PyObject *) _PyLong_Copy(PyLongObject *src);
+PyLongObject * _PyLong_New(int);
+PyObject * _PyLong_Copy(PyLongObject *src);

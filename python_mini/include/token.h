@@ -61,8 +61,7 @@
 #define ISNONTERMINAL(x)	((x) >= NT_OFFSET)
 #define ISEOF(x)		((x) == ENDMARKER)
 
-
-extern DL_IMPORT(char *) _PyParser_TokenNames[]; 
-extern DL_IMPORT(int) PyToken_OneChar(int);
-extern DL_IMPORT(int) PyToken_TwoChars(int, int);
-extern DL_IMPORT(int) PyToken_ThreeChars(int, int, int);
+extern char * _PyParser_TokenNames[]; 
+extern int PyToken_OneChar(int);
+extern int PyToken_TwoChars(int, int);
+extern int PyToken_ThreeChars(int, int, int);

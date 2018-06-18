@@ -20,33 +20,22 @@ struct _dictobject {
 	PyDictEntry ma_smalltable[PyDict_MINSIZE];
 };
 
-extern DL_IMPORT(PyTypeObject) PyDict_Type;
-
+extern PyTypeObject PyDict_Type;
 #define PyDict_Check(op) PyObject_TypeCheck(op, &PyDict_Type)
-
-extern DL_IMPORT(PyObject *) PyDict_New();
-extern DL_IMPORT(PyObject *) PyDict_GetItem(PyObject *mp, PyObject *key);
-extern DL_IMPORT(int) PyDict_SetItem(PyObject *mp, PyObject *key, PyObject *item);
-extern DL_IMPORT(int) PyDict_DelItem(PyObject *mp, PyObject *key);
-extern DL_IMPORT(void) PyDict_Clear(PyObject *mp);
-extern DL_IMPORT(int) PyDict_Next
-	(PyObject *mp, int *pos, PyObject **key, PyObject **value);
-extern DL_IMPORT(PyObject *) PyDict_Keys(PyObject *mp);
-extern DL_IMPORT(PyObject *) PyDict_Values(PyObject *mp);
-extern DL_IMPORT(PyObject *) PyDict_Items(PyObject *mp);
-extern DL_IMPORT(int) PyDict_Size(PyObject *mp);
-extern DL_IMPORT(PyObject *) PyDict_Copy(PyObject *mp);
-
-extern DL_IMPORT(int) PyDict_Update(PyObject *mp, PyObject *other);
-
-extern DL_IMPORT(int) PyDict_Merge(PyObject *mp,
-				   PyObject *other,
-				   int override);
-
-extern DL_IMPORT(int) PyDict_MergeFromSeq2(PyObject *d,
-					   PyObject *seq2,
-					   int override);
-
-extern DL_IMPORT(PyObject *) PyDict_GetItemString(PyObject *dp, char *key);
-extern DL_IMPORT(int) PyDict_SetItemString(PyObject *dp, char *key, PyObject *item);
-extern DL_IMPORT(int) PyDict_DelItemString(PyObject *dp, char *key);
+extern PyObject * PyDict_New();
+extern PyObject * PyDict_GetItem(PyObject *mp, PyObject *key);
+extern int PyDict_SetItem(PyObject *mp, PyObject *key, PyObject *item);
+extern int PyDict_DelItem(PyObject *mp, PyObject *key);
+extern void PyDict_Clear(PyObject *mp);
+extern int PyDict_Next(PyObject *mp, int *pos, PyObject **key, PyObject **value);
+extern PyObject * PyDict_Keys(PyObject *mp);
+extern PyObject * PyDict_Values(PyObject *mp);
+extern PyObject * PyDict_Items(PyObject *mp);
+extern int PyDict_Size(PyObject *mp);
+extern PyObject * PyDict_Copy(PyObject *mp);
+extern int PyDict_Update(PyObject *mp, PyObject *other);
+extern int PyDict_Merge(PyObject *mp, PyObject *other, int override);
+extern int PyDict_MergeFromSeq2(PyObject *d, PyObject *seq2, int override);
+extern PyObject * PyDict_GetItemString(PyObject *dp, char *key);
+extern int PyDict_SetItemString(PyObject *dp, char *key, PyObject *item);
+extern int PyDict_DelItemString(PyObject *dp, char *key);

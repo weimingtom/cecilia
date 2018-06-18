@@ -1,8 +1,7 @@
 //20180324
 #pragma once
 
-extern DL_IMPORT(PyObject) _Py_EllipsisObject; 
-
+extern PyObject _Py_EllipsisObject; 
 #define Py_Ellipsis (&_Py_EllipsisObject)
 
 typedef struct {
@@ -10,12 +9,8 @@ typedef struct {
     PyObject *start, *stop, *step;
 } PySliceObject;
 
-extern DL_IMPORT(PyTypeObject) PySlice_Type;
-
+extern PyTypeObject PySlice_Type;
 #define PySlice_Check(op) ((op)->ob_type == &PySlice_Type)
-
-DL_IMPORT(PyObject *) PySlice_New(PyObject* start, PyObject* stop,
-                                  PyObject* step);
-DL_IMPORT(int) PySlice_GetIndices(PySliceObject *r, int length,
-                                  int *start, int *stop, int *step);
+PyObject * PySlice_New(PyObject* start, PyObject* stop, PyObject* step);
+int PySlice_GetIndices(PySliceObject *r, int length, int *start, int *stop, int *step);
 

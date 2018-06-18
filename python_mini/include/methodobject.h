@@ -1,26 +1,18 @@
 //20180318
 #pragma once
 
-extern DL_IMPORT(PyTypeObject) PyCFunction_Type;
-
+extern PyTypeObject PyCFunction_Type;
 #define PyCFunction_Check(op) ((op)->ob_type == &PyCFunction_Type)
-
 typedef PyObject *(*PyCFunction)(PyObject *, PyObject *);
-typedef PyObject *(*PyCFunctionWithKeywords)(PyObject *, PyObject *,
-					     PyObject *);
+typedef PyObject *(*PyCFunctionWithKeywords)(PyObject *, PyObject *, PyObject *);
 typedef PyObject *(*PyNoArgsFunction)(PyObject *);
-
-extern DL_IMPORT(PyCFunction) PyCFunction_GetFunction(PyObject *);
-extern DL_IMPORT(PyObject *) PyCFunction_GetSelf(PyObject *);
-extern DL_IMPORT(int) PyCFunction_GetFlags(PyObject *);
-
-#define PyCFunction_GET_FUNCTION(func) \
-        (((PyCFunctionObject *)func) -> m_ml -> ml_meth)
-#define PyCFunction_GET_SELF(func) \
-	(((PyCFunctionObject *)func) -> m_self)
-#define PyCFunction_GET_FLAGS(func) \
-	(((PyCFunctionObject *)func) -> m_ml -> ml_flags)
-extern DL_IMPORT(PyObject *) PyCFunction_Call(PyObject *, PyObject *, PyObject *);
+extern PyCFunction PyCFunction_GetFunction(PyObject *);
+extern PyObject * PyCFunction_GetSelf(PyObject *);
+extern int PyCFunction_GetFlags(PyObject *);
+#define PyCFunction_GET_FUNCTION(func) (((PyCFunctionObject *)func) -> m_ml -> ml_meth)
+#define PyCFunction_GET_SELF(func) (((PyCFunctionObject *)func) -> m_self)
+#define PyCFunction_GET_FLAGS(func) (((PyCFunctionObject *)func) -> m_ml -> ml_flags)
+extern PyObject * PyCFunction_Call(PyObject *, PyObject *, PyObject *);
 
 struct PyMethodDef {
     char	*ml_name;
@@ -30,9 +22,8 @@ struct PyMethodDef {
 };
 typedef struct PyMethodDef PyMethodDef;
 
-extern DL_IMPORT(PyObject *) Py_FindMethod(PyMethodDef[], PyObject *, char *);
-
-extern DL_IMPORT(PyObject *) PyCFunction_New(PyMethodDef *, PyObject *);
+extern PyObject * Py_FindMethod(PyMethodDef[], PyObject *, char *);
+extern PyObject * PyCFunction_New(PyMethodDef *, PyObject *);
 
 #define METH_OLDARGS  0x0000
 #define METH_VARARGS  0x0001
@@ -45,8 +36,7 @@ typedef struct PyMethodChain {
     struct PyMethodChain *link;	
 } PyMethodChain;
 
-extern DL_IMPORT(PyObject *) Py_FindMethodInChain(PyMethodChain *, PyObject *,
-                                                  char *);
+extern PyObject * Py_FindMethodInChain(PyMethodChain *, PyObject *, char *);
 
 typedef struct {
     PyObject_HEAD

@@ -10,7 +10,6 @@ typedef struct {
     int groups;
     PyObject* groupindex;
     PyObject* indexgroup;
-    
 	PyObject* pattern;
     int flags;
     int codesize;

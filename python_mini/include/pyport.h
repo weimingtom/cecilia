@@ -74,5 +74,3 @@ typedef int		Py_intptr_t;
 	} while(0)
 
 #define _PyMem_EXTRA 0
-
-#define __attribute__(__x)

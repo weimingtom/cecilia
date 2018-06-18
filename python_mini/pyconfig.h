@@ -1,13 +1,7 @@
 //20180406
 #pragma once
 
-#define USE_VC6_MEMORY_LEAK 0
-
-#define PYTHON_MEMORY_FILE_PATH "../../assets"
-
 #define MS_NO_COREDLL
-
-
 
 #include <io.h>
 #define HAVE_LIMITS_H
@@ -21,7 +15,6 @@
 #define LONG_BIT	32
 #define PREFIX ""
 #define EXEC_PREFIX ""
-
 
 #define NT	
 #define MS_WIN32
@@ -46,16 +39,13 @@ typedef int pid_t;
 
 #include <basetsd.h>
 
-
-#	define PLATFORM "win32"
-#	define HAVE_LARGEFILE_SUPPORT
-#		define SIZEOF_VOID_P 4
-#		define SIZEOF_TIME_T 4
-#		define SIZEOF_OFF_T 4
-#		define SIZEOF_FPOS_T 8
-#		define SIZEOF_HKEY 4
-
-
+#define PLATFORM "win32"
+#define HAVE_LARGEFILE_SUPPORT
+#define SIZEOF_VOID_P 4
+#define SIZEOF_TIME_T 4
+#define SIZEOF_OFF_T 4
+#define SIZEOF_FPOS_T 8
+#define SIZEOF_HKEY 4
 
 #define SIZEOF_SHORT 2
 #define SIZEOF_INT 4

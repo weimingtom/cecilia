@@ -36,7 +36,7 @@ static char errno__doc__ [] =
 	"To map error codes to error messages, use the function os.strerror(),\n"
 	"e.g. os.strerror(2) could return 'No such file or directory'.";
 
-DL_EXPORT(void) initerrno()
+void initerrno()
 {
 	PyObject *m, *d, *de;
 	m = Py_InitModule3("errno", errno_methods, errno__doc__);
