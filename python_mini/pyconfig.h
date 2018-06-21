@@ -5,6 +5,8 @@
 
 #if defined(_MSC_VER)
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 #define HAVE_LIMITS_H
 #define HAVE_SYS_UTIME_H

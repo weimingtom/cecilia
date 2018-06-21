@@ -223,7 +223,7 @@ PyObject *PyErr_NoMemory()
 PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 {
 	PyObject *v;
-	char *s;
+	const char *s;
 	int i = errno;
 	char *s_buf = NULL;
 	if (i == EINTR && PyErr_CheckSignals())
@@ -236,21 +236,7 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 	}
 	else
 	{
-		if (i > 0 && i < _sys_nerr) 
-		{
-			s = _sys_errlist[i];
-		}
-		else 
-		{
-			int len;
-			s_buf = (char *)malloc(100);
-			len = sprintf(s_buf, "FormatMessage #%d", i);
-			s = s_buf;
-			while (len > 0 && (s[len-1] <= ' ' || s[len-1] == '.'))
-			{
-				s[--len] = '\0';
-			}
-		}
+		s = strerror(i);
 	}
 	if (filename != NULL)
 	{
@@ -265,49 +251,12 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 		PyErr_SetObject(exc, v);
 		Py_DECREF(v);
 	}
-	free(s_buf);
 	return NULL;
 }
 
 PyObject *PyErr_SetFromErrno(PyObject *exc)
 {
 	return PyErr_SetFromErrnoWithFilename(exc, NULL);
-}
-
-PyObject *PyErr_SetFromWindowsErrWithFilename(
-	int ierr,
-	const char *filename)
-{
-	int len;
-	char *s;
-	PyObject *v;
-	int err = ierr;
-	s = (char *)malloc(100);
-	len = sprintf(s, "FormatMessage #%d", err);
-	while (len > 0 && (s[len-1] <= ' ' || s[len-1] == '.'))
-	{
-		s[--len] = '\0';
-	}
-	if (filename != NULL)
-	{
-		v = Py_BuildValue("(iss)", err, s, filename);
-	}
-	else
-	{
-		v = Py_BuildValue("(is)", err, s);
-	}
-	if (v != NULL) 
-	{
-		PyErr_SetObject(PyExc_WindowsError, v);
-		Py_DECREF(v);
-	}
-	free(s);
-	return NULL;
-}
-
-PyObject *PyErr_SetFromWindowsErr(int ierr)
-{
-	return PyErr_SetFromWindowsErrWithFilename(ierr, NULL);
 }
 
 void _PyErr_BadInternalCall(char *filename, int lineno)
