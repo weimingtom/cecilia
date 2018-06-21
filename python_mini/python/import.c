@@ -591,14 +591,7 @@ static PyCodeObject *parse_source_module(char *pathname, FILE *fp)
 
 static FILE *open_exclusive(char *filename)
 {
-	int fd;
-	unlink(filename);
-	fd = open(filename, O_EXCL|O_CREAT|O_WRONLY|O_TRUNC|O_BINARY, 0666);
-	if (fd < 0)
-	{
-		return NULL;
-	}
-	return fdopen(fd, "wb");
+	return fopen(filename, "wb");
 }
 
 static void write_compiled_module(PyCodeObject *co, char *cpathname, long mtime)

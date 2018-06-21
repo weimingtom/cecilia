@@ -71,8 +71,9 @@ extern int PyErr_CheckSignals();
 extern void PyErr_SetInterrupt();
 extern void PyErr_SyntaxLocation(char *, int);
 extern PyObject * PyErr_ProgramText(char *, int);
-#define snprintf _snprintf
+#if defined(_MSC_VER)
 #define vsnprintf _vsnprintf
+#endif
 #include <stdarg.h>
 extern int PyOS_snprintf(char *str, size_t size, const char  *format, ...);
 extern int PyOS_vsnprintf(char *str, size_t size, const char  *format, va_list va);

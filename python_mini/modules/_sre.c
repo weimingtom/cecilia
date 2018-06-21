@@ -21,7 +21,7 @@ static char copyright[] =
 
 #undef USE_BUILTIN_COPY
 
-#define LOCAL(type) static __inline type __fastcall
+#define LOCAL(type) static type
 
 #define SRE_ERROR_ILLEGAL -1 
 #define SRE_ERROR_STATE -2 

@@ -64,7 +64,7 @@ objects += modules/getbuildinfo.o
 all : python.exe
 
 python.exe : libpython.a
-	$(CC) $(CFLAGS) -o $@ modules/python.c libpython.a
+	$(CC) $(CFLAGS) -o $@ modules/python.c libpython.a -lm
 	$(STRIP) $@
 
 libpython.a : $(objects)

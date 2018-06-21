@@ -3,7 +3,9 @@
 
 #define MS_NO_COREDLL
 
+#if defined(_MSC_VER)
 #include <io.h>
+#endif
 #define HAVE_LIMITS_H
 #define HAVE_SYS_UTIME_H
 #define HAVE_HYPOT
@@ -25,7 +27,6 @@
 #define PYTHONPATH ".\\DLLs;.\\lib;.\\lib\\plat-win;.\\lib\\lib-tk"
 typedef int pid_t;
 #define WORD_BIT 32
-#define hypot _hypot
 #include <stdio.h>
 #define HAVE_CLOCK
 #define HAVE_STRFTIME
@@ -35,12 +36,14 @@ typedef int pid_t;
 #define USE_SOCKET
 
 #define HAVE_LONG_LONG 1
+#if defined(_MSC_VER)
 #define LONG_LONG __int64
+#else
+#define LONG_LONG long long
+#endif
 
-#include <basetsd.h>
 
 #define PLATFORM "win32"
-#define HAVE_LARGEFILE_SUPPORT
 #define SIZEOF_VOID_P 4
 #define SIZEOF_TIME_T 4
 #define SIZEOF_OFF_T 4

@@ -5,7 +5,10 @@
 #include <sys/types.h>
 #include <string.h>
 
+#if defined(_MSC_VER)
 #include <direct.h>
+#define getcwd _getcwd
+#endif
 
 #define VERSION "2.1"
 
@@ -128,7 +131,7 @@ static void copy_absolute(char *path, char *p)
     }
 	else 
 	{
-		_getcwd(path, MAXPATHLEN);
+        getcwd(path, MAXPATHLEN);
         if (p[0] == '.' && p[1] == SEP)
 		{
             p += 2;

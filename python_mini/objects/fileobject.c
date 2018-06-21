@@ -223,41 +223,17 @@ static PyObject *file_close(PyFileObject *f)
 }
 
 
-typedef fpos_t Py_off_t;
+typedef off_t Py_off_t;
 
 static int _portable_fseek(FILE *fp, Py_off_t offset, int whence)
 {
-	fpos_t pos;
-	switch (whence) 
-	{
-	case SEEK_END:
-		fflush(fp);
-		if (_lseeki64(fileno(fp), 0, 2) == -1)
-		{
-			return -1;
-		}
-		//no break
-
-	case SEEK_CUR:
-		if (fgetpos(fp, &pos) != 0)
-		{
-			return -1;
-		}
-		offset += pos;
-		break;
-	}
-	return fsetpos(fp, &offset);
+	return fseek(fp, offset, whence);
 }
 
 
 static Py_off_t _portable_ftell(FILE* fp)
 {
-	fpos_t pos;
-	if (fgetpos(fp, &pos) != 0)
-	{
-		return -1;
-	}
-	return pos;
+	return ftell(fp);
 }
 
 
@@ -277,8 +253,7 @@ static PyObject *file_seek(PyFileObject *f, PyObject *args)
 	{
 		return NULL;
 	}
-	offset = PyLong_Check(offobj) ?
-		PyLong_AsLongLong(offobj) : PyInt_AsLong(offobj);
+	offset = PyInt_AsLong(offobj);
 	if (PyErr_Occurred())
 	{
 		return NULL;
@@ -299,78 +274,6 @@ static PyObject *file_seek(PyFileObject *f, PyObject *args)
 	return Py_None;
 }
 
-
-static PyObject *file_truncate(PyFileObject *f, PyObject *args)
-{
-	int ret;
-	Py_off_t newsize;
-	PyObject *newsizeobj;
-
-	if (f->f_fp == NULL)
-	{
-		return err_closed();
-	}
-	newsizeobj = NULL;
-	if (!PyArg_ParseTuple(args, "|O:truncate", &newsizeobj))
-	{
-		return NULL;
-	}
-	if (newsizeobj != NULL) 
-	{
-		newsize = PyLong_Check(newsizeobj) ?
-				PyLong_AsLongLong(newsizeobj) :
-				PyInt_AsLong(newsizeobj);
-		if (PyErr_Occurred())
-		{
-			return NULL;
-		}
-	} 
-	else 
-	{
-		Py_BEGIN_ALLOW_THREADS
-		errno = 0;
-		newsize = _portable_ftell(f->f_fp);
-		Py_END_ALLOW_THREADS
-		if (newsize == -1) 
-		{
-		    PyErr_SetFromErrno(PyExc_IOError);
-			clearerr(f->f_fp);
-			return NULL;
-		}
-	}
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	ret = fflush(f->f_fp);
-	Py_END_ALLOW_THREADS
-	if (ret != 0) 
-	{
-		goto onioerror;
-	}
-
-	if (newsize > LONG_MAX) 
-	{
-		PyErr_SetString(PyExc_OverflowError,
-			"the new size is too long for _chsize (it is limited to 32-bit values)");
-		return NULL;
-	} 
-	else 
-	{
-		Py_BEGIN_ALLOW_THREADS
-		errno = 0;
-		ret = _chsize(fileno(f->f_fp), (long)newsize);
-		Py_END_ALLOW_THREADS
-		if (ret != 0) goto onioerror;
-	}
-
-	Py_INCREF(Py_None);
-	return Py_None;
-
-onioerror:
-	PyErr_SetFromErrno(PyExc_IOError);
-	clearerr(f->f_fp);
-	return NULL;
-}
-
 static PyObject *file_tell(PyFileObject *f)
 {
 	Py_off_t pos;
@@ -389,7 +292,7 @@ static PyObject *file_tell(PyFileObject *f)
 		clearerr(f->f_fp);
 		return NULL;
 	}
-	return PyLong_FromLongLong(pos);
+	return PyInt_FromLong(pos);
 }
 
 static PyObject *file_fileno(PyFileObject *f)
@@ -1327,7 +1230,6 @@ static PyMethodDef file_methods[] = {
 	{"write",	(PyCFunction)file_write,      METH_VARARGS, write_doc},
 	{"fileno",	(PyCFunction)file_fileno,     METH_NOARGS,  fileno_doc},
 	{"seek",	(PyCFunction)file_seek,       METH_VARARGS, seek_doc},
-	{"truncate",	(PyCFunction)file_truncate,   METH_VARARGS, truncate_doc},
 	{"tell",	(PyCFunction)file_tell,       METH_NOARGS,  tell_doc},
 	{"readinto",	(PyCFunction)file_readinto,   METH_OLDARGS, readinto_doc},
 	{"readlines",	(PyCFunction)file_readlines,  METH_VARARGS, readlines_doc},

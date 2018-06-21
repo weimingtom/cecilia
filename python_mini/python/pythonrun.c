@@ -1389,8 +1389,6 @@ int Py_FdIsInteractive(FILE *fp, char *filename)
 	       (strcmp(filename, "???") == 0);
 }
 
-#include <malloc.h>
-#include <excpt.h>
 
 int PyOS_CheckStack()
 {

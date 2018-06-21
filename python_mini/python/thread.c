@@ -106,25 +106,13 @@ static void do_PyThread_exit_thread(int no_cleanup)
 	dprintf(("%ld: PyThread_exit_thread called\n", PyThread_get_thread_ident()));
 	if (!initialized)
 	{
-		if (no_cleanup)
-		{
-			_exit(0);
-		}
-		else
-		{
-			exit(0);
-		}
+		exit(0);
 	}
 }
 
 void PyThread_exit_thread()
 {
 	do_PyThread_exit_thread(0);
-}
-
-void PyThread__exit_thread()
-{
-	do_PyThread_exit_thread(1);
 }
 
 PyThread_type_lock PyThread_allocate_lock()

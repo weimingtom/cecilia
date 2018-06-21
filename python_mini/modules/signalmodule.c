@@ -2,7 +2,9 @@
 #include "python.h"
 #include "intrcheck.h"
 
+#if defined(_MSC_VER)
 #include <process.h>
+#endif
 
 #include <signal.h>
 
@@ -228,9 +230,6 @@ void initsignal()
 
 	x = PyInt_FromLong(SIGINT);
 	PyDict_SetItemString(d, "SIGINT", x);
-    Py_XDECREF(x);
-	x = PyInt_FromLong(SIGBREAK);
-	PyDict_SetItemString(d, "SIGBREAK", x);
     Py_XDECREF(x);
 	x = PyInt_FromLong(SIGILL);
 	PyDict_SetItemString(d, "SIGILL", x);
