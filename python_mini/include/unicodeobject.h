@@ -354,20 +354,8 @@ extern PyObject * PyUnicode_TranslateCharmap(
     const char *errors	
     );
 
-extern PyObject* PyUnicode_DecodeMBCS(
-    const char *string,     
-    int length,           
-    const char *errors     
-    );
-
 extern PyObject* PyUnicode_AsMBCSString(
     PyObject *unicode     
-    );
-
-extern PyObject* PyUnicode_EncodeMBCS(
-    const Py_UNICODE *data,   
-    int length,               
-    const char *errors        
     );
 
 extern int PyUnicode_EncodeDecimal(

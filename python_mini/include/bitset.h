@@ -1,9 +1,7 @@
 //20180318
 #pragma once
 
-#define BYTE char
-
-typedef BYTE *bitset;
+typedef char *bitset;
 
 bitset newbitset(int nbits);
 void delbitset(bitset bs);
@@ -12,7 +10,7 @@ int addbit(bitset bs, int ibit);
 int samebitset(bitset bs1, bitset bs2, int nbits);
 void mergebitset(bitset bs1, bitset bs2, int nbits);
 
-#define BITSPERBYTE	(8*sizeof(BYTE))
+#define BITSPERBYTE	(8*sizeof(char))
 #define NBYTES(nbits)	(((nbits) + BITSPERBYTE - 1) / BITSPERBYTE)
 
 #define BIT2BYTE(ibit)	((ibit) / BITSPERBYTE)

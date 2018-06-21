@@ -350,7 +350,7 @@ extern PyObject _Py_NotImplementedStruct;
 #define Py_GT 4
 #define Py_GE 5
 
-#define staticforward extern
+#define staticforward static
 #define statichere static
 
 #define PyTrash_UNWIND_LEVEL 50

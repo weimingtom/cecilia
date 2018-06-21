@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{991C5691-EB98-4919-86CB-340FBD1B5F8F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>python222</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\abstract.h" />
+    <ClInclude Include="include\bitset.h" />
+    <ClInclude Include="include\bufferobject.h" />
+    <ClInclude Include="include\cellobject.h" />
+    <ClInclude Include="include\ceval.h" />
+    <ClInclude Include="include\classobject.h" />
+    <ClInclude Include="include\cobject.h" />
+    <ClInclude Include="include\codecs.h" />
+    <ClInclude Include="include\compile.h" />
+    <ClInclude Include="include\complexobject.h" />
+    <ClInclude Include="include\descrobject.h" />
+    <ClInclude Include="include\dictobject.h" />
+    <ClInclude Include="include\errcode.h" />
+    <ClInclude Include="include\eval.h" />
+    <ClInclude Include="include\fileobject.h" />
+    <ClInclude Include="include\floatobject.h" />
+    <ClInclude Include="include\frameobject.h" />
+    <ClInclude Include="include\funcobject.h" />
+    <ClInclude Include="include\graminit.h" />
+    <ClInclude Include="include\grammar.h" />
+    <ClInclude Include="include\import.h" />
+    <ClInclude Include="include\intobject.h" />
+    <ClInclude Include="include\intrcheck.h" />
+    <ClInclude Include="include\iterobject.h" />
+    <ClInclude Include="include\listobject.h" />
+    <ClInclude Include="include\longintrepr.h" />
+    <ClInclude Include="include\longobject.h" />
+    <ClInclude Include="include\marshal.h" />
+    <ClInclude Include="include\metagrammar.h" />
+    <ClInclude Include="include\methodobject.h" />
+    <ClInclude Include="include\modsupport.h" />
+    <ClInclude Include="include\moduleobject.h" />
+    <ClInclude Include="include\node.h" />
+    <ClInclude Include="include\object.h" />
+    <ClInclude Include="include\objimpl.h" />
+    <ClInclude Include="include\opcode.h" />
+    <ClInclude Include="include\osdefs.h" />
+    <ClInclude Include="include\parsetok.h" />
+    <ClInclude Include="include\patchlevel.h" />
+    <ClInclude Include="include\pgenheaders.h" />
+    <ClInclude Include="include\pydebug.h" />
+    <ClInclude Include="include\pyerrors.h" />
+    <ClInclude Include="include\pyfpe.h" />
+    <ClInclude Include="include\pygetopt.h" />
+    <ClInclude Include="include\pymem.h" />
+    <ClInclude Include="include\pyport.h" />
+    <ClInclude Include="include\pystate.h" />
+    <ClInclude Include="include\python.h" />
+    <ClInclude Include="include\pythonrun.h" />
+    <ClInclude Include="include\pythread.h" />
+    <ClInclude Include="include\rangeobject.h" />
+    <ClInclude Include="include\sliceobject.h" />
+    <ClInclude Include="include\stringobject.h" />
+    <ClInclude Include="include\structmember.h" />
+    <ClInclude Include="include\structseq.h" />
+    <ClInclude Include="include\symtable.h" />
+    <ClInclude Include="include\sysmodule.h" />
+    <ClInclude Include="include\token.h" />
+    <ClInclude Include="include\traceback.h" />
+    <ClInclude Include="include\tupleobject.h" />
+    <ClInclude Include="include\ucnhash.h" />
+    <ClInclude Include="include\unicodeobject.h" />
+    <ClInclude Include="include\weakrefobject.h" />
+    <ClInclude Include="modules\sre.h" />
+    <ClInclude Include="modules\sre_constants.h" />
+    <ClInclude Include="objects\unicodetype_db.h" />
+    <ClInclude Include="parser\parser.h" />
+    <ClInclude Include="parser\pgen.h" />
+    <ClInclude Include="parser\tokenizer.h" />
+    <ClInclude Include="pyconfig.h" />
+    <ClInclude Include="python\importdl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="modules\config.c" />
+    <ClCompile Include="modules\errnomodule.c" />
+    <ClCompile Include="modules\gcmodule.c" />
+    <ClCompile Include="modules\getbuildinfo.c" />
+    <ClCompile Include="modules\getpath.c" />
+    <ClCompile Include="modules\main.c" />
+    <ClCompile Include="modules\newmodule.c" />
+    <ClCompile Include="modules\python.c" />
+    <ClCompile Include="modules\signalmodule.c" />
+    <ClCompile Include="modules\symtablemodule.c" />
+    <ClCompile Include="modules\threadmodule.c" />
+    <ClCompile Include="modules\xxsubtype.c" />
+    <ClCompile Include="modules\_sre.c" />
+    <ClCompile Include="objects\abstract.c" />
+    <ClCompile Include="objects\bufferobject.c" />
+    <ClCompile Include="objects\cellobject.c" />
+    <ClCompile Include="objects\classobject.c" />
+    <ClCompile Include="objects\cobject.c" />
+    <ClCompile Include="objects\complexobject.c" />
+    <ClCompile Include="objects\descrobject.c" />
+    <ClCompile Include="objects\dictobject.c" />
+    <ClCompile Include="objects\fileobject.c" />
+    <ClCompile Include="objects\floatobject.c" />
+    <ClCompile Include="objects\frameobject.c" />
+    <ClCompile Include="objects\funcobject.c" />
+    <ClCompile Include="objects\intobject.c" />
+    <ClCompile Include="objects\iterobject.c" />
+    <ClCompile Include="objects\listobject.c" />
+    <ClCompile Include="objects\longobject.c" />
+    <ClCompile Include="objects\methodobject.c" />
+    <ClCompile Include="objects\moduleobject.c" />
+    <ClCompile Include="objects\object.c" />
+    <ClCompile Include="objects\rangeobject.c" />
+    <ClCompile Include="objects\sliceobject.c" />
+    <ClCompile Include="objects\stringobject.c" />
+    <ClCompile Include="objects\structseq.c" />
+    <ClCompile Include="objects\tupleobject.c" />
+    <ClCompile Include="objects\typeobject.c" />
+    <ClCompile Include="objects\unicodectype.c" />
+    <ClCompile Include="objects\unicodeobject.c" />
+    <ClCompile Include="objects\weakrefobject.c" />
+    <ClCompile Include="parser\acceler.c" />
+    <ClCompile Include="parser\bitset.c" />
+    <ClCompile Include="parser\grammar1.c" />
+    <ClCompile Include="parser\listnode.c" />
+    <ClCompile Include="parser\metagrammar.c" />
+    <ClCompile Include="parser\myreadline.c" />
+    <ClCompile Include="parser\node.c" />
+    <ClCompile Include="parser\parser.c" />
+    <ClCompile Include="parser\parsetok.c" />
+    <ClCompile Include="parser\tokenizer.c" />
+    <ClCompile Include="python\bltinmodule.c" />
+    <ClCompile Include="python\ceval.c" />
+    <ClCompile Include="python\codecs.c" />
+    <ClCompile Include="python\compile.c" />
+    <ClCompile Include="python\dynload_win.c" />
+    <ClCompile Include="python\errors.c" />
+    <ClCompile Include="python\exceptions.c" />
+    <ClCompile Include="python\frozen.c" />
+    <ClCompile Include="python\future.c" />
+    <ClCompile Include="python\getargs.c" />
+    <ClCompile Include="python\getcompiler.c" />
+    <ClCompile Include="python\getcopyright.c" />
+    <ClCompile Include="python\getmtime.c" />
+    <ClCompile Include="python\getopt.c" />
+    <ClCompile Include="python\getplatform.c" />
+    <ClCompile Include="python\getversion.c" />
+    <ClCompile Include="python\graminit.c" />
+    <ClCompile Include="python\import.c" />
+    <ClCompile Include="python\importdl.c" />
+    <ClCompile Include="python\marshal.c" />
+    <ClCompile Include="python\modsupport.c" />
+    <ClCompile Include="python\mysnprintf.c" />
+    <ClCompile Include="python\mystrtoul.c" />
+    <ClCompile Include="python\pyfpe.c" />
+    <ClCompile Include="python\pystate.c" />
+    <ClCompile Include="python\pythonrun.c" />
+    <ClCompile Include="python\structmember.c" />
+    <ClCompile Include="python\symtable.c" />
+    <ClCompile Include="python\sysmodule.c" />
+    <ClCompile Include="python\thread.c" />
+    <ClCompile Include="python\traceback.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

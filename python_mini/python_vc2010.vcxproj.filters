@@ -1,0 +1,481 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="python">
+      <UniqueIdentifier>{79d780ed-0e9f-4487-b2b8-ded8978c6800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{09a1a973-c8ae-4be2-8a25-1c513d75f5c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{e70da37c-584e-4aa6-abe7-e05510eea0ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="parser">
+      <UniqueIdentifier>{209740d4-f100-433c-a5fa-f7cc58cdf800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules">
+      <UniqueIdentifier>{0cd060e3-2fdf-455f-a269-7ae740bb720d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\abstract.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\weakrefobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\unicodeobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ucnhash.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tupleobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\traceback.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\token.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sysmodule.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\symtable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structseq.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structmember.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stringobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sliceobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rangeobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pythread.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pythonrun.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\python.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pystate.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pyport.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pymem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pygetopt.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pyfpe.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pyerrors.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pydebug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pgenheaders.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\patchlevel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\parsetok.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\osdefs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\opcode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\objimpl.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\object.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\node.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\moduleobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\modsupport.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\methodobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\metagrammar.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\marshal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\longobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\longintrepr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\listobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iterobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\intrcheck.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\intobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\import.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\grammar.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graminit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\funcobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\frameobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\floatobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fileobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\eval.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\errcode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dictobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\descrobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\complexobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\compile.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\codecs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\classobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ceval.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cellobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bufferobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitset.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\sre_constants.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="modules\sre.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\tokenizer.h">
+      <Filter>parser</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\pgen.h">
+      <Filter>parser</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\parser.h">
+      <Filter>parser</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\unicodetype_db.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="python\importdl.h">
+      <Filter>python</Filter>
+    </ClInclude>
+    <ClInclude Include="pyconfig.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="modules\xxsubtype.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\threadmodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\symtablemodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\signalmodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\python.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\newmodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\main.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\getpath.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\getbuildinfo.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\gcmodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\errnomodule.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\config.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="modules\_sre.c">
+      <Filter>modules</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\tokenizer.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\parsetok.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\parser.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\node.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\myreadline.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\metagrammar.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\listnode.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\grammar1.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\bitset.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\acceler.c">
+      <Filter>parser</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\weakrefobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\unicodeobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\unicodectype.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\typeobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\tupleobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\structseq.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\stringobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\sliceobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\rangeobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\object.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\moduleobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\methodobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\longobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\listobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\iterobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\intobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\funcobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\frameobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\floatobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\fileobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\dictobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\descrobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\complexobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\cobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\classobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\cellobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\bufferobject.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\abstract.c">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="python\traceback.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\thread.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\sysmodule.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\symtable.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\structmember.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\pythonrun.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\pystate.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\pyfpe.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\mystrtoul.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\mysnprintf.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\modsupport.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\marshal.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\importdl.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\import.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\graminit.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getversion.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getplatform.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getopt.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getmtime.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getcopyright.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getcompiler.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\getargs.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\future.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\frozen.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\exceptions.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\errors.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\dynload_win.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\compile.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\codecs.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\ceval.c">
+      <Filter>python</Filter>
+    </ClCompile>
+    <ClCompile Include="python\bltinmodule.c">
+      <Filter>python</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

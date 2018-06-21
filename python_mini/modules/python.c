@@ -2,9 +2,6 @@
 #include "python.h"
 #include <stdio.h>
 
-#include <windows.h>
-#include <crtdbg.h>
-
 extern int Py_Main(int, char **);
 
 int main(int argc, char **argv)

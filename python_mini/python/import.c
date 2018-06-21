@@ -666,7 +666,7 @@ static PyObject *load_source_module(char *name, char *pathname, FILE *fp)
 	}
 	cpathname = make_compiled_pathname(pathname, buf, (size_t)MAXPATHLEN + 1);
 	if (cpathname != NULL &&
-	    (fpc = check_compiled_module(pathname, mtime, cpathname))) 
+	    (fpc = check_compiled_module(pathname, (long)mtime, cpathname))) 
 	{
 		co = read_compiled_module(cpathname, fpc);
 		fclose(fpc);
@@ -691,7 +691,7 @@ static PyObject *load_source_module(char *name, char *pathname, FILE *fp)
 		{
 			PySys_WriteStderr("import %s # from %s\n", name, pathname);
 		}
-		write_compiled_module(co, cpathname, mtime);
+		write_compiled_module(co, cpathname, (long)mtime);
 	}
 	m = PyImport_ExecCodeModuleEx(name, (PyObject *)co, pathname);
 	Py_DECREF(co);
@@ -882,7 +882,7 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 		len += namelen;
 
 		if (stat(buf, &statbuf) == 0 &&
-		    S_ISDIR(statbuf.st_mode) &&
+		    S_ISDIR_(statbuf.st_mode) &&
 		    find_init_module(buf) && 
 		    case_ok(buf, len, namelen, name))
 		{
@@ -923,31 +923,15 @@ static struct filedescr *find_module(char *realname, PyObject *path, char *buf, 
 	return fdp;
 }
 
-
-#include <windows.h>
-
 static int case_ok(char *buf, int len, int namelen, char *name)
 {
-	WIN32_FIND_DATA data;
-	HANDLE h;
-
 	if (Py_GETENV("PYTHONCASEOK") != NULL)
 	{
 		return 1;
 	}
 
-	h = FindFirstFile(buf, &data);
-	if (h == INVALID_HANDLE_VALUE) 
-	{
-		PyErr_Format(PyExc_NameError,
-		  "Can't find file for module %.100s\n(filename %.300s)",
-		  name, buf);
-		return 0;
-	}
-	FindClose(h);
-	return strncmp(data.cFileName, name, namelen) == 0;
+	return 1;
 }
-
 
 static int find_init_module(char *buf)
 {

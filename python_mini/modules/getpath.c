@@ -37,7 +37,7 @@ static int isfile(char *filename)
 	{
         return 0;
     }
-	if (!S_ISREG(buf.st_mode))
+	if (!S_ISREG_(buf.st_mode))
     {
 		return 0;
     }
@@ -71,7 +71,7 @@ static int isxfile(char *filename)
 	{
         return 0;
     }
-	if (!S_ISREG(buf.st_mode))
+	if (!S_ISREG_(buf.st_mode))
     {
 		return 0;
     }
@@ -89,7 +89,7 @@ static int isdir(char *filename)
 	{
         return 0;
     }
-	if (!S_ISDIR(buf.st_mode))
+	if (!S_ISDIR_(buf.st_mode))
     {
 		return 0;
     }

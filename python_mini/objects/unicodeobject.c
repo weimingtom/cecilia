@@ -4,8 +4,6 @@
 #include "unicodeobject.h"
 #include "ucnhash.h"
 
-#include <windows.h>
-
 #define MAX_UNICODE_FREELIST_SIZE       1024
 #define KEEPALIVE_SIZE_LIMIT       9
 
@@ -2293,76 +2291,6 @@ PyObject *PyUnicode_AsASCIIString(PyObject *unicode)
     return PyUnicode_EncodeASCII(PyUnicode_AS_UNICODE(unicode),
 				 PyUnicode_GET_SIZE(unicode),
 				 NULL);
-}
-
-PyObject *PyUnicode_DecodeMBCS(const char *s,
-				int size,
-				const char *errors)
-{
-    PyUnicodeObject *v;
-    Py_UNICODE *p;
-
-    DWORD usize = MultiByteToWideChar(CP_ACP, 0, s, size, NULL, 0);
-    if (size > 0 && usize==0)
-    {
-		return PyErr_SetFromWindowsErrWithFilename(0, NULL);
-	}
-
-    v = _PyUnicode_New(usize);
-    if (v == NULL)
-    {
-		return NULL;
-    }
-	if (usize == 0)
-	{
-		return (PyObject *)v;
-    }
-	p = PyUnicode_AS_UNICODE(v);
-    if (0 == MultiByteToWideChar(CP_ACP, 0, s, size, p, usize)) 
-	{
-        Py_DECREF(v);
-        return PyErr_SetFromWindowsErrWithFilename(0, NULL);
-    }
-
-    return (PyObject *)v;
-}
-
-PyObject *PyUnicode_EncodeMBCS(const Py_UNICODE *p,
-				int size,
-				const char *errors)
-{
-    PyObject *repr;
-    char *s;
-    DWORD mbcssize;
-
-    if (size==0)
-	{
-		return PyString_FromString("");
-	}
-
-    mbcssize = WideCharToMultiByte(CP_ACP, 0, p, size, NULL, 0, NULL, NULL);
-    if (mbcssize==0)
-    {
-		return PyErr_SetFromWindowsErrWithFilename(0, NULL);
-	}
-
-    repr = PyString_FromStringAndSize(NULL, mbcssize);
-    if (repr == NULL)
-    {
-		return NULL;
-    }
-	if (mbcssize == 0)
-    {
-		return repr;
-	}
-
-    s = PyString_AS_STRING(repr);
-    if (0 == WideCharToMultiByte(CP_ACP, 0, p, size, s, mbcssize, NULL, NULL)) 
-	{
-        Py_DECREF(repr);
-        return PyErr_SetFromWindowsErrWithFilename(0, NULL);
-    }
-    return repr;
 }
 
 static int charmap_decoding_error(const char **source,

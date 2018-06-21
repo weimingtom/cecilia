@@ -22,9 +22,8 @@ typedef int		Py_intptr_t;
 
 #include <sys/stat.h>
 
-#define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
-
-#define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
+#define S_ISREG_(x) (((x) & S_IFMT) == S_IFREG)
+#define S_ISDIR_(x) (((x) & S_IFMT) == S_IFDIR)
 
 #define Py_ARITHMETIC_RIGHT_SHIFT(TYPE, I, J) ((I) >> (J))
 

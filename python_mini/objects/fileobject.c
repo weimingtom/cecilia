@@ -4,7 +4,6 @@
 
 #include <sys/types.h>
 
-#define fileno _fileno
 #define HAVE_FTRUNCATE
 
 #define BUF(v) PyString_AS_STRING((PyStringObject *)v)

@@ -603,7 +603,7 @@ static PyObject *builtin_execfile(PyObject *self, PyObject *args)
 	exists = 0;
 	if (!stat(filename, &s)) 
 	{
-		if (S_ISDIR(s.st_mode))
+		if (S_ISDIR_(s.st_mode))
 		{
 			errno = EISDIR;
 		}

@@ -1,9 +1,6 @@
 //20180109
 #include "python.h"
 
-#include "windows.h"
-#include "winbase.h"
-
 #include <ctype.h>
 
 void PyErr_Restore(PyObject *type, PyObject *value, PyObject *traceback)
@@ -245,16 +242,9 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 		}
 		else 
 		{
-			int len = FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM |
-				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
-				i,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPTSTR) &s_buf,
-				0,
-				NULL);
+			int len;
+			s_buf = (char *)malloc(100);
+			len = sprintf(s_buf, "FormatMessage #%d", i);
 			s = s_buf;
 			while (len > 0 && (s[len-1] <= ' ' || s[len-1] == '.'))
 			{
@@ -275,7 +265,7 @@ PyObject *PyErr_SetFromErrnoWithFilename(PyObject *exc, char *filename)
 		PyErr_SetObject(exc, v);
 		Py_DECREF(v);
 	}
-	LocalFree(s_buf);
+	free(s_buf);
 	return NULL;
 }
 
@@ -291,21 +281,9 @@ PyObject *PyErr_SetFromWindowsErrWithFilename(
 	int len;
 	char *s;
 	PyObject *v;
-	DWORD err = (DWORD)ierr;
-	if (err == 0) 
-	{
-		err = GetLastError();
-	}
-	len = FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		err,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR) &s,
-		0,
-		NULL);
+	int err = ierr;
+	s = (char *)malloc(100);
+	len = sprintf(s, "FormatMessage #%d", err);
 	while (len > 0 && (s[len-1] <= ' ' || s[len-1] == '.'))
 	{
 		s[--len] = '\0';
@@ -323,7 +301,7 @@ PyObject *PyErr_SetFromWindowsErrWithFilename(
 		PyErr_SetObject(PyExc_WindowsError, v);
 		Py_DECREF(v);
 	}
-	LocalFree(s);
+	free(s);
 	return NULL;
 }
 

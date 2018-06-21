@@ -13,9 +13,6 @@
 
 #include <signal.h>
 
-#undef BYTE
-#include "windows.h"
-
 extern char *Py_GetPath();
 
 extern grammar _PyParser_Grammar;
@@ -1292,12 +1289,6 @@ static void err_input(perrdetail *err)
 void Py_FatalError(char *msg)
 {
 	fprintf(stderr, "Fatal Python error: %s\n", msg);
-	OutputDebugString("Fatal Python error: ");
-	OutputDebugString(msg);
-	OutputDebugString("\n");
-#ifdef _DEBUG
-	DebugBreak();
-#endif
 	abort();
 }
 
@@ -1403,13 +1394,7 @@ int Py_FdIsInteractive(FILE *fp, char *filename)
 
 int PyOS_CheckStack()
 {
-	__try {
-		_alloca(PYOS_STACK_MARGIN * sizeof(void*));
-		return 0;
-	} __except (EXCEPTION_EXECUTE_HANDLER) {
-
-	}
-	return 1;
+	return 0;
 }
 
 PyOS_sighandler_t PyOS_getsig(int sig)

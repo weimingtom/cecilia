@@ -24,6 +24,3 @@ extern const struct filedescr _PyImport_DynLoadFiletab[];
 extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname, FILE *);
 
 #define MAXSUFFIXSIZE 12
-
-#include <windows.h>
-typedef FARPROC dl_funcptr;

@@ -183,8 +183,7 @@ static char module_doc[] =
 void initsignal()
 {
 	PyObject *m, *d, *x;
-	int i;
-
+	
 	main_thread = PyThread_get_thread_ident();
 	main_pid = getpid();
 
@@ -219,25 +218,6 @@ void initsignal()
 	Py_INCREF(IntHandler);
 
 	Handlers[0].tripped = 0;
-	for (i = 1; i < NSIG; i++) 
-	{
-		void (*t)(int);
-		t = PyOS_getsig(i);
-		Handlers[i].tripped = 0;
-		if (t == SIG_DFL)
-		{
-			Handlers[i].func = DefaultHandler;
-		}
-		else if (t == SIG_IGN)
-		{
-			Handlers[i].func = IgnoreHandler;
-		}
-		else
-		{
-			Handlers[i].func = Py_None;
-		}
-		Py_INCREF(Handlers[i].func);
-	}
 	if (Handlers[SIGINT].func == DefaultHandler) 
 	{
 		Py_INCREF(IntHandler);

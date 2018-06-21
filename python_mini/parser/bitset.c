@@ -5,7 +5,7 @@
 bitset newbitset(int nbits)
 {
 	int nbytes = NBYTES(nbits);
-	bitset ss = PyMem_NEW(BYTE, nbytes);
+	bitset ss = PyMem_NEW(char, nbytes);
 	
 	if (ss == NULL)
 	{
@@ -27,7 +27,7 @@ void delbitset(bitset ss)
 int addbit(bitset ss, int ibit)
 {
 	int ibyte = BIT2BYTE(ibit);
-	BYTE mask = BIT2MASK(ibit);
+	char mask = BIT2MASK(ibit);
 	
 	if (ss[ibyte] & mask)
 	{
