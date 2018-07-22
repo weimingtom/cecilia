@@ -3,7 +3,7 @@
 
 ## About  
 Python 2.2.2 CSharp/Java port.   
-Cecilia is the name of Cecilia Alcott (セシリア?オルコット) , a heroine in Infinite Stratos.  
+Cecilia is the name of Cecilia Alcott (セシリア=オルコット) , a heroine in Infinite Stratos.  
 
 ## Ref  
 * Python 2.2.2  
