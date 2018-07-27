@@ -79,3 +79,6 @@ https://github.com/micropython/micropython/tree/master/ports/windows
 
 * unity-python  
 https://github.com/exodrifter/unity-python  
+
+* linuxmooc/pylite  
+https://github.com/linuxmooc/pylite  
