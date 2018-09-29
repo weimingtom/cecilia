@@ -83,3 +83,6 @@ https://github.com/exodrifter/unity-python
 * linuxmooc/pylite  
 https://github.com/linuxmooc/pylite  
 https://github.com/weimingtom/pylite/tree/master/win32_prj  
+
+* python-on-a-chip  
+https://github.com/jsnyder/python-on-a-chip  
