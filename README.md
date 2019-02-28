@@ -89,3 +89,10 @@ https://github.com/jsnyder/python-on-a-chip
 
 * RustPython  
 https://github.com/RustPython/RustPython  
+
+* circuitpython  
+https://github.com/adafruit/circuitpython  
+
+* PyGame Zero   
+https://github.com/lordmauve/pgzero  
+
