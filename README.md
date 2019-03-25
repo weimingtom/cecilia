@@ -96,3 +96,6 @@ https://github.com/adafruit/circuitpython
 * PyGame Zero   
 https://github.com/lordmauve/pgzero  
 
+* Microsoft/pyright  
+https://github.com/Microsoft/pyright  
+
