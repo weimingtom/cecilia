@@ -5,6 +5,9 @@
 Python 2.2.2 CSharp/Java port.   
 Cecilia is the name of Cecilia Alcott (セシリア=オルコット) , a heroine in Infinite Stratos.  
 
+## Related projects  
+* https://github.com/weimingtom/python222mod  
+
 ## Ref  
 * Python 2.2.2  
 https://www.python.org/downloads/source/  
