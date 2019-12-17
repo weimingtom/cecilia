@@ -1,18 +1,18 @@
 #define _DEBUG
 
-//20170403
-//#include "pgenheaders.h"
-//#include "grammar.h"
-//#include "node.h"
-//#include "token.h"
-//#include "parser.h"
-
 using System;
 
 namespace Cecilia
 {
 	public partial class Python
 	{
+		//20170403
+		//#include "pgenheaders.h"
+		//#include "grammar.h"
+		//#include "node.h"
+		//#include "token.h"
+		//#include "parser.h"
+
 //		static void fixdfa(grammar *, dfa *);
 //		static void fixstate(grammar *, state *);
 		

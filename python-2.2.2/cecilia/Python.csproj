@@ -48,6 +48,10 @@
     <Compile Include="Class1.cs" />
     <Compile Include="clib.cs" />
     <Compile Include="parser\acceler.c.cs" />
+    <Compile Include="parser\bitset.c.cs" />
+    <Compile Include="parser\grammar1.c.cs" />
+    <Compile Include="parser\listnode.c.cs" />
+    <Compile Include="parser\metagrammar.c.cs" />
     <Compile Include="printf\Tools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

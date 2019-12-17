@@ -1,79 +1,89 @@
-//20170403
-#include "pgenheaders.h"
-#include "token.h"
-#include "node.h"
+#define _DEBUG
 
-static void list1node(FILE *, node *);
-static void listnode(FILE *, node *);
+using System;
 
-void PyNode_ListTree(node *n)
+namespace Cecilia
 {
-	listnode(stdout, n);
-}
-
-static int level, atbol;
-
-static void listnode(FILE *fp, node *n)
-{
-	level = 0;
-	atbol = 1;
-	list1node(fp, n);
-}
-
-static void list1node(FILE *fp, node *n)
-{
-	if (n == 0)
+	public partial class Python
 	{
-		return;
-	}
-	if (ISNONTERMINAL(TYPE(n))) 
-	{
-		int i;
-		for (i = 0; i < NCH(n); i++)
+		//20170403
+		//#include "pgenheaders.h"
+		//#include "token.h"
+		//#include "node.h"
+		
+		//static void list1node(FILE *, node *);
+		//static void listnode(FILE *, node *);
+		
+		public static void PyNode_ListTree(node n)
 		{
-			list1node(fp, CHILD(n, i));
+			listnode(stdout, n);
 		}
-	}
-	else if (ISTERMINAL(TYPE(n))) 
-	{
-		switch (TYPE(n)) 
+		
+		private static int level, atbol;
+		
+		private static void listnode(FILEPtr fp, node n)
 		{
-		case INDENT:
-			++level;
-			break;
-
-		case DEDENT:
-			--level;
-			break;
-
-		default:
-			if (atbol) 
+			level = 0;
+			atbol = 1;
+			list1node(fp, n);
+		}
+		
+		private static void list1node(FILEPtr fp, node n)
+		{
+			if (n == null)
+			{
+				return;
+			}
+			if (ISNONTERMINAL(TYPE(n))) 
 			{
 				int i;
-				for (i = 0; i < level; ++i)
+				for (i = 0; i < NCH(n); i++)
 				{
-					fprintf(fp, "\t");
+					list1node(fp, CHILD(n, i));
 				}
-				atbol = 0;
 			}
-			if (TYPE(n) == NEWLINE) 
+			else if (ISTERMINAL(TYPE(n))) 
 			{
-				if (STR(n) != NULL)
+				switch (TYPE(n)) 
 				{
-					fprintf(fp, "%s", STR(n));
+				case INDENT:
+					++level;
+					break;
+		
+				case DEDENT:
+					--level;
+					break;
+		
+				default:
+					if (atbol != 0) 
+					{
+						int i;
+						for (i = 0; i < level; ++i)
+						{
+							fprintf(fp, "\t");
+						}
+						atbol = 0;
+					}
+					if (TYPE(n) == NEWLINE) 
+					{
+						if (STR(n) != null)
+						{
+							fprintf(fp, "%s", STR(n));
+						}
+						fprintf(fp, "\n");
+						atbol = 1;
+					}
+					else
+					{
+						fprintf(fp, "%s ", STR(n));
+					}
+					break;
 				}
-				fprintf(fp, "\n");
-				atbol = 1;
 			}
 			else
 			{
-				fprintf(fp, "%s ", STR(n));
+				fprintf(fp, "? ");
 			}
-			break;
 		}
-	}
-	else
-	{
-		fprintf(fp, "? ");
 	}
 }

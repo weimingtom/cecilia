@@ -13,17 +13,17 @@ namespace Cecilia
 		public const int TYPE_STDOUT = 1;
 		public const int TYPE_STDERR = 2;
 		
-		public class StreamProxy 
+		public class FILEPtr 
 		{	
 			private Stream stream;
 			private int type = -1;
 			
-			public StreamProxy(int type)
+			public FILEPtr(int type)
 			{
 				this.type = type;
 			}
 			
-			public StreamProxy(Stream stream)
+			public FILEPtr(Stream stream)
 			{
 				this.stream = stream;
 			}
@@ -397,9 +397,9 @@ namespace Cecilia
 				return null;
 			}
 		}
-		public static StreamProxy stdout = new StreamProxy(TYPE_STDOUT);
-		public static StreamProxy stdin = new StreamProxy(TYPE_STDIN);
-		public static StreamProxy stderr = new StreamProxy(TYPE_STDERR);
+		public static FILEPtr stdout = new FILEPtr(TYPE_STDOUT);
+		public static FILEPtr stdin = new FILEPtr(TYPE_STDIN);
+		public static FILEPtr stderr = new FILEPtr(TYPE_STDERR);
 		
 		// misc stuff needed for the compile
 
@@ -596,7 +596,7 @@ namespace Cecilia
 			return strlen(buffer); //FIXME:added
 		}
 
-		public static int fprintf(StreamProxy stream, CharPtr str, params object[] argv)
+		public static int fprintf(FILEPtr stream, CharPtr str, params object[] argv)
 		{
 			string result = Tools.sprintf(str.ToString(), argv);
 			char[] chars = result.ToCharArray();
@@ -885,29 +885,29 @@ namespace Cecilia
 			return (long)a % (long)b;
 		}
 
-		public static int getc(StreamProxy f)
+		public static int getc(FILEPtr f)
 		{
 			return f.ReadByte();
 		}
 
-		public static void ungetc(int c, StreamProxy f)
+		public static void ungetc(int c, FILEPtr f)
 		{
 			f.ungetc();
 		}
 
 		public static int EOF = 0xffff; //-1; //FIXME:changed 
 
-		public static void fputs(CharPtr str, StreamProxy stream)
+		public static void fputs(CharPtr str, FILEPtr stream)
 		{
 			stream.puts(str.ToString());
 		}
 
-		public static int feof(StreamProxy s)
+		public static int feof(FILEPtr s)
 		{
 			return (s.isEof()? 1 : 0);
 		}
 
-		public static int fread(CharPtr ptr, int size, int num, StreamProxy stream)
+		public static int fread(CharPtr ptr, int size, int num, FILEPtr stream)
 		{
 			int num_bytes = num * size;
 			byte[] bytes = new byte[num_bytes];
@@ -924,7 +924,7 @@ namespace Cecilia
 			}
 		}
 
-		public static int fwrite(CharPtr ptr, int size, int num, StreamProxy stream)
+		public static int fwrite(CharPtr ptr, int size, int num, FILEPtr stream)
 		{
 			int num_bytes = num * size;
 			byte[] bytes = new byte[num_bytes];
@@ -987,7 +987,7 @@ namespace Cecilia
             }
         }
 		
-		public static CharPtr fgets(CharPtr str, StreamProxy stream)
+		public static CharPtr fgets(CharPtr str, FILEPtr stream)
 		{
 			int index = 0;
 			try
@@ -1089,7 +1089,7 @@ namespace Cecilia
 			return str + index;
 		}
 
-		public static StreamProxy fopen(CharPtr filename, CharPtr mode)
+		public static FILEPtr fopen(CharPtr filename, CharPtr mode)
 		{
 			string str = filename.ToString();			
 			FileMode filemode = FileMode.Open;
@@ -1110,7 +1110,7 @@ namespace Cecilia
 				}
 			try
 			{
-				return new StreamProxy(new FileStream(str, filemode, fileaccess));
+				return new FILEPtr(new FileStream(str, filemode, fileaccess));
 			}
 			catch
 			{
@@ -1118,7 +1118,7 @@ namespace Cecilia
 			}
 		}
 
-		public static StreamProxy freopen(CharPtr filename, CharPtr mode, StreamProxy stream)
+		public static FILEPtr freopen(CharPtr filename, CharPtr mode, FILEPtr stream)
 		{
 			stream.close();
 			return fopen(filename, mode);
@@ -1130,46 +1130,46 @@ namespace Cecilia
 //			stream.Flush();
 //		}
 
-		public static int ferror(StreamProxy stream)
+		public static int ferror(FILEPtr stream)
 		{
 			return 0;	// todo: fix this - mjf
 		}
 
-		public static int fclose(StreamProxy stream)
+		public static int fclose(FILEPtr stream)
 		{
 			stream.close();
 			return 0;
 		}
 
-		public static StreamProxy tmpfile()
+		public static FILEPtr tmpfile()
 		{
-			return new StreamProxy(new FileStream(Path.GetTempFileName(), FileMode.Create, FileAccess.ReadWrite));
+			return new FILEPtr(new FileStream(Path.GetTempFileName(), FileMode.Create, FileAccess.ReadWrite));
 		}
 
-		public static int fscanf(StreamProxy f, CharPtr format, params object[] argp)
+		public static int fscanf(FILEPtr f, CharPtr format, params object[] argp)
 		{
 			string str = f.readline();
 			return parse_scanf(str, format, argp);
 		}
 		
-		public static int fseek(StreamProxy f, long offset, int origin)
+		public static int fseek(FILEPtr f, long offset, int origin)
 		{
 			return f.seek(offset, origin);
 		}
 
 
-		public static int ftell(StreamProxy f)
+		public static int ftell(FILEPtr f)
 		{
 			return (int)f.getPosition();
 		}
 
-		public static int clearerr(StreamProxy f)
+		public static int clearerr(FILEPtr f)
 		{
 			//Debug.Assert(false, "clearerr not implemented yet - mjf");
 			return 0;
 		}
 
-		public static int setvbuf(StreamProxy stream, CharPtr buffer, int mode, uint size)
+		public static int setvbuf(FILEPtr stream, CharPtr buffer, int mode, uint size)
 		{
 			Debug.Assert(false, "setvbuf not implemented yet - mjf");
 			return 0;
@@ -1260,13 +1260,13 @@ namespace Cecilia
 			return Math.Log10(d);
 		}	
 		
-		public static StreamProxy _popen(CharPtr command, CharPtr type)
+		public static FILEPtr _popen(CharPtr command, CharPtr type)
 		{
 			//FIXME:not implemented
 			return null;
 		}
 		
-		public static int _pclose(StreamProxy stream)
+		public static int _pclose(FILEPtr stream)
 		{
 			//FIXME:not implemented
 			return 0;
@@ -1387,7 +1387,7 @@ namespace Cecilia
 			return ticks;
 		}
 		
-		public static int fflush(StreamProxy stream)
+		public static int fflush(FILEPtr stream)
 		{
 			return stream.flush();
 		}
@@ -1504,5 +1504,12 @@ namespace Cecilia
 		
 		
 		public const int INT_MIN = -2147483648;
+		
+		
+		
+		//-----------------------------------------------------
+		//new 
+		
+		public static void assert(bool b) { Debug.Assert(b); }
 	}
 }
