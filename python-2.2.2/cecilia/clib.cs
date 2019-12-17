@@ -593,7 +593,7 @@ namespace Cecilia
 		{
 			string temp = Tools.sprintf(str.ToString(), argv);
 			strcpy(buffer, temp);
-			return strlen(buffer); //FIXME:added
+			return (int)strlen(buffer); //FIXME:added
 		}
 
 		public static int fprintf(FILEPtr stream, CharPtr str, params object[] argv)
@@ -860,9 +860,9 @@ namespace Cecilia
 			return dst;
 		}
 
-		public static int strlen(CharPtr str)
+		public static uint strlen(CharPtr str)
 		{
-			int index = 0;
+			uint index = 0;
 			while (str[index] != '\0')
 				index++;
 			return index;
@@ -987,7 +987,7 @@ namespace Cecilia
             }
         }
 		
-		public static CharPtr fgets(CharPtr str, FILEPtr stream)
+		public static CharPtr fgets(CharPtr str, int len, FILEPtr stream)
 		{
 			int index = 0;
 			try
@@ -1050,7 +1050,7 @@ namespace Cecilia
 					{
 						return null;
 					}
-					if (index >= str.chars.Length)
+					if (index >= str.chars.Length || index >= len)
 						break;
 					index++;
 				}
@@ -1511,5 +1511,6 @@ namespace Cecilia
 		//new 
 		
 		public static void assert(bool b) { Debug.Assert(b); }
+		public const int EINTR = 4;
 	}
 }

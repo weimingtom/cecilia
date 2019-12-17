@@ -34,9 +34,4 @@ extern void PyEval_AcquireThread(PyThreadState *tstate);
 extern void PyEval_ReleaseThread(PyThreadState *tstate);
 extern void PyEval_ReInitThreads();
 
-#define Py_BEGIN_ALLOW_THREADS { PyThreadState *_save; _save = PyEval_SaveThread();
-#define Py_BLOCK_THREADS PyEval_RestoreThread(_save);
-#define Py_UNBLOCK_THREADS _save = PyEval_SaveThread();
-#define Py_END_ALLOW_THREADS PyEval_RestoreThread(_save); }
-
 extern int _PyEval_SliceIndex(PyObject *, int *);

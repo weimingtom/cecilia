@@ -101,8 +101,15 @@ char *PyOS_Readline(char *prompt)
 	{
 		PyOS_ReadlineFunctionPointer = PyOS_StdioReadline;
 	}
-	Py_BEGIN_ALLOW_THREADS
-	rv = (*PyOS_ReadlineFunctionPointer)(prompt);
-	Py_END_ALLOW_THREADS
+
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+	
+		rv = (*PyOS_ReadlineFunctionPointer)(prompt);
+		
+		PyEval_RestoreThread(_save); 
+	}
+	
 	return rv;
 }

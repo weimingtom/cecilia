@@ -180,7 +180,10 @@ namespace Cecilia
 		public static void PyMem_DEL(ref intPtr x) {}
 		public static void PyMem_DEL(ref bitset x) {}
 		public static intPtr PyMem_NEW_int(int n) { return null; }		
-		public static bitset PyMem_NEW_char(int n) { return null; }		
+		public static bitset PyMem_NEW_char(int n) { return null; }	
+		public static void PyMem_FREE(ref CharPtr p) {}
+		public static CharPtr PyMem_REALLOC(CharPtr p, uint n) {return null;}
+		public static CharPtr PyMem_MALLOC(uint n) {return null;}
 		
 		public const int NT_OFFSET = 256;
 		
@@ -229,5 +232,20 @@ namespace Cecilia
 		public const int INDENT	= 5;
 		public const int DEDENT	= 6;
 		public const int NEWLINE = 4;
+		public static int PyOS_InterruptOccurred() { return 0; }
+		
+		public class PyThreadState
+		{
+			
+		}
+		public static PyThreadState PyEval_SaveThread() { return null; }
+		public static void PyEval_RestoreThread(PyThreadState save) {}
+		
+		public class PyObject
+		{
+			
+		}
+		public static PyObject PyExc_OverflowError;
+		public static void PyErr_SetString(PyObject o, CharPtr str) { }
 	}
 }

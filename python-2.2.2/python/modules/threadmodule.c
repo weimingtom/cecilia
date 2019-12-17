@@ -55,9 +55,14 @@ static PyObject *lock_PyThread_acquire_lock(lockobject *self, PyObject *args)
 		i = 1;
 	}
 
-	Py_BEGIN_ALLOW_THREADS
-	i = PyThread_acquire_lock(self->lock_lock, i);
-	Py_END_ALLOW_THREADS
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
+		i = PyThread_acquire_lock(self->lock_lock, i);
+		
+		PyEval_RestoreThread(_save); 
+	}
 
 	if (args == NULL) 
 	{

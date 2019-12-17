@@ -83,11 +83,17 @@ static PyObject *open_the_file(PyFileObject *f, char *name, char *mode)
 		return NULL;
 	}
 	errno = 0;
-	{
-		Py_BEGIN_ALLOW_THREADS
+	
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		f->f_fp = fopen(name, mode);
-		Py_END_ALLOW_THREADS
+		
+		PyEval_RestoreThread(_save); 
 	}
+
+
 	if (f->f_fp == NULL) 
 	{
 		if (errno == 0)	
@@ -178,9 +184,12 @@ static void file_dealloc(PyFileObject *f)
 {
 	if (f->f_fp != NULL && f->f_close != NULL) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		(*f->f_close)(f->f_fp);
-		Py_END_ALLOW_THREADS
+		
+		PyEval_RestoreThread(_save); 
 	}
 	Py_XDECREF(f->f_name);
 	Py_XDECREF(f->f_mode);
@@ -203,10 +212,13 @@ static PyObject *file_close(PyFileObject *f)
 	{
 		if (f->f_close != NULL) 
 		{
-			Py_BEGIN_ALLOW_THREADS
+			PyThreadState *_save; 
+			_save = PyEval_SaveThread();
+
 			errno = 0;
 			sts = (*f->f_close)(f->f_fp);
-			Py_END_ALLOW_THREADS
+
+			PyEval_RestoreThread(_save); 
 		}
 		f->f_fp = NULL;
 	}
@@ -259,10 +271,15 @@ static PyObject *file_seek(PyFileObject *f, PyObject *args)
 		return NULL;
 	}
 
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	ret = _portable_fseek(f->f_fp, offset, whence);
-	Py_END_ALLOW_THREADS
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+		
+		errno = 0;
+		ret = _portable_fseek(f->f_fp, offset, whence);
+	
+		PyEval_RestoreThread(_save); 
+	}
 
 	if (ret != 0) 
 	{
@@ -282,10 +299,17 @@ static PyObject *file_tell(PyFileObject *f)
 	{
 		return err_closed();
 	}
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	pos = _portable_ftell(f->f_fp);
-	Py_END_ALLOW_THREADS
+
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
+		errno = 0;
+		pos = _portable_ftell(f->f_fp);
+
+		PyEval_RestoreThread(_save); 
+	}
+	
 	if (pos == -1) 
 	{
 		PyErr_SetFromErrno(PyExc_IOError);
@@ -312,10 +336,17 @@ static PyObject *file_flush(PyFileObject *f)
 	{
 		return err_closed();
 	}
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	res = fflush(f->f_fp);
-	Py_END_ALLOW_THREADS
+
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+		
+		errno = 0;
+		res = fflush(f->f_fp);
+
+		PyEval_RestoreThread(_save); 
+	}
+	
 	if (res != 0) 
 	{
 		PyErr_SetFromErrno(PyExc_IOError);
@@ -333,9 +364,16 @@ static PyObject *file_isatty(PyFileObject *f)
 	{
 		return err_closed();
 	}
-	Py_BEGIN_ALLOW_THREADS
-	res = isatty((int)fileno(f->f_fp));
-	Py_END_ALLOW_THREADS
+
+	{ 
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+	
+		res = isatty((int)fileno(f->f_fp));
+
+		PyEval_RestoreThread(_save); 
+	}
+	
 	return PyInt_FromLong(res);
 }
 
@@ -415,11 +453,16 @@ static PyObject *file_read(PyFileObject *f, PyObject *args)
 	bytesread = 0;
 	for (;;) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		errno = 0;
 		chunksize = fread(BUF(v) + bytesread, 1,
 				  buffersize - bytesread, f->f_fp);
-		Py_END_ALLOW_THREADS
+		
+		PyEval_RestoreThread(_save); 
+		
+		
 		if (chunksize == 0) 
 		{
 			if (!ferror(f->f_fp))
@@ -469,10 +512,15 @@ static PyObject *file_readinto(PyFileObject *f, PyObject *args)
 	ndone = 0;
 	while (ntodo > 0) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		errno = 0;
 		nnow = fread(ptr+ndone, 1, ntodo, f->f_fp);
-		Py_END_ALLOW_THREADS
+		
+		PyEval_RestoreThread(_save); 
+		
+
 		if (nnow == 0) 
 		{
 			if (!ferror(f->f_fp))
@@ -509,12 +557,15 @@ static PyObject *getline_via_fgets(FILE *fp)
 	pvfree = buf;
 	for (;;) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		pvend = buf + total_v_size;
 		nfree = pvend - pvfree;
 		memset(pvfree, '\n', nfree);
 		p = fgets(pvfree, nfree, fp);
-		Py_END_ALLOW_THREADS
+
+		PyEval_RestoreThread(_save); 
 
 		if (p == NULL) 
 		{
@@ -564,12 +615,15 @@ static PyObject *getline_via_fgets(FILE *fp)
 
 	for (;;) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		pvend = BUF(v) + total_v_size;
 		nfree = pvend - pvfree;
 		memset(pvfree, '\n', nfree);
 		p = fgets(pvfree, nfree, fp);
-		Py_END_ALLOW_THREADS
+
+		PyEval_RestoreThread(_save); 
 
 		if (p == NULL) 
 		{
@@ -646,7 +700,9 @@ static PyObject *get_line(PyFileObject *f, int n)
 
 	for (;;) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
 		FLOCKFILE(fp);
 		while ((c = GETC(fp)) != EOF &&
 		       (*buf++ = c) != '\n' &&
@@ -655,7 +711,10 @@ static PyObject *get_line(PyFileObject *f, int n)
 			;
 		}
 		FUNLOCKFILE(fp);
-		Py_END_ALLOW_THREADS
+
+		PyEval_RestoreThread(_save); 
+		
+			
 		if (c == '\n')
 		{
 			break;
@@ -871,13 +930,18 @@ static PyObject *file_readlines(PyFileObject *f, PyObject *args)
 		}
 		else 
 		{
-			Py_BEGIN_ALLOW_THREADS
+			PyThreadState *_save; 
+			_save = PyEval_SaveThread();
+
 			errno = 0;
 			nread = fread(buffer+nfilled, 1,
 				      buffersize-nfilled, f->f_fp);
-			Py_END_ALLOW_THREADS
+
+			PyEval_RestoreThread(_save); 
+
 			shortread = (nread < buffersize-nfilled);
 		}
+
 		if (nread == 0) 
 		{
 			sizehint = 0;
@@ -998,10 +1062,17 @@ static PyObject *file_write(PyFileObject *f, PyObject *args)
 		return NULL;
 	}
 	f->f_softspace = 0;
-	Py_BEGIN_ALLOW_THREADS
-	errno = 0;
-	n2 = fwrite(s, 1, n, f->f_fp);
-	Py_END_ALLOW_THREADS
+
+	{
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+
+		errno = 0;
+		n2 = fwrite(s, 1, n, f->f_fp);
+		
+		PyEval_RestoreThread(_save);
+	}
+
 	if (n2 != n) 
 	{
 		PyErr_SetFromErrno(PyExc_IOError);
@@ -1112,24 +1183,30 @@ static PyObject *file_writelines(PyFileObject *f, PyObject *seq)
 			}
 		}
 
-		Py_BEGIN_ALLOW_THREADS
-		f->f_softspace = 0;
-		errno = 0;
-		for (i = 0; i < j; i++) 
-		{
-		    line = PyList_GET_ITEM(list, i);
-			len = PyString_GET_SIZE(line);
-			nwritten = fwrite(PyString_AS_STRING(line),
-					  1, len, f->f_fp);
-			if (nwritten != len) 
+		{ 
+			PyThreadState *_save; 
+			_save = PyEval_SaveThread();
+		
+			f->f_softspace = 0;
+			errno = 0;
+			for (i = 0; i < j; i++) 
 			{
-				Py_BLOCK_THREADS
-				PyErr_SetFromErrno(PyExc_IOError);
-				clearerr(f->f_fp);
-				goto error;
+				line = PyList_GET_ITEM(list, i);
+				len = PyString_GET_SIZE(line);
+				nwritten = fwrite(PyString_AS_STRING(line),
+						  1, len, f->f_fp);
+				if (nwritten != len) 
+				{
+					PyEval_RestoreThread(_save);
+
+					PyErr_SetFromErrno(PyExc_IOError);
+					clearerr(f->f_fp);
+					goto error;
+				}
 			}
+			
+			PyEval_RestoreThread(_save); 
 		}
-		Py_END_ALLOW_THREADS
 
 		if (j < CHUNKSIZE)
 		{

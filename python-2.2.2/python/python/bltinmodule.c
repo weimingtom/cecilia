@@ -615,9 +615,13 @@ static PyObject *builtin_execfile(PyObject *self, PyObject *args)
 	
 	if (exists) 
 	{
-		Py_BEGIN_ALLOW_THREADS
+		PyThreadState *_save; 
+		_save = PyEval_SaveThread();
+		
 		fp = fopen(filename, "r");
-		Py_END_ALLOW_THREADS
+		
+		PyEval_RestoreThread(_save);
+
 
 		if (fp == NULL) 
 		{
