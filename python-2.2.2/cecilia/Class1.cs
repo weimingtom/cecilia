@@ -22,6 +22,7 @@ namespace Cecilia
 		    	this.lb_type = lb_type;
 		    	this.lb_str = lb_str;
 		    }
+		    public label() {}
 		}
 		public class labelPtr
 		{
@@ -177,13 +178,24 @@ namespace Cecilia
 			public bitset(string str) { }			
 		}
 		
+		//FIXME: may be Ptr
 		public static void PyMem_DEL(ref intPtr x) {}
 		public static void PyMem_DEL(ref bitset x) {}
-		public static intPtr PyMem_NEW_int(int n) { return null; }		
+		public static void PyMem_DEL(ref node x) {}
+		public static void PyMem_DEL(ref nodePtr x) {}
+		public static void PyMem_DEL(CharPtr x) {}
+		public static void PyMem_DEL(ref parser_state x) {}
+		
+		public static intPtr PyMem_NEW_int(int n) { return null; }
 		public static bitset PyMem_NEW_char(int n) { return null; }	
+		public static node PyMem_NEW_node(int n) { return null; }
+		public static parser_state PyMem_NEW_parser_state(int n) {return null;}
+		public static CharPtr PyMem_NEW_char2(int n) { return null; }	
+		
 		public static void PyMem_FREE(ref CharPtr p) {}
 		public static CharPtr PyMem_REALLOC(CharPtr p, uint n) {return null;}
 		public static CharPtr PyMem_MALLOC(uint n) {return null;}
+		public static void PyMem_RESIZE_node(ref nodePtr x, int n) {}
 		
 		public const int NT_OFFSET = 256;
 		
@@ -223,6 +235,7 @@ namespace Cecilia
 			public void inc() { }
 			public void dec() { }
 			public nodePtr(nodePtr ptr) { }
+			public nodePtr(nodePtr ptr, int index) { }
 		}		
 		public static int NCH(node n) { return (n.n_nchildren); }
 		public static node CHILD(node n, int i)	{ return (n.n_child[i]); }
@@ -247,5 +260,64 @@ namespace Cecilia
 		}
 		public static PyObject PyExc_OverflowError;
 		public static void PyErr_SetString(PyObject o, CharPtr str) { }
+		
+		public const int E_OVERFLOW = 19;
+		public const int E_NOMEM = 15;
+		
+		public static int Py_DebugFlag = 0;
+		public const int NAME = 1;
+		
+		public const int EINTR = 4;
+		public const int NUMBER = 2;
+		public const int E_SYNTAX = 14;
+		public const int E_OK = 10;
+		public const int E_DONE = 16;
+		public const int E_EOF = 11;		
+
+		public class perrdetail {
+		    public int error;
+		    public CharPtr filename;
+		    public int lineno;
+		    public int offset;
+		    public CharPtr text;
+		    public int token;
+		    public int expected;
+		};
+		
+		public const int MAXINDENT = 100;
+		
+		public class tok_state {
+			public CharPtr buf;
+			public CharPtr cur;
+			public CharPtr inp;
+			public CharPtr end;
+			public CharPtr start;
+			public int done;
+			public FILEPtr fp;
+			public int tabsize;
+			public int indent;
+			public int[] indstack = new int[MAXINDENT];
+			public int atbol;
+			public int pendin;
+			public CharPtr prompt, nextprompt;
+			public int lineno;
+			public int level;
+			public CharPtr filename;
+			public int altwarning;
+			public int alterror;
+			public int alttabsize;
+			public int[] altindstack = new int[MAXINDENT];
+		};
+		
+		public static tok_state PyTokenizer_FromString(CharPtr str) { return null; }
+		public static int Py_VerboseFlag;
+		public static tok_state PyTokenizer_FromFile(FILEPtr fp, CharPtr ps1, CharPtr ps2) { return null; }
+		public static int PyTokenizer_Get(tok_state tok, ref CharPtr p_start, ref CharPtr p_end) { return 0; }
+		
+		public const int PyPARSE_YIELD_IS_KEYWORD = 0x0001;
+		public const int ERRORTOKEN = 51;
+		
+		public static void PySys_WriteStderr(CharPtr format, params object[] par) {}
+		public static void PyTokenizer_Free(tok_state x) {}
 	}
 }

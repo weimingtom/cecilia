@@ -53,6 +53,10 @@
     <Compile Include="parser\listnode.c.cs" />
     <Compile Include="parser\metagrammar.c.cs" />
     <Compile Include="parser\myreadline.c.cs" />
+    <Compile Include="parser\node.c.cs" />
+    <Compile Include="parser\parser.c.cs" />
+    <Compile Include="parser\parser.h.cs" />
+    <Compile Include="parser\parsetok.c.cs" />
     <Compile Include="printf\Tools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

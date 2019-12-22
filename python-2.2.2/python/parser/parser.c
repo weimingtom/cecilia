@@ -232,10 +232,14 @@ int PyParser_AddToken(parser_state *ps, int type, char *str,
 					return err;
 				}
 				D(printf(" Shift.\n"));
-				while (s = &d->d_state
-						[ps->p_stack.s_top->s_state],
-					s->s_accept && s->s_narcs == 1) 
+				while (1) 
 				{
+					s = &d->d_state[ps->p_stack.s_top->s_state];
+					if (!(s->s_accept && s->s_narcs == 1))
+					{
+						break;
+					}
+
 					D(printf("  DFA '%s', state %d: "
 						 "Direct pop.\n",
 						 d->d_name,

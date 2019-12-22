@@ -1511,6 +1511,5 @@ namespace Cecilia
 		//new 
 		
 		public static void assert(bool b) { Debug.Assert(b); }
-		public const int EINTR = 4;
 	}
 }
