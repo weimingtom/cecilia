@@ -185,17 +185,20 @@ namespace Cecilia
 		public static void PyMem_DEL(ref nodePtr x) {}
 		public static void PyMem_DEL(CharPtr x) {}
 		public static void PyMem_DEL(ref parser_state x) {}
+		public static void PyMem_DEL(ref tok_state x) {}
 		
 		public static intPtr PyMem_NEW_int(int n) { return null; }
 		public static bitset PyMem_NEW_char(int n) { return null; }	
 		public static node PyMem_NEW_node(int n) { return null; }
 		public static parser_state PyMem_NEW_parser_state(int n) {return null;}
-		public static CharPtr PyMem_NEW_char2(int n) { return null; }	
+		public static CharPtr PyMem_NEW_char2(int n) { return null; }
+		public static tok_state PyMem_NEW_tok_state(int n) { return null; }
 		
 		public static void PyMem_FREE(ref CharPtr p) {}
 		public static CharPtr PyMem_REALLOC(CharPtr p, uint n) {return null;}
 		public static CharPtr PyMem_MALLOC(uint n) {return null;}
 		public static void PyMem_RESIZE_node(ref nodePtr x, int n) {}
+		public static void PyMem_RESIZE_char(ref CharPtr x, int n) {}
 		
 		public const int NT_OFFSET = 256;
 		
@@ -213,10 +216,7 @@ namespace Cecilia
 		public static char BIT2MASK(int ibit) { return (char)(1 << BIT2SHIFT(ibit)); }
 		public static int BYTE2BIT(int ibyte) { return ((ibyte) * BITSPERBYTE); }
 		
-		public const int ENDMARKER = 0;
-		
 		public static void PyOS_snprintf(CharPtr s, int n, CharPtr format,  params object[] par) {}
-		public static string[] _PyParser_TokenNames = {};
 		
 		public class node {
 		    public short		n_type;
@@ -242,9 +242,6 @@ namespace Cecilia
 		public static short TYPE(node n) { return (n.n_type); }
 		public static CharPtr STR(node n) { return (n.n_str); }
 		public static void REQ(node n, short type) { assert(TYPE(n) == (type)); }
-		public const int INDENT	= 5;
-		public const int DEDENT	= 6;
-		public const int NEWLINE = 4;
 		public static int PyOS_InterruptOccurred() { return 0; }
 		
 		public class PyThreadState
@@ -261,18 +258,9 @@ namespace Cecilia
 		public static PyObject PyExc_OverflowError;
 		public static void PyErr_SetString(PyObject o, CharPtr str) { }
 		
-		public const int E_OVERFLOW = 19;
-		public const int E_NOMEM = 15;
-		
 		public static int Py_DebugFlag = 0;
-		public const int NAME = 1;
-		
-		public const int EINTR = 4;
-		public const int NUMBER = 2;
-		public const int E_SYNTAX = 14;
-		public const int E_OK = 10;
-		public const int E_DONE = 16;
-		public const int E_EOF = 11;		
+
+		public const int EINTR = 4;	
 
 		public class perrdetail {
 		    public int error;
@@ -284,40 +272,78 @@ namespace Cecilia
 		    public int expected;
 		};
 		
-		public const int MAXINDENT = 100;
-		
-		public class tok_state {
-			public CharPtr buf;
-			public CharPtr cur;
-			public CharPtr inp;
-			public CharPtr end;
-			public CharPtr start;
-			public int done;
-			public FILEPtr fp;
-			public int tabsize;
-			public int indent;
-			public int[] indstack = new int[MAXINDENT];
-			public int atbol;
-			public int pendin;
-			public CharPtr prompt, nextprompt;
-			public int lineno;
-			public int level;
-			public CharPtr filename;
-			public int altwarning;
-			public int alterror;
-			public int alttabsize;
-			public int[] altindstack = new int[MAXINDENT];
-		};
-		
-		public static tok_state PyTokenizer_FromString(CharPtr str) { return null; }
 		public static int Py_VerboseFlag;
-		public static tok_state PyTokenizer_FromFile(FILEPtr fp, CharPtr ps1, CharPtr ps2) { return null; }
-		public static int PyTokenizer_Get(tok_state tok, ref CharPtr p_start, ref CharPtr p_end) { return 0; }
 		
 		public const int PyPARSE_YIELD_IS_KEYWORD = 0x0001;
-		public const int ERRORTOKEN = 51;
 		
 		public static void PySys_WriteStderr(CharPtr format, params object[] par) {}
-		public static void PyTokenizer_Free(tok_state x) {}
+	
+		public const int ENDMARKER = 0;
+		public const int NAME = 1;
+		public const int NUMBER = 2;
+		public const int STRING = 3;
+		public const int NEWLINE = 4;
+		public const int INDENT = 5;
+		public const int DEDENT = 6;
+		public const int LPAR = 7;
+		public const int RPAR = 8;
+		public const int LSQB = 9;
+		public const int RSQB = 10;
+		public const int COLON = 11;
+		public const int COMMA = 12;
+		public const int SEMI = 13;
+		public const int PLUS = 14;
+		public const int MINUS = 15;
+		public const int STAR = 16;
+		public const int SLASH = 17;
+		public const int VBAR = 18;
+		public const int AMPER = 19;
+		public const int LESS = 20;
+		public const int GREATER = 21;
+		public const int EQUAL = 22;
+		public const int DOT = 23;
+		public const int PERCENT = 24;
+		public const int BACKQUOTE = 25;
+		public const int LBRACE = 26;
+		public const int RBRACE = 27;
+		public const int EQEQUAL = 28;
+		public const int NOTEQUAL = 29;
+		public const int LESSEQUAL = 30;
+		public const int GREATEREQUAL = 31;
+		public const int TILDE = 32;
+		public const int CIRCUMFLEX = 33;
+		public const int LEFTSHIFT = 34;
+		public const int RIGHTSHIFT = 35;
+		public const int DOUBLESTAR = 36;
+		public const int PLUSEQUAL = 37;
+		public const int MINEQUAL = 38;
+		public const int STAREQUAL = 39;
+		public const int SLASHEQUAL = 40;
+		public const int PERCENTEQUAL = 41;
+		public const int AMPEREQUAL = 42;
+		public const int VBAREQUAL = 43;
+		public const int CIRCUMFLEXEQUAL = 44;
+		public const int LEFTSHIFTEQUAL = 45;
+		public const int RIGHTSHIFTEQUAL = 46;
+		public const int DOUBLESTAREQUAL = 47;
+		public const int DOUBLESLASH = 48;
+		public const int DOUBLESLASHEQUAL = 49;
+		public const int OP = 50;
+		public const int ERRORTOKEN = 51;
+		public const int N_TOKENS = 52;
+		
+		
+		public const int E_OK = 10;
+		public const int E_EOF = 11;
+		public const int E_INTR = 12;
+		public const int E_TOKEN = 13;
+		public const int E_SYNTAX = 14;
+		public const int E_NOMEM = 15;
+		public const int E_DONE	= 16;
+		public const int E_ERROR = 17;
+		public const int E_TABSPACE = 18;
+		public const int E_OVERFLOW = 19;
+		public const int E_TOODEEP = 20;
+		public const int E_DEDENT = 21;
 	}
 }

@@ -57,6 +57,9 @@
     <Compile Include="parser\parser.c.cs" />
     <Compile Include="parser\parser.h.cs" />
     <Compile Include="parser\parsetok.c.cs" />
+    <Compile Include="parser\pgen.h.cs" />
+    <Compile Include="parser\tokenizer.c.cs" />
+    <Compile Include="parser\tokenizer.h.cs" />
     <Compile Include="printf\Tools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

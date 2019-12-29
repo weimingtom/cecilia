@@ -18,6 +18,11 @@ namespace Cecilia
 			private Stream stream;
 			private int type = -1;
 			
+			public FILEPtr(FILEPtr f)
+			{
+				throw new Exception();
+			}
+			
 			public FILEPtr(int type)
 			{
 				this.type = type;
@@ -1511,5 +1516,6 @@ namespace Cecilia
 		//new 
 		
 		public static void assert(bool b) { Debug.Assert(b); }
+		public static int atoi(CharPtr s) { throw new Exception(); }
 	}
 }
