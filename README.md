@@ -8,6 +8,10 @@ Cecilia is the name of Cecilia Alcott (セシリア=オルコット) , a heroine
 ## Related projects  
 * https://github.com/weimingtom/python222mod  
 
+## Workspaces  
+* https://gitee.com/weimingtom/pythonnet_work  
+(TODO) pythonnet load python.dll runtime error (console exe is ok)  
+
 ## Ref  
 * Python 2.2.2  
 https://www.python.org/downloads/source/  
