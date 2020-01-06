@@ -102,6 +102,9 @@ https://github.com/lordmauve/pgzero
 * Microsoft/pyright  
 https://github.com/Microsoft/pyright  
 
+* CPython-Internals  
+https://github.com/zpoint/CPython-Internals  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
