@@ -108,3 +108,6 @@ https://github.com/zpoint/CPython-Internals
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
+
+* https://github.com/weimingtom/pythonnetmod  
+(TODO) pythonnet with vs2013 and sharpdevelop  
