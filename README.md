@@ -105,6 +105,9 @@ https://github.com/Microsoft/pyright
 * CPython-Internals  
 https://github.com/zpoint/CPython-Internals  
 
+* Pyjion  
+https://github.com/microsoft/Pyjion  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
