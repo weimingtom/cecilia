@@ -114,3 +114,6 @@ https://github.com/microsoft/Pyjion
 
 * https://github.com/weimingtom/pythonnetmod  
 (TODO) pythonnet with vs2013 and sharpdevelop  
+
+* https://github.com/weimingtom/boost_python_hello  
+(TODO) Boost::Python with vs2013    
