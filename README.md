@@ -108,8 +108,11 @@ https://github.com/zpoint/CPython-Internals
 * Pyjion  
 https://github.com/microsoft/Pyjion  
 
-8 pythonvm  
+* pythonvm  
 https://gitee.com/hinus/pythonvm    
+
+* pybind11  
+https://github.com/pybind/pybind11  
 
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
