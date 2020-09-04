@@ -114,6 +114,9 @@ https://gitee.com/hinus/pythonvm
 * pybind11  
 https://github.com/pybind/pybind11  
 
+* JPython  
+https://github.com/xia-st/JPython  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
