@@ -120,6 +120,7 @@ https://github.com/xia-st/JPython
 * Pyodide, using WebAssembly    
 https://github.com/pyodide/pyodide  
 https://pyodide-cdn2.iodide.io/v0.17.0a2/full/console.html  
+see 115 chrome extension, Python Shell  
 
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
