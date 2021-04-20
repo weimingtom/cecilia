@@ -117,6 +117,10 @@ https://github.com/pybind/pybind11
 * JPython  
 https://github.com/xia-st/JPython  
 
+* Pyodide, using WebAssembly    
+https://github.com/pyodide/pyodide  
+https://pyodide-cdn2.iodide.io/v0.17.0a2/full/console.html  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
