@@ -122,6 +122,9 @@ https://github.com/pyodide/pyodide
 https://pyodide-cdn2.iodide.io/v0.17.0a2/full/console.html  
 see 115 chrome extension, Python Shell  
 
+* pyston  
+https://github.com/pyston/pyston  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
