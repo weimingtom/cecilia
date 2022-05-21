@@ -132,6 +132,9 @@ https://github.com/pymo/pymo/issues/2
 * pyscript  
 https://github.com/pyscript/pyscript  
 
+* PikaScript    
+https://github.com/pikasTech/pikascript  
+
 ## Workspaces  
 * https://gitee.com/weimingtom/pythonnet_work  
 (TODO) pythonnet load python.dll runtime error (console exe is ok)  
