@@ -135,7 +135,7 @@ https://github.com/pyscript/pyscript
 * PikaScript    
 https://github.com/pikasTech/pikascript  
 
-* pythonvm  
+* pythonvm, 自己动手写Python虚拟机    
 https://github.com/koshox/pythonvm  
 
 ## Workspaces  
